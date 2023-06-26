@@ -1,0 +1,77 @@
+{{define "index.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>guide-index</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8" />
+        <meta name="keywords" content=""/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    </head>
+
+    <style>
+        body {
+            background-color: rgba(243, 209, 146, 0.93);
+        }
+        .delete-btn {
+            height: 34px;
+            width: 50px;
+            padding: 0 auto;
+            background-color: #ea1f41;
+            color: #fff;
+            text-align: center;
+            font-size: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-btn {
+            height: 34px;
+            width: 50px;
+            padding: 0 auto;
+            background-color: #5938ea;
+            color: #fff;
+            text-align: center;
+            font-size: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+    <body>
+        <p style="margin-left: 10px;color: crimson"><b>PS: </b>不要输入空字符,否则会出现不可描述的错误.</p>
+        <form action="/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px;">
+                网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
+                伪名: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
+                <input  class="add-btn" type="submit" value="添加">
+        </form>
+        <form action="/del" method="post" enctype="multipart/form-data" style="margin-left: 10px;">
+            伪名: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name" placeholder="输入伪名">
+            <input  class="delete-btn" type="submit" value="删除">
+        </form>
+        <hr>
+
+        <div>
+            <table class="table table-hover">
+                <thead>
+                    <th>伪名</th>
+                    <th>网址</th>
+                    <th>动作</th>
+                </thead>
+                <tbody>
+                {{range $k,$v := .UrlPic}}
+
+                    <tr>
+                        <td>{{$k}}</td>
+                        <td>{{$v}}</td>
+                        <td><a href="{{$v}}" target=_blank><input class="btn btn-success" type="button" value="访问"></a></td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
+
+{{end}}
