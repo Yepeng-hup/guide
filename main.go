@@ -148,7 +148,7 @@ func main() {
 		}
 		c.Redirect(http.StatusFound, "/index")
 	})
-	log.Println("start ok ---> Listening and serving HTTP on 0.0.0.0:7878")
+	log.Println("start ok ---> Listening and serving HTTP on 0.0.0.0:7878/index")
 	if err := r.Run("0.0.0.0:7878"); err != nil {
 		log.Println("error start fail", err)
 	}
