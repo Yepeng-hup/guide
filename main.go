@@ -150,7 +150,6 @@ func main() {
 	})
 	host := os.Getenv("GUIDE_HOST")
 	port := os.Getenv("GUIDE_PORT")
-	fmt.Println("----------->", host, port)
 	log.Println("start ok ---> Listening and serving HTTP on "+host+":"+port+"/index")
 	if err := r.Run(host+":"+port); err != nil {
 		log.Println("error start fail", err)
