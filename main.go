@@ -19,48 +19,90 @@ type (
 	from struct {
 		url   string
 		uName string
+		notes string
 	}
 	name struct {
 		Name string
 	}
+
+	News struct {
+		UName string
+		Url string
+		Notes string
+	}
+
 )
 
-func writeFile(fileName, url string) error {
+func writeFile(fileName, url, notes string) error {
 	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
 	defer file.Close()
-	text := fileName + " " + url + "\n"
+	text := fileName + " " + url + " " + notes+"\n"
 	if _, err := file.WriteString(text); err != nil {
 		return fmt.Errorf(err.Error())
 	}
 	return nil
 }
 
-func readFileLines(path string) ([]string, error) {
-	file, err := os.Open(path)
+//func readFileLines(path string) ([]string, error) {
+//	file, err := os.Open(path)
+//	if err != nil {
+//		return nil, err
+//	}
+//	defer file.Close()
+//
+//	var lines []string
+//	scanner := bufio.NewScanner(file)
+//	fmt.Println(scanner)
+//	for scanner.Scan() {
+//		lines = append(lines, scanner.Text())
+//	}
+//	return lines, scanner.Err()
+//}
+//
+//func sliceUewMap(textSlice []string) map[string]string {
+//	imageMap := make(map[string]string)
+//	for _, s := range textSlice {
+//		parts := strings.Split(s, " ")
+//		imageMap[parts[0]] = parts[1]
+//	}
+//	fmt.Println(imageMap)
+//	return imageMap
+//}
+
+
+func str()([]News,){
+	var structSlice []News
+	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, err
+		log.Println(err.Error())
+		return nil
 	}
+
 	defer file.Close()
 
-	var lines []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := scanner.Text()
+		slice := strings.Split(line, " ")
+		txtStruct := News{
+			UName:   slice[0],
+			Url: slice[1],
+			Notes: slice[2],
+		}
+		//fmt.Println(myStruct.uName)
+		structSlice = append(structSlice, txtStruct)
 	}
-	return lines, scanner.Err()
+
+	if err := scanner.Err(); err != nil {
+		log.Println(err.Error())
+		return nil
+	}
+	return structSlice
 }
 
-func sliceUewMap(textSlice []string) map[string]string {
-	imageMap := make(map[string]string)
-	for _, s := range textSlice {
-		parts := strings.Split(s, " ")
-		imageMap[parts[0]] = parts[1]
-	}
-	return imageMap
-}
 
 func rewriteFile() error {
 	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
@@ -103,18 +145,14 @@ func delUrlService(serviceName string) error {
 }
 
 func main() {
-	gin.SetMode("release")
+	//gin.SetMode("release")
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 
 	r.GET("/index", func(c *gin.Context) {
-		rel, err := readFileLines(filePath)
-		if err != nil {
-			log.Println(err.Error())
-		}
-		relMap := sliceUewMap(rel)
+		relStr := str()
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"UrlPic": relMap,
+			"UrlPic": relStr,
 		})
 	})
 
@@ -122,11 +160,15 @@ func main() {
 		f := from{
 			url:   c.PostForm("url"),
 			uName: c.PostForm("u-name"),
+			notes: c.PostForm("txt"),
 		}
 		if f.url == "" && f.uName == ""{
 			log.Println("add element is nil.")
 		}else{
-			err := writeFile(f.uName, f.url)
+			if f.notes == "" {
+				f.notes = "无备注"
+			}
+			err := writeFile(f.uName, f.url, f.notes)
 			if err != nil {
 				log.Println(err)
 			}
@@ -154,4 +196,5 @@ func main() {
 	if err := r.Run(host+":"+port); err != nil {
 		log.Println("error start fail", err)
 	}
+
 }

@@ -40,10 +40,11 @@
     </style>
 
     <body>
-        <p style="margin-left: 10px;color: crimson"><b>PS: </b>不要输入空字符,否则会出现不可描述的错误.</p>
-        <form action="/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px;">
-                网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
+        <p style="margin-left: 10px;color: crimson"><b>PS: </b>系统网址集合</p>
+        <form action="/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px">
                 伪名: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
+                网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
+                备注: <input style="margin-top: 10px; height: 35px; width: 400px" type="text" name="txt" placeholder="默认'无备注'字段">
                 <input  class="add-btn" type="submit" value="添加">
         </form>
         <form action="/del" method="post" enctype="multipart/form-data" style="margin-left: 10px;">
@@ -57,15 +58,17 @@
                 <thead>
                     <th>伪名</th>
                     <th>网址</th>
+                    <th>备注</th>
                     <th>动作</th>
                 </thead>
                 <tbody>
-                {{range $k,$v := .UrlPic}}
+                {{range $k ,$v := .UrlPic}}
 
                     <tr>
-                        <td>{{$k}}</td>
-                        <td>{{$v}}</td>
-                        <td><a href="{{$v}}" target=_blank><input class="btn btn-success" type="button" value="访问"></a></td>
+                        <td>{{$v.UName}}</td>
+                        <td>{{$v.Url}}</td>
+                        <td>{{$v.Notes}}</td>
+                        <td><a href="{{$v.Url}}" target=_blank><input class="btn btn-success" type="button" value="访问"></a></td>
                     </tr>
                 {{end}}
                 </tbody>
