@@ -42,13 +42,13 @@
     <body>
         <p style="margin-left: 10px;color: crimson"><b>PS: </b>系统网址集合</p>
         <form action="/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px">
-                伪名: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
+                名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
                 网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
                 备注: <input style="margin-top: 10px; height: 35px; width: 400px" type="text" name="txt" placeholder="默认'无备注'字段">
                 <input  class="add-btn" type="submit" value="添加">
         </form>
         <form action="/del" method="post" enctype="multipart/form-data" style="margin-left: 10px;">
-            伪名: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name" placeholder="输入伪名">
+            名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name" placeholder="输入名称">
             <input  class="delete-btn" type="submit" value="删除">
         </form>
         <hr>
@@ -56,7 +56,7 @@
         <div>
             <table class="table table-hover">
                 <thead>
-                    <th>伪名</th>
+                    <th>名称</th>
                     <th>网址</th>
                     <th>备注</th>
                     <th>动作</th>

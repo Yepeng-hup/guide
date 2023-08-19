@@ -1,1 +1,1 @@
-github https://github.com/
+test https://www.test.com.cn 这是一个测试网址示例。
