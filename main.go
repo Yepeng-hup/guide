@@ -145,7 +145,7 @@ func delUrlService(serviceName string) error {
 }
 
 func main() {
-	//gin.SetMode("release")
+	gin.SetMode("release")
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 
@@ -190,11 +190,13 @@ func main() {
 		}
 		c.Redirect(http.StatusFound, "/index")
 	})
-	host := os.Getenv("GUIDE_HOST")
-	port := os.Getenv("GUIDE_PORT")
-	log.Println("start ok ---> Listening and serving HTTP on "+host+":"+port+"/index")
-	if err := r.Run(host+":"+port); err != nil {
+	//host := os.Getenv("GUIDE_HOST")
+	//port := os.Getenv("GUIDE_PORT")
+	log.Println("start ok ---> Listening and serving HTTP on 0.0.0.0:7878/index")
+	//if err := r.Run(host+":"+port); err != nil {
+	//	log.Println("error start fail", err)
+	//}
+	if err := r.Run("0.0.0.0:7878"); err != nil {
 		log.Println("error start fail", err)
 	}
-
 }
