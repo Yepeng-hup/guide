@@ -46,32 +46,6 @@ func writeFile(fileName, url, notes string) error {
 	return nil
 }
 
-//func readFileLines(path string) ([]string, error) {
-//	file, err := os.Open(path)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer file.Close()
-//
-//	var lines []string
-//	scanner := bufio.NewScanner(file)
-//	fmt.Println(scanner)
-//	for scanner.Scan() {
-//		lines = append(lines, scanner.Text())
-//	}
-//	return lines, scanner.Err()
-//}
-//
-//func sliceUewMap(textSlice []string) map[string]string {
-//	imageMap := make(map[string]string)
-//	for _, s := range textSlice {
-//		parts := strings.Split(s, " ")
-//		imageMap[parts[0]] = parts[1]
-//	}
-//	fmt.Println(imageMap)
-//	return imageMap
-//}
-
 
 func str()([]News,){
 	var structSlice []News
@@ -190,13 +164,10 @@ func main() {
 		}
 		c.Redirect(http.StatusFound, "/index")
 	})
-	//host := os.Getenv("GUIDE_HOST")
-	//port := os.Getenv("GUIDE_PORT")
+	host := os.Getenv("GUIDE_HOST")
+	port := os.Getenv("GUIDE_PORT")
 	log.Println("start ok ---> Listening and serving HTTP on 0.0.0.0:7878/index")
-	//if err := r.Run(host+":"+port); err != nil {
-	//	log.Println("error start fail", err)
-	//}
-	if err := r.Run("0.0.0.0:7878"); err != nil {
+	if err := r.Run(host+":"+port); err != nil {
 		log.Println("error start fail", err)
 	}
 }
