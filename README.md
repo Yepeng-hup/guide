@@ -9,4 +9,4 @@ export GUIDE_HOST=0.0.0.0 GUIDE_PORT=7878 && ./guide
 
 ```
 
-![](pic/dosc.png)
+![](pic/tb.png)
