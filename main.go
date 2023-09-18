@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -164,9 +165,13 @@ func main() {
 		}
 		c.Redirect(http.StatusFound, "/index")
 	})
+	err := godotenv.Load("guide.env")
+	if err != nil {
+		log.Fatal(err)
+	}
 	host := os.Getenv("GUIDE_HOST")
 	port := os.Getenv("GUIDE_PORT")
-	log.Println("start ok ---> Listening and serving HTTP on 0.0.0.0:7878/index")
+	log.Println("start ok ---> Listening and serving HTTP on "+host+":"+port+"/index")
 	if err := r.Run(host+":"+port); err != nil {
 		log.Println("error start fail", err)
 	}
