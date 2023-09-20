@@ -122,6 +122,7 @@ func delUrlService(serviceName string) error {
 func main() {
 	gin.SetMode("release")
 	r := gin.Default()
+	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*")
 
 	r.GET("/index", func(c *gin.Context) {
