@@ -1,0 +1,114 @@
+{{define "url.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>网址管理</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8" />
+        <meta name="keywords" content=""/>
+        <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
+        <script src="/sta/js/jstools/jquery.slim.min.js"></script>
+        <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
+    </head>
+
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+        .delete-btn {
+            height: 35px;
+            width: 50px;
+            padding: 0 auto;
+            background-color: #ea1f41;
+            color: #fff;
+            text-align: center;
+            font-size: 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .add-btn {
+            height: 35px;
+            width: 50px;
+            padding: 0 auto;
+            background-color: #5938ea;
+            color: #fff;
+            text-align: center;
+            font-size: 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .fw-btn {
+            height: 30px;
+            width: 50px;
+            padding: 0 auto;
+            background-color: #165eea;
+            color: #fff;
+            text-align: center;
+            font-size: 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-dark bg-dark">
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item btn btn-dark">
+                        <a class="nav-link" href="/url/index">网址管理 <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item btn btn-dark">
+                        <a class="nav-link" href="/">文件管理</a>
+                    </li>
+                    <li class="nav-item btn btn-dark dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            其他管理
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/readme">使用文档</a>
+                            <a class="dropdown-item" href="#">开发中</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <form action="/url/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 15px">
+            名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
+            网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
+            备注: <input style="margin-top: 10px; height: 35px; width: 400px" type="text" name="txt" placeholder="默认'无备注'字段">
+            <input  class="add-btn" type="submit" value="添加">
+        </form>
+        <form action="/url/del" method="post" enctype="multipart/form-data" style="margin-left: 10px;">
+            名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name" placeholder="模糊匹配，输入全名称">
+            <input  class="delete-btn" type="submit" value="删除">
+        </form>
+
+        <div style="margin-top: 50px">
+            <table class="table table-hover">
+                <thead>
+                <th>名称</th>
+                <th>网址</th>
+                <th>备注</th>
+                <th>动作</th>
+                </thead>
+                <tbody>
+                {{range $k ,$v := .UrlPic}}
+
+                    <tr>
+                        <td>{{$v.UName}}</td>
+                        <td>{{$v.Url}}</td>
+                        <td>{{$v.Notes}}</td>
+                        <td><a href="{{$v.Url}}" target=_blank><input class="fw-btn" type="button" value="访问"></a></td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
+{{end}}

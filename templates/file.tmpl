@@ -1,0 +1,103 @@
+{{define "file.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>文件管理</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8" />
+        <meta name="keywords" content=""/>
+        <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
+        <script src="/sta/js/jstools/jquery.slim.min.js"></script>
+        <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
+        <style>
+            .fw-btn {
+                height: 40px;
+                width: 50px;
+                padding: 0 auto;
+                background-color: #5938ea;
+                color: #fff;
+                text-align: center;
+                font-size: 15px;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+                margin-left: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-dark bg-dark">
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item btn btn-dark">
+                        <a class="nav-link" href="/url/index">网址管理 <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item btn btn-dark">
+                        <a class="nav-link" href="/">文件管理</a>
+                    </li>
+                    <li class="nav-item btn btn-dark dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            其他管理
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/readme">使用文档</a>
+                            <a class="dropdown-item" href="#">开发中</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="folder">
+            <h3 style="margin-top: 15px; margin-left: 15px">
+                ROOT: {{.currentDir}}
+            </h3>
+            <form style="float: left; display: flex; align-items: center;margin-left: 15px;" action="/file/upload" method="post" enctype="multipart/form-data" id="submitForm">
+                <input class="btn btn-dark" type="file" name="file" id="f">
+                <button class="fw-btn" id="submitF">上传</button>
+            </form>
+            <br><br><br>
+            <table class="table">
+                <thead>
+                    <th>#</th>
+                    <th>大小</th>
+                    <th>时间</th>
+                    <th>权限</th>
+                </thead>
+
+                <tbody>
+                {{range .dirList}}
+                    <tr>
+                    <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/dir.png" style="width: 20px; height: 20px">{{.DirectoryName}}</a></td>
+                        <td>{{.Size}}</td>
+                        <td>{{.Time}}</td>
+                        <td>{{.Power}}</td>
+                    </tr>
+                {{end}}
+                {{range .fileList}}
+                    <tr>
+                        <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/file.png" style="width: 20px; height: 20px">{{.FileName}}</a></td>
+                        <td>{{.Size}}MB</td>
+                        <td>{{.Time}}</td>
+                        <td>{{.Power}}</td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+        <script>
+            const button = document.querySelector("#submitF")
+            const form = document.querySelector("#f")
+            button.addEventListener("click", () => {
+                console.log(form)
+                form.action = form.action + "?path=" + location.pathname
+                form.submit()
+            })
+        </script>
+
+
+    </body>
+    </html>
+{{end}}

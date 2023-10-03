@@ -1,0 +1,46 @@
+{{define "readme.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>使用文档</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8" />
+        <meta name="keywords" content=""/>
+        <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
+        <script src="/sta/js/jstools/jquery.slim.min.js"></script>
+        <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-dark bg-dark">
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item btn btn-dark">
+                        <a class="nav-link" href="/url/index">网址管理 <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item btn btn-dark">
+                        <a class="nav-link" href="/">文件管理</a>
+                    </li>
+                    <li class="nav-item btn btn-dark dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            其他管理
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/readme">使用文档</a>
+                            <a class="dropdown-item" href="#">开发中</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <h3 style="margin-top: 15px; text-align: center">使用文档</h3>
+        <h5 style="margin-left: 10px;color: #007bff">网址管理</h5>
+        <p style="margin-left: 30px">添加功能 --> 正常填写就行，服务名称一定要唯一。</p>
+        <p style="margin-left: 30px">删除功能 --> 删除是模糊匹配，如果你有2个服务，分别是app01，app02，如果删除功能名称中填写app01和app02会正常删除，如果填写app的话，它会删除所有带app字符的所有名称。</p>
+        <br>
+        <h5 style="margin-left: 10px;color: #007bff">文件管理</h5>
+    </body>
+    </html>
+{{end}}
