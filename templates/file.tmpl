@@ -7,8 +7,11 @@
         <meta charset="UTF-8" />
         <meta name="keywords" content=""/>
         <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
-        <script src="/sta/js/jstools/jquery.slim.min.js"></script>
+        <script src="/sta/js/jstools/jquery-3.7.1.min.js"></script>
+        {{/*<script src="/sta/js/jstools/jquery.slim.min.js"></script>*/}}
         <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
+        <script src="/sta/js/alert.js"></script>
+        <script src="/sta/js/file.js"></script>
         <style>
             .fw-btn {
                 height: 40px;
@@ -50,53 +53,64 @@
             </div>
         </nav>
 
+        <div id="alert"></div>
+
         <div class="folder">
             <h3 style="margin-top: 15px; margin-left: 15px">
                 ROOT: {{.currentDir}}
             </h3>
-            <form style="float: left; display: flex; align-items: center;margin-left: 15px;" action="/file/upload" method="post" enctype="multipart/form-data" id="submitForm">
+
+            <form style="float: left; display: flex; align-items: center;margin-left: 15px;" action="/file/upload" method="post" enctype="multipart/form-data" id="sForm">
                 <input class="btn btn-dark" type="file" name="file" id="f">
-                <button class="fw-btn" id="submitF">上传</button>
+                <button class="fw-btn" id="sButton">上传</button>
             </form>
-            <br><br><br>
+
+            <input style="float: left; display: flex; align-items: center;margin-left: 30px;width: 120px;height: 40px" type="text" name="dir" id="dir" placeholder="绝对路径目录名">
+            <button class="fw-btn" id="createdir">创建</button>
+            <br><br>
             <table class="table">
                 <thead>
                     <th>#</th>
+                    <th>文件名</th>
                     <th>大小</th>
                     <th>时间</th>
                     <th>权限</th>
+                    <th>动作</th>
                 </thead>
 
                 <tbody>
                 {{range .dirList}}
                     <tr>
-                    <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/dir.png" style="width: 20px; height: 20px">{{.DirectoryName}}</a></td>
-                        <td>{{.Size}}</td>
+                        <td><input class="cb" type="checkbox"/></td>
+                        <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/dir.png" style="width: 20px; height: 20px">{{.DirectoryName}}</a></td>
+                        <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
+                        <td><button class="btn btn-danger" onclick="">删除</button></td>
                     </tr>
                 {{end}}
                 {{range .fileList}}
                     <tr>
+                        <td><input class="cb" type="checkbox"/></td>
                         <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/file.png" style="width: 20px; height: 20px">{{.FileName}}</a></td>
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
+                        <td><button class="btn btn-danger" onclick="">删除</button></td>
                     </tr>
                 {{end}}
                 </tbody>
             </table>
         </div>
+
         <script>
-            const button = document.querySelector("#submitF")
-            const form = document.querySelector("#f")
+            const button = document.querySelector("#sButton")
+            const form = document.querySelector("#sForm")
             button.addEventListener("click", () => {
-                console.log(form)
                 form.action = form.action + "?path=" + location.pathname
                 form.submit()
             })
         </script>
-
 
     </body>
     </html>

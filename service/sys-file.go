@@ -1,9 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"guide/global"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -21,8 +24,6 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 
 	for _, file := range files {
 		href := strings.ReplaceAll(c.Request.URL.Path +"/"+ file.Name(), "//", "/")
-		//i, s := core.BitConvert(file.Size())
-		//fmt.Println(i, s)
 		if file.IsDir() {
 			dirList = append(dirList, DirectoryAnchor{
 				DirectoryName: file.Name(),
@@ -53,36 +54,54 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 
 
 func UploadData(c *gin.Context) {
-	file, err := c.FormFile("file")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{
-			"msg": err.Error(),
-		})
+	file, _ := c.FormFile("file")
+	if file == nil {
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
 	filename := filepath.Base(file.Filename)
 	if strings.Contains(c.Query("path"), "..") {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "invalid path.",
-		})
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	savePath := filepath.Join("file", c.Query("path"), filename)
-	err = c.SaveUploadedFile(file, savePath)
+	savePath := filepath.Join(global.SaveDataDir, c.Query("path"), filename)
+	err := c.SaveUploadedFile(file, savePath)
 	if err != nil {
-		//c.String(http.StatusInternalServerError, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg": err.Error(),
-		})
+		fmt.Println("file save fail,", err.Error())
+		c.Redirect(http.StatusFound, "/")
+		return
 	}
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusFound, c.Query("path"))
 }
 
 
 func DownloadData(c *gin.Context, absolutePath *string) {
 	c.File(*absolutePath)
+}
+
+
+func CreateDir(c *gin.Context){
+	dirName := c.PostForm("name")
+	fmt.Println(dirName)
+	err := os.Mkdir(dirName, 0755)
+	if err != nil {
+		fmt.Println("filedir create fail.", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": 500,
+			"message": "目录创建失败.",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"message": "目录创建成功.",
+	})
+}
+
+
+func DeleteDirAndFile(c *gin.Context){
+
 }
 
 
