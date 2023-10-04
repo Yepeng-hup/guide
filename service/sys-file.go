@@ -52,6 +52,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 func UploadData(c *gin.Context) {
 	file, _ := c.FormFile("file")
 	if file == nil {
+		log.Println("WARN: file is nil.")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
