@@ -84,7 +84,6 @@ func DownloadData(c *gin.Context, absolutePath *string) {
 
 func CreateDir(c *gin.Context){
 	dirName := c.PostForm("name")
-	fmt.Println(dirName)
 	err := os.Mkdir(dirName, 0755)
 	if err != nil {
 		fmt.Println("filedir create fail.", err.Error())
