@@ -1,10 +1,10 @@
 package service
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"guide/global"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,12 +16,10 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	files, _ := ioutil.ReadDir(*fullPath)
 	dirList := make([]DirectoryAnchor, 0)
 	fileList := make([]FileAnchor, 0)
-
 	dirList = append(dirList, DirectoryAnchor{
 		DirectoryName: "..",
 		Href: strings.TrimRight(c.Request.URL.Path, "/") + "/..",
 	})
-
 	for _, file := range files {
 		href := strings.ReplaceAll(c.Request.URL.Path +"/"+ file.Name(), "//", "/")
 		if file.IsDir() {
@@ -43,13 +41,11 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 			})
 		}
 	}
-
 	c.HTML(http.StatusOK, "file.tmpl", gin.H{
 		"dirList": dirList,
 		"fileList": fileList,
 		"currentDir": c.Request.URL.Path,
 	})
-
 }
 
 
@@ -59,17 +55,15 @@ func UploadData(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
-
 	filename := filepath.Base(file.Filename)
 	if strings.Contains(c.Query("path"), "..") {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
-
 	savePath := filepath.Join(global.SaveDataDir, c.Query("path"), filename)
 	err := c.SaveUploadedFile(file, savePath)
 	if err != nil {
-		fmt.Println("file save fail,", err.Error())
+		log.Println("ERROR: file save fail,", err.Error())
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -86,12 +80,13 @@ func CreateDir(c *gin.Context){
 	dirName := c.PostForm("name")
 	err := os.Mkdir(dirName, 0755)
 	if err != nil {
-		fmt.Println("filedir create fail.", err.Error())
+		log.Println("ERROR: create dir and file fail.", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": 500,
 			"message": "目录创建失败.",
 		})
 	}
+	log.Printf("INFO: create dir and file success ---> [%v].", dirName)
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"message": "目录创建成功.",

@@ -61,7 +61,7 @@ func delUrlService(serviceName string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("service and url has been delete ---> [%v]", serviceName)
+	log.Printf("INFO: service and url has been delete ---> [%v]", serviceName)
 	err = rewriteFile()
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -77,7 +77,7 @@ func RewriteUrl(c *gin.Context){
 		Notes: c.PostForm("txt"),
 	}
 	if f.Url == "" && f.UName == ""{
-		log.Println("add element is nil.")
+		log.Println("WARN: add element is nil.")
 	}else{
 		if f.Notes == "" {
 			f.Notes = "无备注"
@@ -96,7 +96,7 @@ func DelUrl(c *gin.Context){
 		Name: c.PostForm("u-name"),
 	}
 	if n.Name == ""{
-		log.Println("del element is nil.")
+		log.Println("WARN: del element is nil.")
 	}else {
 		err := delUrlService(n.Name)
 		if err != nil {

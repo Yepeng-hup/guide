@@ -12,7 +12,7 @@ func ShowUrl()([]News,){
 	var structSlice []News
 	file, err := os.Open(global.FilePath)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("ERROR: ",err.Error())
 		return nil
 	}
 
@@ -31,7 +31,7 @@ func ShowUrl()([]News,){
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Println(err.Error())
+		log.Println("ERROR: ",err.Error())
 		return nil
 	}
 	return structSlice
