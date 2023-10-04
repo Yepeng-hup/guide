@@ -2,7 +2,6 @@ package service
 
 import (
 	"os"
-	"time"
 )
 
 type (
@@ -19,7 +18,7 @@ type (
 		DirectoryName string
 		Href          string
 		Size int64
-		Time time.Time
+		Time string
 		Power os.FileMode
 	}
 
@@ -27,7 +26,7 @@ type (
 		FileName string
 		Href     string
 		Size int64
-		Time time.Time
+		Time string
 		Power os.FileMode
 	}
 )

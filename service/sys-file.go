@@ -22,12 +22,13 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	})
 	for _, file := range files {
 		href := strings.ReplaceAll(c.Request.URL.Path +"/"+ file.Name(), "//", "/")
+		times := file.ModTime()
 		if file.IsDir() {
 			dirList = append(dirList, DirectoryAnchor{
 				DirectoryName: file.Name(),
 				Href:          href,
 				Size: file.Size(),
-				Time: file.ModTime(),
+				Time: times.Format("2006-01-02 15:04:05"),
 				Power: file.Mode(),
 			})
 
@@ -36,7 +37,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 				FileName: file.Name(),
 				Href:     href,
 				Size: file.Size()/1024/1024,
-				Time: file.ModTime(),
+				Time: times.Format("2006-01-02 15:04:05"),
 				Power: file.Mode(),
 			})
 		}
