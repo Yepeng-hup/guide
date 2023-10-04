@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"guide/core"
+	"guide/global"
 	"guide/service"
 	"net/http"
 	"os"
@@ -13,15 +14,13 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	ginDebug := os.Getenv("GUIDE_GIN_DEBUG")
-	saveDataDir := os.Getenv("GUIDE_FILEDATA_DIR")
-	gin.SetMode(ginDebug)
+	gin.SetMode(global.GinDebug)
 	r := gin.Default()
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*")
 
 	r.NoRoute(func(c *gin.Context) {
-		fullPath := filepath.Join(saveDataDir, c.Request.URL.Path)
+		fullPath := filepath.Join(global.SaveDataDir, c.Request.URL.Path)
 		fileInfo, err := os.Stat(fullPath)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -53,6 +52,7 @@ func InitRoute() *gin.Engine {
 
 	file := r.Group("/file")
 		file.POST("/upload", service.UploadData)
+		file.POST("/create", service.CreateDir)
 
 	return r
 }
