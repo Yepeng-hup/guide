@@ -9,4 +9,4 @@ export GUIDE_HOST=0.0.0.0 GUIDE_PORT=7878 GUIDE_GIN_DEBUG=debug GUIDE_FILEDATA_D
 
 ```
 
-![](pic/tb.png)
+![](pic/ui.png)
