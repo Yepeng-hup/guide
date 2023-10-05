@@ -75,6 +75,9 @@ func UploadData(c *gin.Context) {
 
 
 func DownloadData(c *gin.Context, absolutePath *string) {
+	c.Writer.WriteHeader(200)
+	//提示客户端这是个二进制文件而非普通文本格式
+	c.Header("Content-Type", "application/octet-stream")
 	c.File(*absolutePath)
 }
 
