@@ -69,6 +69,7 @@ func UploadData(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
+	log.Printf("INFO: file push success ---> [%s]", filename)
 	c.Redirect(http.StatusFound, c.Query("path"))
 }
 
@@ -79,24 +80,60 @@ func DownloadData(c *gin.Context, absolutePath *string) {
 
 
 func CreateDir(c *gin.Context){
-	dirName := c.PostForm("name")
-	err := os.Mkdir(dirName, 0755)
+	f := Creates{
+		DirName: c.PostForm("name"),
+		DirPath: c.PostForm("path"),
+	}
+	createDirPath := global.SaveDataDir+f.DirPath+"/"+f.DirName
+	err := os.Mkdir(createDirPath, 0755)
 	if err != nil {
 		log.Println("ERROR: create dir and file fail.", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"code": 500,
+			"code": http.StatusInternalServerError,
 			"message": "目录创建失败.",
 		})
 	}
-	log.Printf("INFO: create dir and file success ---> [%v].", dirName)
+	log.Printf("INFO: create dir and file success ---> [%v].", f.DirName)
 	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
+		"code": http.StatusOK,
 		"message": "目录创建成功.",
 	})
 }
 
 
 func DeleteDirAndFile(c *gin.Context){
+	d := Deletes{
+		FileDirName: c.PostForm("FDname"),
+		FileDirPath: c.PostForm("FDpath"),
+	}
+	fileAndDirList := strings.Fields(d.FileDirName)
+	if fileAndDirList[0] == ".."||fileAndDirList[0] == "."{
+		log.Println("ERROR: cannot delete root directory.")
+		return
+	}
+	folderFilePath := global.SaveDataDir+d.FileDirPath+"/"+fileAndDirList[0]
+	v, err := os.Stat(folderFilePath)
+	if err != nil {
+		log.Println("ERROR: show dir and file info fail.", err.Error())
+		return
+	}
+	if v.IsDir() {
+		err := os.RemoveAll(folderFilePath)
+		if err != nil {
+			log.Println("ERROR: delete dir fail.", err.Error())
+			return
+		}
+		log.Printf("INFO: delete dir success. ---> [%s]", fileAndDirList[0])
+		return
+	}else {
+		err := os.Remove(folderFilePath)
+		if err != nil {
+			log.Println("ERROR: delete file fail.", err.Error())
+			return
+		}
+		log.Printf("INFO: delete file success. ---> [%s]", fileAndDirList[0])
+		return
+	}
 
 }
 

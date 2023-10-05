@@ -29,4 +29,14 @@ type (
 		Time string
 		Power os.FileMode
 	}
+
+	Creates struct {
+		DirName string
+		DirPath string
+	}
+
+	Deletes struct {
+		FileDirName string
+		FileDirPath string
+	}
 )

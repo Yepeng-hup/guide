@@ -65,7 +65,7 @@
                 <button class="fw-btn" id="sButton">上传</button>
             </form>
 
-            <input style="float: left; display: flex; align-items: center;margin-left: 30px;width: 120px;height: 40px" type="text" name="dir" id="dir" placeholder="绝对路径目录名">
+            <input style="float: left; display: flex; align-items: center;margin-left: 30px;width: 150px;height: 40px" type="text" name="dir" id="dir" placeholder="目录名">
             <button class="fw-btn" id="createdir">创建</button>
             <br><br>
             <table class="table">
@@ -86,7 +86,7 @@
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
-                        <td><button class="btn btn-danger" onclick="">删除</button></td>
+                        <td><button class="btn btn-danger" onclick="deleteCheckbox()">删除</button></td>
                     </tr>
                 {{end}}
                 {{range .fileList}}
@@ -96,7 +96,7 @@
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
-                        <td><button class="btn btn-danger" onclick="">删除</button></td>
+                        <td><button class="btn btn-danger" onclick="deleteCheckbox()">删除</button></td>
                     </tr>
                 {{end}}
                 </tbody>

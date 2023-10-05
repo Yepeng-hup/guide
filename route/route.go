@@ -53,6 +53,7 @@ func InitRoute() *gin.Engine {
 	file := r.Group("/file")
 		file.POST("/upload", service.UploadData)
 		file.POST("/create", service.CreateDir)
+		file.POST("/delete", service.DeleteDirAndFile)
 
 	return r
 }
