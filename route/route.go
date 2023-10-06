@@ -14,7 +14,7 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	gin.SetMode("debug")
+	gin.SetMode("release")
 	r := gin.Default()
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*")
