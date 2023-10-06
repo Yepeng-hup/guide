@@ -60,14 +60,11 @@ func ShowLocalIp(interfaceName *string)(string, error){
 
 
 	}
-
-	// 获取所有网络接口
+	
 	//interfaces, err := net.Interfaces()
 	//if err != nil {
 	//	return "", fmt.Errorf("ERROR: Unable to obtain the list of network interfaces, %s", err.Error())
 	//}
-
-	// 遍历网络接口并获取IP地址
 	//for _, ifaceEth := range interfaces {
 	//	addrs, err := ifaceEth.Addrs()
 	//	if err != nil {
@@ -78,7 +75,6 @@ func ShowLocalIp(interfaceName *string)(string, error){
 	//		ipNet, ok := addr.(*net.IPNet)
 	//		if ok && !ipNet.IP.IsLoopback() && ipNet.IP.To4() != nil {
 	//			if ifaceEth.Name == "eth0" || ifaceEth.Name == "WLAN" || ifaceEth.Name == "ens33"{
-	//				//fmt.Printf("接口：%s，IP地址：%s\n", ifaceEth.Name, ipNet.IP.String())
 	//				return ipNet.IP.String()+":"+global.Port, nil
 	//			}
 	//		}
