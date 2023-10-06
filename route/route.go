@@ -14,12 +14,12 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	gin.SetMode(global.GinDebug)
+	gin.SetMode("debug")
 	r := gin.Default()
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*")
 
-	r.NoRoute(func(c *gin.Context) {
+	r.NoRoute(core.IpWhitelistMiddleware(global.IsStartWhitelist), func(c *gin.Context) {
 		fullPath := filepath.Join(global.SaveDataDir, c.Request.URL.Path)
 		fileInfo, err := os.Stat(fullPath)
 		if err != nil {
@@ -36,24 +36,24 @@ func InitRoute() *gin.Engine {
 
 	})
 
-	r.GET("/readme", func(c *gin.Context){
+	r.GET("/readme",core.IpWhitelistMiddleware(global.IsStartWhitelist), func(c *gin.Context){
 		c.HTML(http.StatusOK, "readme.tmpl",gin.H{})
 	})
 
 	url := r.Group("/url")
-		url.GET("/index", func(c *gin.Context) {
+		url.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
 			relStr := core.ShowUrl()
 			c.HTML(http.StatusOK, "url.tmpl", gin.H{
 				"UrlPic": relStr,
 			})
 		})
-		url.POST("/upload", service.RewriteUrl)
-		url.POST("/del", service.DelUrl)
+		url.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.RewriteUrl)
+		url.POST("/del", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DelUrl)
 
 	file := r.Group("/file")
-		file.POST("/upload", service.UploadData)
-		file.POST("/create", service.CreateDir)
-		file.POST("/delete", service.DeleteDirAndFile)
+		file.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.UploadData)
+		file.POST("/create", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.CreateDir)
+		file.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DeleteDirAndFile)
 
 	return r
 }
