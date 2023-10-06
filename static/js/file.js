@@ -5,7 +5,7 @@ $(function () {
             alertMontage("不允许为空.","alert-danger");
             setTimeout(function() {
                 window.location = "/";
-            }, 2000);
+            }, 1000);
         } else {
             $.post({
                 "url": "/file/create",
@@ -18,12 +18,12 @@ $(function () {
                         alertMontage(data["message"],"alert-success");
                         setTimeout(function() {
                             window.location = location.pathname;
-                        }, 2000);
+                        }, 1000);
                     } else {
                         alertMontage(data["message"],"alert-danger");
                         setTimeout(function() {
                             window.location = location.pathname;
-                        }, 2000);
+                        }, 1000);
                     }
                 },
                 "fail": function (error) {
