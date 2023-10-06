@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"guide/core"
 	"guide/global"
@@ -31,7 +30,6 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 		href := strings.ReplaceAll(c.Request.URL.Path +"/"+ file.Name(), "//", "/")
 		times := file.ModTime()
 		if file.IsDir() {
-			fmt.Println(file.Size())
 			dirList = append(dirList, DirectoryAnchor{
 				DirectoryName: file.Name(),
 				Href:          href,
