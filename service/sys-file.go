@@ -45,7 +45,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	c.HTML(http.StatusOK, "file.tmpl", gin.H{
 		"dirList": dirList,
 		"fileList": fileList,
-		"currentDir": c.Request.URL.Path,
+		"rootDir": c.Request.URL.Path,
 	})
 }
 
@@ -58,11 +58,11 @@ func UploadData(c *gin.Context) {
 		return
 	}
 	filename := filepath.Base(file.Filename)
-	if strings.Contains(c.Query("path"), "..") {
+	if strings.Contains(c.PostForm("path"), "..") {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
-	savePath := filepath.Join(global.SaveDataDir, c.Query("path"), filename)
+	savePath := filepath.Join(global.SaveDataDir, c.PostForm("path"), filename)
 	err := c.SaveUploadedFile(file, savePath)
 	if err != nil {
 		log.Println("ERROR: file save fail,", err.Error())
@@ -70,7 +70,7 @@ func UploadData(c *gin.Context) {
 		return
 	}
 	log.Printf("INFO: file push success ---> [%s]", filename)
-	c.Redirect(http.StatusFound, c.Query("path"))
+	c.Redirect(http.StatusFound, c.PostForm("path"))
 }
 
 
