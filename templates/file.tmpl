@@ -8,7 +8,6 @@
         <meta name="keywords" content=""/>
         <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
         <script src="/sta/js/jstools/jquery-3.7.1.min.js"></script>
-        {{/*<script src="/sta/js/jstools/jquery.slim.min.js"></script>*/}}
         <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
         <script src="/sta/js/alert.js"></script>
         <script src="/sta/js/file.js"></script>
@@ -55,20 +54,22 @@
 
         <div id="alert"></div>
 
+        <div id="jdt"></div>
+
         <div class="folder">
             <h3 style="margin-top: 15px; margin-left: 15px">
-                ROOT: {{.currentDir}}
+                ROOT: {{.rootDir}}
             </h3>
+            <div style="float: left; display: flex; align-items: center;margin-left: 15px;">
+                <form  id="sForm">
+                    <input class="btn btn-dark" type="file" name="file" id="f">
+                    <button class="fw-btn" id="sButton" onclick="pushFile()" hidden="true ">上传</button>
+                </form>
 
-            <form style="float: left; display: flex; align-items: center;margin-left: 15px;" action="/file/upload" method="post" enctype="multipart/form-data" id="sForm">
-                <input class="btn btn-dark" type="file" name="file" id="f">
-                <button class="fw-btn" id="sButton">上传</button>
-            </form>
-
-            <input style="float: left; display: flex; align-items: center;margin-left: 30px;width: 150px;height: 40px" type="text" name="dir" id="dir" placeholder="目录名">
-            <button class="fw-btn" id="createdir">创建</button>
-            <br><br>
-            <table class="table">
+                <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="dir" id="dir" placeholder="目录名">
+                <button class="fw-btn" id="createdir">创建</button>
+            </div>
+            <table class="table" style="margin-top: 70px">
                 <thead>
                     <th>#</th>
                     <th>文件名</th>
@@ -104,12 +105,11 @@
         </div>
 
         <script>
-            const button = document.querySelector("#sButton")
-            const form = document.querySelector("#sForm")
-            button.addEventListener("click", () => {
-                form.action = form.action + "?path=" + location.pathname
-                form.submit()
-            })
+            const fileInput = document.getElementById('f');
+            const submitButton = document.getElementById('sButton');
+            fileInput.addEventListener('change', function () {
+                submitButton.removeAttribute('hidden');
+            });
         </script>
 
     </body>
