@@ -15,6 +15,7 @@ var (
 	Port = os.Getenv("GUIDE_PORT")
 	whiteFile = os.Getenv("GUIDE_WHITE_LIST")
 	IsStartWhitelist = os.Getenv("GUIDE_START_WHITE_LIST")
+	InterfaceName = os.Getenv("GUIDE_INTERFACE_NAME")
 )
 
 

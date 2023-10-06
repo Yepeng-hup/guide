@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"guide/core"
 	"guide/global"
 	"io/ioutil"
 	"log"
@@ -16,9 +17,14 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	files, _ := ioutil.ReadDir(*fullPath)
 	dirList := make([]DirectoryAnchor, 0)
 	fileList := make([]FileAnchor, 0)
+	ipAndPort, err := core.ShowLocalIp(&global.InterfaceName)
+	if err != nil {
+		log.Println(err.Error())
+	}
 	dirList = append(dirList, DirectoryAnchor{
 		DirectoryName: "..",
 		Href: strings.TrimRight(c.Request.URL.Path, "/") + "/..",
+		IpPort: ipAndPort,
 	})
 	for _, file := range files {
 		href := strings.ReplaceAll(c.Request.URL.Path +"/"+ file.Name(), "//", "/")
@@ -30,6 +36,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 				Size: file.Size(),
 				Time: times.Format("2006-01-02 15:04:05"),
 				Power: file.Mode(),
+				IpPort: ipAndPort,
 			})
 
 		} else {
@@ -39,6 +46,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 				Size: file.Size()/1024/1024,
 				Time: times.Format("2006-01-02 15:04:05"),
 				Power: file.Mode(),
+				IpPort: ipAndPort,
 			})
 		}
 	}

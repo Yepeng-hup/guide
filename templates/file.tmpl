@@ -83,7 +83,7 @@
                 {{range .dirList}}
                     <tr>
                         <td><input class="cb" type="checkbox"/></td>
-                        <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/dir.png" style="width: 20px; height: 20px">{{.DirectoryName}}</a></td>
+                        <td><a href="http://{{.IpPort}}{{.Href}}"><img src="/sta/img/dir.png" style="width: 20px; height: 20px">{{.DirectoryName}}</a></td>
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
@@ -93,7 +93,7 @@
                 {{range .fileList}}
                     <tr>
                         <td><input class="cb" type="checkbox"/></td>
-                        <td><a href="http://127.0.0.1:7879{{.Href}}"><img src="/sta/img/file.png" style="width: 20px; height: 20px">{{.FileName}}</a></td>
+                        <td><a href="http://{{.IpPort}}{{.Href}}"><img src="/sta/img/file.png" style="width: 20px; height: 20px">{{.FileName}}</a></td>
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>

@@ -20,6 +20,7 @@ type (
 		Size int64
 		Time string
 		Power os.FileMode
+		IpPort string
 	}
 
 	FileAnchor struct {
@@ -28,6 +29,7 @@ type (
 		Size int64
 		Time string
 		Power os.FileMode
+		IpPort string
 	}
 
 	Creates struct {
