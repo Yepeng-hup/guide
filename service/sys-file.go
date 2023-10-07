@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"guide/core"
 	"guide/global"
@@ -87,7 +86,6 @@ func DownloadData(c *gin.Context, p *string) {
 	c.Writer.WriteHeader(200)
 	//提示客户端这是个二进制文件而非普通文本格式
 	c.Header("Content-Type", "application/octet-stream")
-	fmt.Println(*p)
 	c.File(*p)
 }
 
