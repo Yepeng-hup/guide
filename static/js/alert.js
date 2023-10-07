@@ -66,7 +66,7 @@ function catFileCheckbox() {
                             textpj(data["fileText"]);
                             return
                         } else {
-                            alertMontage("这不是文件格式.","alert-danger");
+                            alertMontage("不支持的文件格式.","alert-danger");
                             setTimeout(function() {
                                 window.location = location.pathname;
                             }, 1000);

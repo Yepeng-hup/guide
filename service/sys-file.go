@@ -17,7 +17,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	files, _ := ioutil.ReadDir(*fullPath)
 	dirList := make([]DirectoryAnchor, 0)
 	fileList := make([]FileAnchor, 0)
-	ipAndPort, err := core.ShowLocalIp(&global.InterfaceNameTest)
+	ipAndPort, err := core.ShowLocalIp(&global.InterfaceName)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -91,7 +91,9 @@ func DownloadData(c *gin.Context, p *string) {
 
 
 func CatFile(c *gin.Context){
-	var notFileTailNameList = []string{"tar","gz","zip","tar.gz"}
+	// 定义格式支持
+	var fileTailNameList = []string{"go","sh","txt","py","yaml","yml","md","java","c","json","env","dockerfile","conf","js","html","css","ts",
+		"tmpl","sql"}
 	fileNmae := c.Query("fileName")
 	filePath := c.Query("filePath")
 	fileList := strings.Fields(fileNmae)
@@ -99,7 +101,7 @@ func CatFile(c *gin.Context){
 	if lastIndex != -1 && lastIndex+1 < len(fileList[0]) {
 		// 最后一个点的后一个位置开始截取字符串
 		fName := fileList[0][lastIndex+1:]
-		if core.SliceCheck(notFileTailNameList, fName) {
+		if !core.SliceCheck(fileTailNameList, fName) {
 			log.Println("ERROR: This is not a file.")
 			return
 		}else {
