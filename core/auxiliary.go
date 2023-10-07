@@ -60,7 +60,7 @@ func ShowLocalIp(interfaceName *string)(string, error){
 
 
 	}
-	
+
 	//interfaces, err := net.Interfaces()
 	//if err != nil {
 	//	return "", fmt.Errorf("ERROR: Unable to obtain the list of network interfaces, %s", err.Error())
@@ -100,3 +100,12 @@ func ShowLocalIp(interfaceName *string)(string, error){
 //	}
 //}
 
+
+func SliceCheck(slices []string, targets string) bool {
+	for _, value := range slices {
+		if value == targets {
+			return true
+		}
+	}
+	return false
+}

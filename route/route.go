@@ -17,7 +17,7 @@ func InitRoute() *gin.Engine {
 	gin.SetMode("release")
 	r := gin.Default()
 	r.Static("/sta","static")
-	r.LoadHTMLGlob("templates/*")
+	r.LoadHTMLGlob("templates/*.tmpl")
 
 	r.NoRoute(core.IpWhitelistMiddleware(global.IsStartWhitelist), func(c *gin.Context) {
 		fullPath := filepath.Join(global.SaveDataDir, c.Request.URL.Path)
@@ -54,6 +54,7 @@ func InitRoute() *gin.Engine {
 		file.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.UploadData)
 		file.POST("/create", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.CreateDir)
 		file.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DeleteDirAndFile)
+		file.GET("/cat", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CatFile)
 
 	return r
 }

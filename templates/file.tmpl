@@ -97,12 +97,17 @@
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
-                        <td><button class="btn btn-danger" onclick="deleteCheckbox()">删除</button></td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                            <button style="margin-left: 15px" class="btn btn-info" onclick="catFileCheckbox()">查看</button>
+                        </td>
                     </tr>
                 {{end}}
                 </tbody>
             </table>
         </div>
+
+        <div id="texts" style="margin-left: 15px; margin-right: 15px; background-color: #343a40"></div>
 
         <script>
             const fileInput = document.getElementById('f');
