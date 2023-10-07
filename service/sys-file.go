@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"guide/core"
 	"guide/global"
@@ -17,7 +18,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	files, _ := ioutil.ReadDir(*fullPath)
 	dirList := make([]DirectoryAnchor, 0)
 	fileList := make([]FileAnchor, 0)
-	ipAndPort, err := core.ShowLocalIp(&global.InterfaceName)
+	ipAndPort, err := core.ShowLocalIp(&global.InterfaceNameTest)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -82,11 +83,44 @@ func UploadData(c *gin.Context) {
 }
 
 
-func DownloadData(c *gin.Context, absolutePath *string) {
+func DownloadData(c *gin.Context, p *string) {
 	c.Writer.WriteHeader(200)
 	//提示客户端这是个二进制文件而非普通文本格式
 	c.Header("Content-Type", "application/octet-stream")
-	c.File(*absolutePath)
+	fmt.Println(*p)
+	c.File(*p)
+}
+
+
+func CatFile(c *gin.Context){
+	var notFileTailNameList = []string{"tar","gz","zip","tar.gz"}
+	fileNmae := c.Query("fileName")
+	filePath := c.Query("filePath")
+	fileList := strings.Fields(fileNmae)
+	lastIndex := strings.LastIndex(fileList[0], ".")
+	if lastIndex != -1 && lastIndex+1 < len(fileList[0]) {
+		// 最后一个点的后一个位置开始截取字符串
+		fName := fileList[0][lastIndex+1:]
+		if core.SliceCheck(notFileTailNameList, fName) {
+			log.Println("ERROR: This is not a file.")
+			return
+		}else {
+			//cat file
+			fileContents, err := ioutil.ReadFile(global.SaveDataDir+filePath+"/"+fileList[0])
+			if err != nil {
+				log.Printf("ERROR: not is read file, %v\n", err.Error())
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusOK,
+				"fileText": string(fileContents),
+			})
+		}
+
+	} else {
+		log.Println("ERROR: Not in character [.] .")
+		return
+	}
 }
 
 
