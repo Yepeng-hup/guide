@@ -56,5 +56,11 @@ func InitRoute() *gin.Engine {
 		file.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DeleteDirAndFile)
 		file.GET("/cat", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CatFile)
 
+	sqls := r.Group("/sqls")
+		sqls.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
+			c.HTML(http.StatusOK, "dbmerge.tmpl", gin.H{
+			})
+		})
+
 	return r
 }

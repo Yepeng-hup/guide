@@ -17,7 +17,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	files, _ := ioutil.ReadDir(*fullPath)
 	dirList := make([]DirectoryAnchor, 0)
 	fileList := make([]FileAnchor, 0)
-	ipAndPort, err := core.ShowLocalIp(&global.InterfaceName)
+	ipAndPort, err := core.ShowLocalIp(&global.InterfaceNameTest)
 	if err != nil {
 		log.Println(err.Error())
 	}
