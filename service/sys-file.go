@@ -93,7 +93,7 @@ func DownloadData(c *gin.Context, p *string) {
 func CatFile(c *gin.Context){
 	// 定义格式支持
 	var fileTailNameList = []string{"go","sh","txt","py","yaml","yml","md","java","c","json","env","dockerfile","conf","js","html","css","ts",
-		"tmpl","sql"}
+		"tmpl","sql","bat","ps1","php"}
 	fileNmae := c.Query("fileName")
 	filePath := c.Query("filePath")
 	fileList := strings.Fields(fileNmae)
