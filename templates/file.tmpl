@@ -87,7 +87,10 @@
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
-                        <td><button class="btn btn-danger" onclick="deleteCheckbox()">删除</button></td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                            <button style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                        </td>
                     </tr>
                 {{end}}
                 {{range .fileList}}
@@ -98,8 +101,14 @@
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
                         <td>
-                            <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
-                            <button style="margin-left: 15px" class="btn btn-info" onclick="catFileCheckbox()">查看</button>
+                            {{if hasSuffix .FileName ".tar" ".zip" ".tar.gz" ".bz2" ".gz"}}
+                                <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                                <button style="margin-left: 15px" class="btn btn-primary" onclick="jyCheckbox()">解压</button>
+                            {{else}}
+                                <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                                <button style="margin-left: 15px" class="btn btn-info" onclick="catFileCheckbox()">查看</button>
+                                <button id="ys" style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                            {{end}}
                         </td>
                     </tr>
                 {{end}}

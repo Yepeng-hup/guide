@@ -9,13 +9,17 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	_ "path/filepath"
+	"html/template"
 )
 
 
 func InitRoute() *gin.Engine {
 	gin.SetMode("release")
 	r := gin.Default()
+	r.SetFuncMap(template.FuncMap{
+		"hasSuffix": core.CheckFileTailStr,
+	})
+
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*.tmpl")
 
@@ -54,6 +58,8 @@ func InitRoute() *gin.Engine {
 		file.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.UploadData)
 		file.POST("/create", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.CreateDir)
 		file.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DeleteDirAndFile)
+		file.POST("/ys", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CompressZipTar)
+		file.POST("/jy", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DecompressionZipTar)
 		file.GET("/cat", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CatFile)
 
 	sqls := r.Group("/sqls")

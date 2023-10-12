@@ -2,8 +2,10 @@ package core
 
 import (
 	"bufio"
+	"compress/gzip"
 	"fmt"
 	"guide/global"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -108,4 +110,34 @@ func SliceCheck(slices []string, targets string) bool {
 		}
 	}
 	return false
+}
+
+
+func UnGz(gzSrcPath string) error {
+	//open file
+	gzFile, err := os.Open(gzSrcPath)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer gzFile.Close()
+
+	// new gzip Reader
+	gzReader, err := gzip.NewReader(gzFile)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer gzReader.Close()
+
+	outputFile, err := os.Create(strings.TrimSuffix(gzSrcPath, ".gz"))
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer outputFile.Close()
+
+	// gzip data cp to outfile
+	_, err = io.Copy(outputFile, gzReader)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	return nil
 }

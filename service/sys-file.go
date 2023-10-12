@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/mholt/archiver"
 	"guide/core"
 	"guide/global"
 	"io/ioutil"
@@ -147,7 +148,7 @@ func CreateDir(c *gin.Context){
 
 
 func DeleteDirAndFile(c *gin.Context){
-	d := Deletes{
+	d := Global{
 		FileDirName: c.PostForm("FDname"),
 		FileDirPath: c.PostForm("FDpath"),
 	}
@@ -180,6 +181,83 @@ func DeleteDirAndFile(c *gin.Context){
 		return
 	}
 
+}
+
+
+func DecompressionZipTar(c *gin.Context){
+	f := Global{
+		c.PostForm("fileName"),
+		c.PostForm("filePath"),
+	}
+	fileList := strings.Fields(f.FileDirName)
+	lastIndex := strings.LastIndex(fileList[0], ".")
+	if lastIndex != -1 && lastIndex+1 < len(fileList[0]) {
+		fName := fileList[0][lastIndex+1:]
+		switch fName {
+			case "zip":
+				err := archiver.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
+				if err != nil{
+					log.Println("ERROR: unarchive zip fail,", err.Error())
+					return
+				}
+			case "gz":
+				g := archiver.NewTarGz()
+				err := g.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
+				if err != nil {
+					log.Println("ERROR: unarchive tar.gz fail,", err.Error())
+					err := core.UnGz(global.SaveDataDir+f.FileDirPath+"/"+fileList[0])
+					if err != nil{
+						log.Println("ERROR: unarchive gz fail,", err.Error())
+						return
+					}
+				}
+			case "tar":
+				t := archiver.NewTar()
+				err := t.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
+				if err != nil {
+					log.Printf("ERROR: unarchive tar fail %s\n",err.Error())
+					return
+			}
+		default:
+			log.Println("ERROR: Invalid decompression format.")
+			return
+		}
+	}else {
+		log.Println("ERROR: Not in character [.] .")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"message": "解压成功.",
+	})
+}
+
+
+
+func CompressZipTar(c *gin.Context){
+	f := Global{
+		c.PostForm("fileName"),
+		c.PostForm("filePath"),
+	}
+	fileList := strings.Fields(f.FileDirName)
+	if fileList[0] == ".."||fileList[0] == "."{
+		log.Println("ERROR: cannot compress zip root directory.")
+		return
+	}
+	err := archiver.Archive([]string{global.SaveDataDir+f.FileDirPath+"/"+fileList[0]}, global.SaveDataDir+f.FileDirPath+"/"+fileList[0]+".zip")
+	if err != nil {
+		log.Printf("ERROR: zip file and dir fail, %v\n", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": http.StatusInternalServerError,
+			"message": "压缩失败.",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"message": "压缩成功.",
+	})
 }
 
 

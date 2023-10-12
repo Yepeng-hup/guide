@@ -82,5 +82,80 @@ function catFileCheckbox() {
 }
 
 
+function ysCheckbox() {
+    let items=document.getElementsByClassName('cb');
+    let len=items.length;
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+            $.post(
+                {
+                    "url": "/file/ys",
+                    "data": {
+                        "fileName": divlr,
+                        "filePath": location.pathname
+                    },
+                    "success": function (data) {
+                        if (data["code"] === 200) {
+                            alertMontage(data["message"],"alert-success");
+                            setTimeout(function() {
+                                window.location = location.pathname;
+                            }, 1000);
+                        } else {
+                            alertMontage("文件或目录压缩失败.","alert-danger");
+                            setTimeout(function() {
+                                window.location = location.pathname;
+                            }, 1000);
+                        }
+                    },
+                    "fail": function (error) {
+                        console.log(error);
+                    }
+                },
+            )
+        }
+    }
+}
+
+function jyCheckbox() {
+    let items=document.getElementsByClassName('cb');
+    let len=items.length;
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+            $.post(
+                {
+                    "url": "/file/jy",
+                    "data": {
+                        "fileName": divlr,
+                        "filePath": location.pathname
+                    },
+                    "success": function (data) {
+                        if (data["code"] === 200) {
+                            alertMontage(data["message"],"alert-success");
+                            setTimeout(function() {
+                                window.location = location.pathname;
+                            }, 1000);
+                        } else {
+                            alertMontage("解压失败.","alert-danger");
+                            setTimeout(function() {
+                                window.location = location.pathname;
+                            }, 1000);
+                        }
+                    },
+                    "fail": function (error) {
+                        console.log(error);
+                    }
+                },
+            )
+        }
+    }
+}
+
+
 
 

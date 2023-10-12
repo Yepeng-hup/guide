@@ -37,7 +37,7 @@ type (
 		DirPath string
 	}
 
-	Deletes struct {
+	Global struct {
 		FileDirName string
 		FileDirPath string
 	}
