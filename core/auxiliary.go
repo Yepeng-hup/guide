@@ -127,15 +127,14 @@ func UnGz(gzSrcPath string) error {
 		return fmt.Errorf(err.Error())
 	}
 	defer gzReader.Close()
-
-	outputFile, err := os.Create(strings.TrimSuffix(gzSrcPath, ".gz"))
+	outFile, err := os.Create(strings.TrimSuffix(gzSrcPath, ".gz"))
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	defer outputFile.Close()
+	defer outFile.Close()
 
 	// gzip data cp to outfile
-	_, err = io.Copy(outputFile, gzReader)
+	_, err = io.Copy(outFile, gzReader)
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
