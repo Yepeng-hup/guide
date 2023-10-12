@@ -19,7 +19,7 @@ func ShowUrl()[]News{
 		//log.Println("ERROR: ",err.Error())
 		err := os.Mkdir("text", 0755)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("ERROR: create dir fail,",err.Error())
 			return nil
 		}
 		return nil
