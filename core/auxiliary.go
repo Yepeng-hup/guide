@@ -12,11 +12,16 @@ import (
 	"strings"
 )
 
-func ShowUrl()([]News,){
+func ShowUrl()[]News{
 	var structSlice []News
 	file, err := os.Open(global.FilePath)
 	if err != nil {
 		log.Println("ERROR: ",err.Error())
+		err := os.Mkdir("text", 0755)
+		if err != nil {
+			log.Println(err.Error())
+			return nil
+		}
 		return nil
 	}
 
