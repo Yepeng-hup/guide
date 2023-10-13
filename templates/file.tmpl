@@ -25,6 +25,20 @@
                 cursor: pointer;
                 margin-left: 10px;
             }
+
+            .fw-df-btn {
+                height: 40px;
+                width: 80px;
+                padding: 0 auto;
+                background-color: #5938ea;
+                color: #fff;
+                text-align: center;
+                font-size: 15px;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+                margin-left: 10px;
+            }
         </style>
     </head>
 
@@ -63,7 +77,7 @@
             <div style="float: left; display: flex; align-items: center;margin-left: 15px;">
                 <form  id="sForm">
                     <input class="btn btn-dark" type="file" name="file" id="f" multiple>
-                    <button class="fw-btn" id="sButton" onclick="pushFile()" hidden="true ">上传</button>
+                    <button class="fw-df-btn" id="sButton" onclick="pushFile()" hidden="true ">上传文件</button>
                 </form>
 
                 <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="dir" id="dir" placeholder="目录名">
