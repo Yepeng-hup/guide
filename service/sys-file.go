@@ -60,26 +60,20 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 
 
 func UploadData(c *gin.Context) {
-	file, _ := c.FormFile("file")
-	if file == nil {
-		log.Println("WARN: file is nil.")
-		c.Redirect(http.StatusFound, "/")
-		return
+	f, _ := c.MultipartForm()
+	files := f.File["file"]
+	for _, file := range files {
+		// init route
+		filename := filepath.Base(file.Filename)
+		savePath := filepath.Join(global.SaveDataDir, c.PostForm("path"), filename)
+		// save file
+		err := c.SaveUploadedFile(file, savePath)
+		if err != nil {
+			log.Println("ERROR: file save fail,", err.Error())
+			return
+		}
+		log.Printf("INFO: file push success ---> [%s]", filename)
 	}
-	filename := filepath.Base(file.Filename)
-	if strings.Contains(c.PostForm("path"), "..") {
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-	savePath := filepath.Join(global.SaveDataDir, c.PostForm("path"), filename)
-	err := c.SaveUploadedFile(file, savePath)
-	if err != nil {
-		log.Println("ERROR: file save fail,", err.Error())
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-	log.Printf("INFO: file push success ---> [%s]", filename)
-	c.Redirect(http.StatusFound, c.PostForm("path"))
 }
 
 
