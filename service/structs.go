@@ -32,9 +32,14 @@ type (
 		IpPort string
 	}
 
-	Creates struct {
+	CreateDirs struct {
 		DirName string
 		DirPath string
+	}
+
+	CreateFiles struct {
+		FileName string
+		FilePath string
 	}
 
 	Global struct {

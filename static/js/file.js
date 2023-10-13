@@ -35,6 +35,45 @@ $(function () {
     });
 });
 
+
+$(function () {
+    $("#createfile").click(function () {
+        let fileName = $("#file").val();
+        if (fileName === '') {
+            alertMontage("不允许为空.","alert-danger");
+            setTimeout(function() {
+                window.location = "/";
+            }, 1000);
+        } else {
+            $.post({
+                "url": "/file/file/create",
+                "data": {
+                    "name": fileName,
+                    "path": location.pathname
+                },
+                "success": function (data) {
+                    if (data["code"] === 200) {
+                        alertMontage(data["message"],"alert-success");
+                        setTimeout(function() {
+                            window.location = location.pathname;
+                        }, 1000);
+                    } else {
+                        alertMontage(data["message"],"alert-danger");
+                        setTimeout(function() {
+                            window.location = location.pathname;
+                        }, 1000);
+                    }
+                },
+                "fail": function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+    });
+});
+
+
 function pushFile() {
 
     const forms = document.getElementById('sForm');

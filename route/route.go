@@ -57,6 +57,7 @@ func InitRoute() *gin.Engine {
 	file := r.Group("/file")
 		file.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.UploadData)
 		file.POST("/create", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.CreateDir)
+		file.POST("/file/create", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CreateFile)
 		file.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DeleteDirAndFile)
 		file.POST("/ys", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CompressZipTar)
 		file.POST("/jy", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DecompressionZipTar)
