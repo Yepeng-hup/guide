@@ -57,9 +57,9 @@
         <div id="jdt"></div>
 
         <div class="folder">
-            <h3 style="margin-top: 15px; margin-left: 15px">
+            <h5 style="margin-top: 15px; margin-left: 15px">
                 ROOT: {{.rootDir}}
-            </h3>
+            </h5>
             <div style="float: left; display: flex; align-items: center;margin-left: 15px;">
                 <form  id="sForm">
                     <input class="btn btn-dark" type="file" name="file" id="f">
@@ -83,7 +83,7 @@
                 {{range .dirList}}
                     <tr>
                         <td><input class="cb" type="checkbox"/></td>
-                        <td><a href="http://{{.IpPort}}{{.Href}}"><img src="/sta/img/dir.png" style="width: 20px; height: 20px">{{.DirectoryName}}</a></td>
+                        <td><a href="http://{{.IpPort}}{{.Href}}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/dir.png" style="width: 20px; height: 20px"><b> {{.DirectoryName}}</b></a></td>
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
@@ -96,7 +96,7 @@
                 {{range .fileList}}
                     <tr>
                         <td><input class="cb" type="checkbox"/></td>
-                        <td><a href="http://{{.IpPort}}{{.Href}}"><img src="/sta/img/file.png" style="width: 20px; height: 20px">{{.FileName}}</a></td>
+                        <td><a href="http://{{.IpPort}}{{.Href}}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/file.png" style="width: 20px; height: 20px"> {{.FileName}}</a></td>
                         <td>{{.Size}}MB</td>
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
