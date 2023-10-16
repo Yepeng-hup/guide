@@ -10,15 +10,3 @@ func CheckFileTailStr(fileName string, tailStr ...string) bool {
 	}
 	return false
 }
-
-
-func IfFileIsImage(fileName string, tailStr ...string) bool {
-	for _, suffix := range tailStr {
-		if strings.HasSuffix(fileName, suffix) {
-			return true
-		}
-	}
-	return false
-}
-
-

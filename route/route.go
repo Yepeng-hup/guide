@@ -18,7 +18,6 @@ func InitRoute() *gin.Engine {
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
-		"ifFileIsImage": core.IfFileIsImage,
 	})
 
 	r.Static("/sta","static")

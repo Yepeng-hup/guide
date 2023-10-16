@@ -118,7 +118,7 @@
                                 <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
                                 <button style="margin-left: 15px" class="btn btn-primary" onclick="jyCheckbox()">解压</button>
                             {{else}}
-                                {{ if ifFileIsImage .FileName ".png" ".jpg"}}
+                                {{ if checkFileTailStr .FileName ".png" ".jpg"}}
                                     <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
                                     <button id="ys" style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
                                 {{else}}
