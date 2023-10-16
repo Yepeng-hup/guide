@@ -15,3 +15,7 @@ set GUIDE_HOST=0.0.0.0 GUIDE_PORT=7878 GUIDE_FILEDATA_DIR=D:\tmp GUIDE_INTERFACE
 ./guide.exe
 
 ```
+
+![](./pic/g1.png)
+
+![](./pic/g2.png)
