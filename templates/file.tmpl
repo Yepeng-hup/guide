@@ -85,6 +85,8 @@
 
                 <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="file" id="file" placeholder="文件名">
                 <button class="fw-btn" id="createfile">创建</button>
+
+                <button style="margin-left: 30px;" class="fw-btn" onclick="location.reload()">刷新</button>
             </div>
             <table class="table table-hover" style="margin-top: 70px">
                 <thead>
@@ -123,7 +125,7 @@
                                 <button style="margin-left: 15px" class="btn btn-primary" onclick="jyCheckbox()">解压</button>
                             {{else}}
                                 <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
-                                <button style="margin-left: 15px" class="btn btn-info" onclick="catFileCheckbox()">查看</button>
+                                <button style="margin-left: 15px" class="btn btn-success" onclick="catFileCheckbox()">查看</button>
                                 <button id="ys" style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
                             {{end}}
                         </td>

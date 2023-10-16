@@ -79,27 +79,36 @@ func UploadData(c *gin.Context) {
 
 func DownloadData(c *gin.Context, p *string) {
 	c.Writer.WriteHeader(200)
-	//提示客户端这是个二进制文件而非普通文本格式
+	//prompt the client that this is a binary file rather than a regular text format
 	c.Header("Content-Type", "application/octet-stream")
 	c.File(*p)
 }
 
 
 func CatFile(c *gin.Context){
-	// 定义格式支持
 	var fileTailNameList = []string{"go","sh","txt","py","yaml","yml","md","java","c","json","env","dockerfile","conf","js","html","css","ts",
-		"tmpl","sql","bat","ps1","php"}
+		"tmpl","sql","bat","ps1","php","tmp","xml"}
 	fileNmae := c.Query("fileName")
 	filePath := c.Query("filePath")
 	fileList := strings.Fields(fileNmae)
 	lastIndex := strings.LastIndex(fileList[0], ".")
 	if lastIndex != -1 && lastIndex+1 < len(fileList[0]) {
-		// 最后一个点的后一个位置开始截取字符串
+		// starting from the last position of the last point, truncate the string
 		fName := fileList[0][lastIndex+1:]
 		if !core.SliceCheck(fileTailNameList, fName) {
 			log.Println("ERROR: This is not a file.")
 			return
 		}else {
+			//add if file size
+			fileInfo, err := os.Stat(global.SaveDataDir+filePath+"/"+fileList[0])
+			if err != nil{
+				log.Println("ERROR: show file info fail,", err.Error())
+				return
+			}
+			if fileInfo.Size()/1024/1024 > 1 {
+				log.Printf("ERROR: only allow viewing files below 1M, the is file size -> [%v]M", fileInfo.Size()/1024/1024)
+				return
+			}
 			//cat file
 			fileContents, err := ioutil.ReadFile(global.SaveDataDir+filePath+"/"+fileList[0])
 			if err != nil {
