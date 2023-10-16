@@ -120,7 +120,7 @@
                         <td>{{.Time}}</td>
                         <td>{{.Power}}</td>
                         <td>
-                            {{if hasSuffix .FileName ".tar" ".zip" ".tar.gz" ".bz2" ".gz"}}
+                            {{if checkFileTailStr .FileName ".tar" ".zip" ".tar.gz" ".bz2" ".gz"}}
                                 <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
                                 <button style="margin-left: 15px" class="btn btn-primary" onclick="jyCheckbox()">解压</button>
                             {{else}}
