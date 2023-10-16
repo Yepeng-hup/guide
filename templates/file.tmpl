@@ -67,9 +67,7 @@
         </nav>
 
         <div id="alert"></div>
-
         <div id="jdt"></div>
-
         <div class="folder">
             <h5 style="margin-top: 15px; margin-left: 15px">
                 ROOT: {{.rootDir}}
@@ -79,13 +77,10 @@
                     <input class="btn btn-dark" type="file" name="file" id="f" multiple>
                     <button class="fw-df-btn" id="sButton" onclick="pushFile()" hidden="true ">上传文件</button>
                 </form>
-
                 <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="dir" id="dir" placeholder="目录名">
                 <button class="fw-btn" id="createdir">创建</button>
-
                 <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="file" id="file" placeholder="文件名">
                 <button class="fw-btn" id="createfile">创建</button>
-
                 <button style="margin-left: 30px;" class="fw-btn" onclick="location.reload()">刷新</button>
             </div>
             <table class="table table-hover" style="margin-top: 70px">
@@ -97,7 +92,6 @@
                     <th>权限</th>
                     <th>动作</th>
                 </thead>
-
                 <tbody>
                 {{range .dirList}}
                     <tr>
@@ -124,9 +118,14 @@
                                 <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
                                 <button style="margin-left: 15px" class="btn btn-primary" onclick="jyCheckbox()">解压</button>
                             {{else}}
-                                <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
-                                <button style="margin-left: 15px" class="btn btn-success" onclick="catFileCheckbox()">查看</button>
-                                <button id="ys" style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                                {{ if ifFileIsImage .FileName ".png" ".jpg"}}
+                                    <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                                    <button id="ys" style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                                {{else}}
+                                    <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                                    <button data-toggle="modal" data-target="#mtk" style="margin-left: 15px" class="btn btn-success" onclick="catFileCheckbox()">查看</button>
+                                    <button id="ys" style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                                {{end}}
                             {{end}}
                         </td>
                     </tr>
@@ -134,9 +133,22 @@
                 </tbody>
             </table>
         </div>
-
-        <div id="texts" style="margin-left: 15px; margin-right: 15px; background-color: #343a40"></div>
-
+        <div class="modal" id="mtk">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">文本内容</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="texts" style="background-color: #343a40"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
             const fileInput = document.getElementById('f');
             const submitButton = document.getElementById('sButton');
@@ -144,7 +156,6 @@
                 submitButton.removeAttribute('hidden');
             });
         </script>
-
     </body>
     </html>
 {{end}}

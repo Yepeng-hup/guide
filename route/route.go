@@ -6,10 +6,10 @@ import (
 	"guide/core"
 	"guide/global"
 	"guide/service"
+	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
-	"html/template"
 )
 
 
@@ -17,7 +17,8 @@ func InitRoute() *gin.Engine {
 	gin.SetMode("release")
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
-		"hasSuffix": core.CheckFileTailStr,
+		"checkFileTailStr": core.CheckFileTailStr,
+		"ifFileIsImage": core.IfFileIsImage,
 	})
 
 	r.Static("/sta","static")
