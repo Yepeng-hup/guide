@@ -46,4 +46,11 @@ type (
 		FileDirName string
 		FileDirPath string
 	}
+
+	CronsFrom struct {
+		Cname string
+		Ctime string
+		Ccode string
+		Cnotes string
+	}
 )

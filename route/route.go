@@ -19,7 +19,6 @@ func InitRoute() *gin.Engine {
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
 	})
-
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*.tmpl")
 
@@ -63,11 +62,15 @@ func InitRoute() *gin.Engine {
 		file.POST("/jy", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DecompressionZipTar)
 		file.GET("/cat", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CatFile)
 
-	sqls := r.Group("/sqls")
-		sqls.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
-			c.HTML(http.StatusOK, "dbmerge.tmpl", gin.H{
+	cron := r.Group("/cron")
+		cron.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
+			c.HTML(http.StatusOK, "cron.tmpl", gin.H{
 			})
 		})
+		cron.GET("/list",core.IpWhitelistMiddleware(global.IsStartWhitelist), service.ShowCron)
+		cron.POST("/cfg", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CoutomCron)
+		cron.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DelCron)
+
 
 	return r
 }

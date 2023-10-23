@@ -4,15 +4,15 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/jteeuwen/go-bindata v3.0.7+incompatible
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/mholt/archiver v3.1.1+incompatible
+	github.com/robfig/cron/v3 v3.0.1
 )
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/elazarl/go-bindata-assetfs v1.0.1 // indirect
 	github.com/frankban/quicktest v1.14.6 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

@@ -1,15 +1,15 @@
-{{define "dbmerge.tmpl"}}
+{{define "cron.tmpl"}}
     <!DOCTYPE HTML>
     <html lang="en">
     <head>
-        <title>数据合并</title>
+        <title>定时任务</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="UTF-8" />
         <meta name="keywords" content=""/>
         <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
         <script src="/sta/js/jstools/jquery.slim.min.js"></script>
         <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
-        <script src="/sta/js/merge.js"></script>
+        <script src="/sta/js/cron.js"></script>
     </head>
 
     <body>
@@ -29,14 +29,48 @@
                     </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/readme">使用文档</a>
-                        <a class="dropdown-item" href="/sqls/index">数据合并</a>
+                        <a class="dropdown-item" href="/cron/index">定时任务</a>
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <h3>开发中</h3>
+    <form class="form-horizontal" style="margin-top: 25px" action="/cron/cfg" method="post">
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">定时任务名</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="cname" name="cname" placeholder="测试">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-2 control-label">定时任务时间线</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="ctime" name="ctime" placeholder="*/10 * * * *">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-2 control-label">执行代码</label>
+            <div class="col-sm-10">
+                <textarea id="ccode" name="ccode" type="text" class="form-control"  placeholder="{bash test.sh} and {win code}" rows="8"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-2 control-label">备注</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="cnotes" name="cnotes" placeholder="测试">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-info">创建定时</button>
+                <a href="/cron/list">
+                    <button type="button" class="btn btn-info">查看定时</button>
+                </a>
+            </div>
+        </div>
+    </form>
 
     <script>
 
