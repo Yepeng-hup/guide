@@ -9,6 +9,7 @@ type (
 
 	Cron struct{
 		CronId string
+		CronNewDate string
 		CronName string
 		CronTime string
 		CronCode string

@@ -21,7 +21,7 @@ func CreateCronTable()error{
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	createTableSQL := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
+	createTableSQL := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
 	_, err = db.Exec(createTableSQL)
 	if err != nil {
 		return fmt.Errorf("ERROR: create table cron fail,%s", err.Error())
@@ -58,6 +58,7 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 		defer rows.Close()
 		var cron struct{
 			CronId string
+			CronNewDate string
 			CronName string
 			CronTime string
 			CronCode string
@@ -65,7 +66,7 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 		}
 		cronList := make([]Cron, 0)
 		for rows.Next() {
-			err := rows.Scan(&cron.CronId,&cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
+			err := rows.Scan(&cron.CronId,&cron.CronName,&cron.CronNewDate, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
 			if err != nil {
 				return nil, fmt.Errorf(err.Error())
 			}
@@ -82,6 +83,7 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 		defer rows.Close()
 		var cron struct{
 			CronId string
+			CronNewDate string
 			CronName string
 			CronTime string
 			CronCode string
@@ -89,7 +91,7 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 		}
 		cronList := make([]Cron, 0)
 		for rows.Next() {
-			err := rows.Scan(&cron.CronId,&cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
+			err := rows.Scan(&cron.CronId,&cron.CronNewDate,&cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
 			if err != nil {
 				return nil, fmt.Errorf(err.Error())
 			}
