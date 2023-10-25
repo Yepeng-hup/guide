@@ -18,7 +18,7 @@ func linuxC(code string)error{
 	cmd := exec.Command("/bin/bash", "-c", code)
 	out, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("ERROR: use command error,%s", err)
+		return fmt.Errorf("use command error,%s", err)
 	}
 	fmt.Println("****************************************************************************************************************************\n", string(out))
 	fmt.Println("****************************************************************************************************************************")
@@ -30,12 +30,12 @@ func winC(code string)error{
 	cmd := exec.Command("cmd", "/c", code)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("ERROR: use command error,%s", err)
+		return fmt.Errorf("use command error,%s", err)
 	}
 	reader := transform.NewReader(bytes.NewReader(out), simplifiedchinese.GBK.NewDecoder())
 	output, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return fmt.Errorf("ERROR: byte encoding conversion error,%s", err.Error())
+		return fmt.Errorf("byte encoding conversion error,%s", err.Error())
 	}
 	fmt.Println("****************************************************************************************************************************\n", string(output))
 	fmt.Println("****************************************************************************************************************************")
