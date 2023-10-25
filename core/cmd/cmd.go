@@ -28,7 +28,7 @@ func linuxC(code string)error{
 
 func winC(code string)error{
 	cmd := exec.Command("cmd", "/c", code)
-	out, err := cmd.CombinedOutput()
+	out, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("use command error,%s", err)
 	}

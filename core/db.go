@@ -66,7 +66,7 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 		}
 		cronList := make([]Cron, 0)
 		for rows.Next() {
-			err := rows.Scan(&cron.CronId,&cron.CronName,&cron.CronNewDate, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
+			err := rows.Scan(&cron.CronId,&cron.CronNewDate,&cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
 			if err != nil {
 				return nil, fmt.Errorf(err.Error())
 			}
