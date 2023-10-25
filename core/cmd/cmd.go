@@ -16,10 +16,12 @@ func showSys()string{
 
 func linuxC(code string)error{
 	cmd := exec.Command("/bin/bash", "-c", code)
-	_, err := cmd.Output()
+	out, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("ERROR: use command error,%s", err)
 	}
+	fmt.Println("****************************************************************************************************************************\n", string(out))
+	fmt.Println("****************************************************************************************************************************")
 	return nil
 }
 
