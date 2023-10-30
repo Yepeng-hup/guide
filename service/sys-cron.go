@@ -23,7 +23,8 @@ func CoutomCron(c *gin.Context)  {
 		return
 	}
 	// check from security
-	if core.CheckForm(f.Ccode) {
+	s := core.Security{}
+	if s.CheckForm(f.Ccode) {
 		log.Printf("ERROR: detected code containing dangerous characters --> [%v]", f.Ccode)
 		c.Redirect(http.StatusFound, "/cron/index")
 		return
