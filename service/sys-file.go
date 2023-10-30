@@ -63,8 +63,15 @@ func UploadData(c *gin.Context) {
 	f, _ := c.MultipartForm()
 	files := f.File["file"]
 	for _, file := range files {
-		// init route
+		// init route path
 		filename := filepath.Base(file.Filename)
+		// 注释部分为支持中文url，我这里是不支持，如果要想支持中文url，取消下面注释即可。
+		//decodePath, err0 := url.PathUnescape(c.PostForm("path"))
+		//if err0 != nil {
+		//	log.Println("ERROR: decod path fail,", err0.Error())
+		//	return
+		//}
+		//savePath := filepath.Join(global.SaveDataDir, decodePath, filename)
 		savePath := filepath.Join(global.SaveDataDir, c.PostForm("path"), filename)
 		// save file
 		err := c.SaveUploadedFile(file, savePath)
