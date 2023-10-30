@@ -22,6 +22,13 @@ func CoutomCron(c *gin.Context)  {
 		c.Redirect(http.StatusFound, "/cron/index")
 		return
 	}
+	// check from security
+	if core.CheckForm(f.Ccode) {
+		log.Printf("ERROR: detected code containing dangerous characters --> [%v]", f.Ccode)
+		c.Redirect(http.StatusFound, "/cron/index")
+		return
+	}
+
 	v, err := core.SelectAct("cronName", f.Cname, false)
 	if err != nil {
 		log.Println("ERROR: ",err.Error())
@@ -52,6 +59,7 @@ func CoutomCron(c *gin.Context)  {
 		return
 	}
 	c.Redirect(http.StatusFound, "/cron/index")
+	return
 }
 
 
@@ -76,4 +84,5 @@ func DelCron(c *gin.Context){
 		return
 	}
 	c.Redirect(http.StatusFound, "/cron/list")
+	return
 }
