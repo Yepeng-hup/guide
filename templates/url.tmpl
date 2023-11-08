@@ -3,14 +3,8 @@
     <html lang="en">
     <head>
         <title>网址管理</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta charset="UTF-8" />
-        <meta name="keywords" content=""/>
-        <link rel="stylesheet" href="/sta/css/csstools/bootstrap.min.css">
-        <script src="/sta/js/jstools/jquery.slim.min.js"></script>
-        <script src="/sta/js/jstools/bootstrap.bundle.min.js"></script>
     </head>
-
+    {{template "base" .}}
     <style>
         body {
             background-color: #ffffff;
@@ -54,29 +48,6 @@
     </style>
 
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-dark bg-dark">
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item btn btn-dark">
-                        <a class="nav-link" href="/url/index">网址管理 <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item btn btn-dark">
-                        <a class="nav-link" href="/">文件管理</a>
-                    </li>
-                    <li class="nav-item btn btn-dark dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                            其他管理
-                        </a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="/readme">使用文档</a>
-                            <a class="dropdown-item" href="/cron/index">定时任务</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
         <form action="/url/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 15px">
             名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
             网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
