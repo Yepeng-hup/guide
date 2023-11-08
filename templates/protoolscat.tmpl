@@ -1,0 +1,38 @@
+{{define "protoolscat.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>服务记录表</title>
+    </head>
+    {{template "base" .}}
+
+    <body>
+    <table class="table table-hover">
+        <thead>
+            <th>@</th>
+            <th>名称</th>
+            <th>记录时间</th>
+            <th>启动命名</th>
+            <th>备注</th>
+            <th>动作</th>
+        </thead>
+
+        <tbody>
+            {{range $_, $v := .svcList}}
+                <tr>
+                    <td><input class="cb" type="checkbox"/></td>
+                    <td>{{$v.ServiceName}}</td>
+                    <td>{{$v.ServiceDate}}</td>
+                    <td>{{$v.StartCmd}}</td>
+                    <td>{{$v.ServiceNotes}}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="">删除</button>
+                    </td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+    </body>
+
+    </html>
+{{end}}

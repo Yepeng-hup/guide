@@ -1,0 +1,41 @@
+{{define "protools.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>服务管理</title>
+    </head>
+    {{template "base" .}}
+
+    <body>
+
+        <form style="margin-top: 25px; margin-left: 10px" action="/svc/cfg" method="post">
+            <div class="form-group row">
+                <label for="inputPassword" class="col-sm-1 col-form-label">服务名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="svcName" name="svcName">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword" class="col-sm-1 col-form-label">启动命令</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="svcCmd" name="svcCmd" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword" class="col-sm-1 col-form-label">备注</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="notes" name="svcNotes" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 35px">
+                    <button type="submit" class="btn btn-info">创建服务记录</button>
+                    <a href="/svc/list">
+                        <button type="button" class="btn btn-info">查看服务记录</button>
+                    </a>
+            </div>
+        </form>
+    </body>
+
+    </html>
+{{end}}
