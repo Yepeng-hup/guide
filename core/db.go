@@ -50,19 +50,17 @@ func InsertAct(params ...string){
 }
 
 
-func InsertActSTools(){
+func InsertActSTools(p ...string)error{
 	db, err := ConnDb()
 	if err != nil {
-		log.Println(err)
-		return
+		return fmt.Errorf("%s",err)
 	}
 	insertSQL := `INSERT INTO service_tools (serviceName, startCmd, serviceNotes) VALUES (?, ?, ?);`
-	_, err = db.Exec(insertSQL, "nginx", "nginx -s reload", "nill")
+	_, err = db.Exec(insertSQL, p[0], p[1], p[2])
 	if err != nil {
-		log.Printf("ERROR: insert data to service_tools fail,%s", err.Error())
-		return
+		return fmt.Errorf("ERROR: insert data to service_tools fail,%s", err.Error())
 	}
-	return
+	return nil
 }
 
 
