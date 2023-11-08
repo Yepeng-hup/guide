@@ -21,13 +21,19 @@ func CreateCronTable()error{
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	createTableSQL := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
-	_, err = db.Exec(createTableSQL)
+	createTableCron := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
+	createTableServiceTools := `CREATE TABLE IF NOT EXISTS service_tools (id INTEGER PRIMARY KEY, serviceName TEXT, serviceDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), startCmd TEXT, serviceNotes TEXT);`
+	_, err = db.Exec(createTableCron)
 	if err != nil {
 		return fmt.Errorf("ERROR: create table cron fail,%s", err.Error())
 	}
+	_, err = db.Exec(createTableServiceTools)
+	if err != nil {
+		return fmt.Errorf("ERROR: create table service_tools fail,%s", err.Error())
+	}
 	return nil
 }
+
 
 func InsertAct(params ...string){
 	db, err := ConnDb()
@@ -41,6 +47,22 @@ func InsertAct(params ...string){
 		log.Println("ERROR: insert data to cron fail, ", err.Error())
 		return
 	}
+}
+
+
+func InsertActSTools(){
+	db, err := ConnDb()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	insertSQL := `INSERT INTO service_tools (serviceName, startCmd, serviceNotes) VALUES (?, ?, ?);`
+	_, err = db.Exec(insertSQL, "nginx", "nginx -s reload", "nill")
+	if err != nil {
+		log.Printf("ERROR: insert data to service_tools fail,%s", err.Error())
+		return
+	}
+	return
 }
 
 
@@ -102,6 +124,35 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 }
 
 
+func SelectActSTools(selectSql string)([]ServiceTools, error){
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query service_tools table fail,%s",err.Error())
+	}
+	defer rows.Close()
+	var serviceTools struct{
+		Id string
+		ServiceName string
+		ServiceDate string
+		StartCmd string
+		ServiceNotes string
+	}
+	serviceToolsList := make([]ServiceTools, 0)
+	for rows.Next() {
+		err := rows.Scan(&serviceTools.Id,&serviceTools.ServiceName,&serviceTools.ServiceDate, &serviceTools.StartCmd, &serviceTools.ServiceNotes)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		serviceToolsList = append(serviceToolsList, serviceTools)
+	}
+	return serviceToolsList, nil
+}
+
+
 func DeleteAct(p ...string)error{
 	db, err := ConnDb()
 	if err != nil {
@@ -123,4 +174,9 @@ func DeleteAct(p ...string)error{
 	}
 	log.Printf("INFO: delete cron ok. name -> [%s].", p[0])
 	return nil
+}
+
+
+func DeleteActSTools(p ...string){
+	return
 }

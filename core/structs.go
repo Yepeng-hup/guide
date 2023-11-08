@@ -15,4 +15,12 @@ type (
 		CronCode string
 		CronNotes string
 	}
+
+	ServiceTools struct {
+		Id string
+		ServiceName string
+		ServiceDate string
+		StartCmd string
+		ServiceNotes string
+	}
 )
