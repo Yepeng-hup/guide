@@ -14,7 +14,7 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	gin.SetMode("release")
+	//gin.SetMode("release")
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
@@ -71,6 +71,13 @@ func InitRoute() *gin.Engine {
 		cron.POST("/cfg", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CoutomCron)
 		cron.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DelCron)
 
+	svc := r.Group("/svc")
+		svc.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
+			c.HTML(http.StatusOK, "protools.tmpl", gin.H{
+			})
+		})
+		svc.POST("/cfg", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.SvcCfg)
+		svc.GET("/list", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.ShowSvcCfg)
 
 	return r
 }
