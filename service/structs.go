@@ -53,4 +53,10 @@ type (
 		Ccode string
 		Cnotes string
 	}
+
+	SvcFrom struct {
+		SvcName string
+		SvcCmd string
+		SvcNotes string
+	}
 )
