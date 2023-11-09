@@ -5,6 +5,7 @@ import (
 	"guide/core"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func SvcCfg(c *gin.Context)  {
@@ -42,4 +43,16 @@ func ShowSvcCfg(c *gin.Context){
 	c.HTML(http.StatusOK, "protoolscat.tmpl", gin.H{
 		"svcList": svcList,
 	})
+}
+
+
+func DeleteSvc(c *gin.Context){
+	svcList := strings.Fields(c.PostForm("svc"))
+	err := core.DeleteActSTools(svcList[0])
+	if err != nil{
+		log.Println(err)
+		return
+	}
+	c.Redirect(http.StatusFound, "/svc/list")
+	return
 }

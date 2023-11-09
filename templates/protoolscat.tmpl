@@ -23,15 +23,16 @@
                     <td><input class="cb" type="checkbox"/></td>
                     <td>{{$v.ServiceName}}</td>
                     <td>{{$v.ServiceDate}}</td>
-                    <td>{{$v.StartCmd}}</td>
+                    <td><pre>{{$v.StartCmd}}</pre></td>
                     <td>{{$v.ServiceNotes}}</td>
                     <td>
-                        <button class="btn btn-danger" onclick="">删除</button>
+                        <button class="btn btn-danger" onclick="deleteSvc()">删除</button>
                     </td>
                 </tr>
             {{end}}
         </tbody>
     </table>
+    <script src="/sta/js/cron.js"></script>
     </body>
 
     </html>

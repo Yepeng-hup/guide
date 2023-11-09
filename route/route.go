@@ -14,7 +14,7 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	//gin.SetMode("release")
+	gin.SetMode("release")
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
@@ -77,6 +77,7 @@ func InitRoute() *gin.Engine {
 			})
 		})
 		svc.POST("/cfg", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.SvcCfg)
+		svc.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DeleteSvc)
 		svc.GET("/list", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.ShowSvcCfg)
 
 	return r
