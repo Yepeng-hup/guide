@@ -116,6 +116,15 @@ func SliceCheck(slices []string, targets string) bool {
 	return false
 }
 
+func IfElement(slice []string, element string) bool {
+	for _, v := range slice {
+		if v == element {
+			return true
+		}
+	}
+	return false
+}
+
 
 func UnGz(gzSrcPath string) error {
 	//open file

@@ -11,7 +11,7 @@ func CliInit (){
 	lsStartWhitelist := global.IsStartWhitelist
 	host := global.Host
 	port := global.Port
-	interfaceName := global.InterfaceName
+	//interfaceName := global.InterfaceName
 	if saveDataDir == ""{
 		log.Fatalln("ERROR: GUIDE_FILEDATA_DIR is undefined")
 	}else if w == ""{
@@ -22,8 +22,6 @@ func CliInit (){
 		log.Fatalln("ERROR: GUIDE_PORT is undefined")
 	}else if lsStartWhitelist == ""{
 		log.Fatalln("ERROR: GUIDE_START_WHITE_LIST is undefined")
-	}else  if interfaceName == ""{
-		log.Fatalln("ERROR: GUIDE_INTERFACE_NAME is undefined")
 	}
 	return
 }
