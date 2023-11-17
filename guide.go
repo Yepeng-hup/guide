@@ -13,9 +13,9 @@ import (
 func main() {
 	cmd.CliInit()
 	r := route.InitRoute()
-	err := core.CreateCronTable()
+	err := core.CreateMeAllTable()
 	if err != nil {
-		log.Fatalln(err.Error(),"guide database init fail.")
+		log.Fatalln(err,"guide database init fail.")
 	}
 	fmt.Printf("\033[32m%s\033[0m\n", global.Logo)
 	log.Println("INFO: Server version -> 2.5, listening and serving HTTP on "+global.Host+":"+global.Port)
