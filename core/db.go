@@ -7,6 +7,8 @@ import (
 	"log"
 )
 
+var tableList = []string{"cron", "service_tools"}
+
 func ConnDb()(*sql.DB,error){
 	db, err := sql.Open("sqlite3", "guide.db")
 	if err != nil {
@@ -16,20 +18,61 @@ func ConnDb()(*sql.DB,error){
 }
 
 
-func CreateCronTable()error{
+func checkTableIfCreate()[]string{
+	t := make([]string , 0)
+	database, err := ConnDb()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	rows, err := database.Query("SELECT name FROM sqlite_master WHERE type='table';")
+	if err != nil {
+		log.Fatal(err.Error())
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tableName string
+		err := rows.Scan(&tableName)
+		if err != nil {
+			log.Fatal(err.Error())
+			return nil
+		}
+		t = append(t, tableName)
+	}
+	return t
+}
+
+
+func CreateMeAllTable()error{
 	db, err := ConnDb()
 	if err != nil {
-		return fmt.Errorf(err.Error())
+		log.Fatal(err.Error())
 	}
-	createTableCron := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
-	createTableServiceTools := `CREATE TABLE IF NOT EXISTS service_tools (id INTEGER PRIMARY KEY, serviceName TEXT, serviceDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), startCmd TEXT, serviceNotes TEXT);`
-	_, err = db.Exec(createTableCron)
-	if err != nil {
-		return fmt.Errorf("ERROR: create table cron fail,%s", err.Error())
-	}
-	_, err = db.Exec(createTableServiceTools)
-	if err != nil {
-		return fmt.Errorf("ERROR: create table service_tools fail,%s", err.Error())
+
+	list := checkTableIfCreate()
+	for _, v := range tableList {
+		if IfElement(list, v) {
+			return nil
+		}else {
+			switch v {
+			case "cron":
+				createTableCron := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
+				_, err = db.Exec(createTableCron)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table cron fail,%s", err.Error())
+				}
+			case "service_tools":
+				createTableServiceTools := `CREATE TABLE IF NOT EXISTS service_tools (id INTEGER PRIMARY KEY, serviceName TEXT, serviceDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), startCmd TEXT, serviceNotes TEXT);`
+				_, err = db.Exec(createTableServiceTools)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table service_tools fail,%s", err.Error())
+				}
+			default:
+				return nil
+			}
+		}
 	}
 	return nil
 }
