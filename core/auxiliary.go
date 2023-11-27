@@ -3,6 +3,10 @@ package core
 import (
 	"bufio"
 	"compress/gzip"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"guide/global"
 	"io"
@@ -152,4 +156,48 @@ func UnGz(gzSrcPath string) error {
 		return fmt.Errorf(err.Error())
 	}
 	return nil
+}
+
+
+func PasswordEncryption(p string)(string, error) {
+	block, err := aes.NewCipher([]byte("GuideROOT0917sec"))
+	if err != nil {
+		return "", fmt.Errorf("new key fail,%s", err.Error())
+	}
+
+	// 创建加密器
+	ciphertext := make([]byte, aes.BlockSize+len(p))
+	iv := ciphertext[:aes.BlockSize]
+	if _, err := rand.Read(iv); err != nil {
+		return "", fmt.Errorf(err.Error())
+	}
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], []byte(p))
+
+	// 将IV和加密后的数据合并为一个字符串
+	encryptedPassword := base64.URLEncoding.EncodeToString(ciphertext)
+	return encryptedPassword, nil
+}
+
+
+
+func PasswordDecrypt(p string)(string, error){
+	block, err := aes.NewCipher([]byte("GuideROOT0917sec"))
+	if err != nil {
+		return "", fmt.Errorf("new key fail,%s", err.Error())
+	}
+
+	// 解码加密数据
+	ciphertext, err := base64.URLEncoding.DecodeString(p)
+	if err != nil {
+		return "", fmt.Errorf(err.Error())
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(ciphertext, ciphertext)
+
+	// 解密数据并返回原始密码
+	decryptedPassword := string(ciphertext)
+	return decryptedPassword, nil
 }
