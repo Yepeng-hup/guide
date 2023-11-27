@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-var tableList = []string{"cron", "service_tools"}
+var tableList = []string{"cron", "service_tools", "user_passwd"}
 
 func ConnDb()(*sql.DB,error){
 	db, err := sql.Open("sqlite3", "guide.db")
@@ -54,7 +54,7 @@ func CreateMeAllTable()error{
 	list := checkTableIfCreate()
 	for _, v := range tableList {
 		if IfElement(list, v) {
-			return nil
+
 		}else {
 			switch v {
 			case "cron":
@@ -69,6 +69,13 @@ func CreateMeAllTable()error{
 				if err != nil {
 					return fmt.Errorf("ERROR: create table service_tools fail,%s", err.Error())
 				}
+			case "user_passwd":
+				createTableUserPasswd := `CREATE TABLE IF NOT EXISTS user_passwd (id INTEGER PRIMARY KEY, serviceName TEXT, user TEXT, password TEXT, Notes TEXT);`
+				_, err = db.Exec(createTableUserPasswd)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table user_passwd fail,%s", err.Error())
+				}
+
 			default:
 				return nil
 			}
@@ -102,6 +109,20 @@ func InsertActSTools(p ...string)error{
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2])
 	if err != nil {
 		return fmt.Errorf("ERROR: insert data to service_tools fail,%s", err.Error())
+	}
+	return nil
+}
+
+
+func InsertUserPwd(p ...string)error{
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s",err)
+	}
+	insertSQL := `INSERT INTO user_passwd (serviceName,user ,password ,Notes) VALUES (?, ?, ?, ?);`
+	_, err = db.Exec(insertSQL, p[0], p[1], p[2], p[3])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data to user_passwd fail,%s", err.Error())
 	}
 	return nil
 }
@@ -233,3 +254,5 @@ func DeleteActSTools(p ...string)error{
 	log.Printf("INFO: delete service_tools ok. name -> [%s].", p[0])
 	return nil
 }
+
+
