@@ -159,8 +159,8 @@ func UnGz(gzSrcPath string) error {
 }
 
 
-func PasswordEncryption(p string)(string, error) {
-	block, err := aes.NewCipher([]byte("GuideROOT0917sec"))
+func PasswordEncryption(p, key string)(string, error) {
+	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", fmt.Errorf("new key fail,%s", err.Error())
 	}
@@ -181,8 +181,8 @@ func PasswordEncryption(p string)(string, error) {
 
 
 
-func PasswordDecrypt(p string)(string, error){
-	block, err := aes.NewCipher([]byte("GuideROOT0917sec"))
+func PasswordDecrypt(p, key string)(string, error){
+	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", fmt.Errorf("new key fail,%s", err.Error())
 	}
