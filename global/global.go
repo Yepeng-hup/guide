@@ -23,6 +23,7 @@ var (
 	WhiteFile = os.Getenv("GUIDE_WHITE_LIST")
 	IsStartWhitelist = os.Getenv("GUIDE_START_WHITE_LIST")
 	PasswdAdminWhitelist = os.Getenv("GUIDE_PWD_ADMIN_WHITELIST")
+	NowKey = os.Getenv("GUIDE_KEY")
 	//InterfaceName = os.Getenv("GUIDE_INTERFACE_NAME")
 )
 
