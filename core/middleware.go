@@ -73,7 +73,7 @@ func PasswdAdminWhitelist()gin.HandlerFunc{
 			return
 		}
 		if !ifPwdIpWhitelist(&clientIP) {
-			log.Printf("%s host does not allow access.", clientIP)
+			log.Printf("ERROR: %s host does not allow access to password management.", clientIP)
 			c.Redirect(http.StatusFound, "/")
 			return
 		}
