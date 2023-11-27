@@ -14,7 +14,8 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	gin.SetMode("release")
+	//gin.SetMode("release")
+	gin.SetMode("debug")
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
@@ -22,7 +23,7 @@ func InitRoute() *gin.Engine {
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*.tmpl")
 
-	r.NoRoute(core.IpWhitelistMiddleware(global.IsStartWhitelist), func(c *gin.Context) {
+	r.NoRoute(core.SysIpWhitelist(global.IsStartWhitelist), func(c *gin.Context) {
 		fullPath := filepath.Join(global.SaveDataDir, c.Request.URL.Path)
 		fileInfo, err := os.Stat(fullPath)
 		if err != nil {
@@ -39,46 +40,49 @@ func InitRoute() *gin.Engine {
 
 	})
 
-	r.GET("/readme",core.IpWhitelistMiddleware(global.IsStartWhitelist), func(c *gin.Context){
+	r.GET("/readme",core.SysIpWhitelist(global.IsStartWhitelist), func(c *gin.Context){
 		c.HTML(http.StatusOK, "readme.tmpl",gin.H{})
 	})
 
 	url := r.Group("/url")
-		url.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
+		url.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
 			relStr := core.ShowUrl()
 			c.HTML(http.StatusOK, "url.tmpl", gin.H{
 				"UrlPic": relStr,
 			})
 		})
-		url.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.RewriteUrl)
-		url.POST("/del", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DelUrl)
+		url.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),service.RewriteUrl)
+		url.POST("/del", core.SysIpWhitelist(global.IsStartWhitelist),service.DelUrl)
 
 	file := r.Group("/file")
-		file.POST("/upload", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.UploadData)
-		file.POST("/create", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.CreateDir)
-		file.POST("/file/create", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CreateFile)
-		file.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist),service.DeleteDirAndFile)
-		file.POST("/ys", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CompressZipTar)
-		file.POST("/jy", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DecompressionZipTar)
-		file.GET("/cat", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CatFile)
+		file.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),service.UploadData)
+		file.POST("/create", core.SysIpWhitelist(global.IsStartWhitelist),service.CreateDir)
+		file.POST("/file/create", core.SysIpWhitelist(global.IsStartWhitelist), service.CreateFile)
+		file.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist),service.DeleteDirAndFile)
+		file.POST("/ys", core.SysIpWhitelist(global.IsStartWhitelist), service.CompressZipTar)
+		file.POST("/jy", core.SysIpWhitelist(global.IsStartWhitelist), service.DecompressionZipTar)
+		file.GET("/cat", core.SysIpWhitelist(global.IsStartWhitelist), service.CatFile)
 
 	cron := r.Group("/cron")
-		cron.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
+		cron.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
 			c.HTML(http.StatusOK, "cron.tmpl", gin.H{
 			})
 		})
-		cron.GET("/list",core.IpWhitelistMiddleware(global.IsStartWhitelist), service.ShowCron)
-		cron.POST("/cfg", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.CoutomCron)
-		cron.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DelCron)
+		cron.GET("/list",core.SysIpWhitelist(global.IsStartWhitelist), service.ShowCron)
+		cron.POST("/cfg", core.SysIpWhitelist(global.IsStartWhitelist), service.CoutomCron)
+		cron.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist), service.DelCron)
 
 	svc := r.Group("/svc")
-		svc.GET("/index", core.IpWhitelistMiddleware(global.IsStartWhitelist),func(c *gin.Context) {
+		svc.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
 			c.HTML(http.StatusOK, "protools.tmpl", gin.H{
 			})
 		})
-		svc.POST("/cfg", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.SvcCfg)
-		svc.POST("/delete", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.DeleteSvc)
-		svc.GET("/list", core.IpWhitelistMiddleware(global.IsStartWhitelist), service.ShowSvcCfg)
+		svc.POST("/cfg", core.SysIpWhitelist(global.IsStartWhitelist), service.SvcCfg)
+		svc.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist), service.DeleteSvc)
+		svc.GET("/list", core.SysIpWhitelist(global.IsStartWhitelist), service.ShowSvcCfg)
+
+	pwd := r.Group("/pwd")
+		pwd.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.PwdIndex)
 
 	return r
 }

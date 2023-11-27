@@ -9,7 +9,37 @@ import (
 	"net/http"
 )
 
-func IpWhitelistMiddleware(onOff string) gin.HandlerFunc {
+
+func ifSysIpInWhitelist(ip *string) bool {
+	whitelist := global.IpList()
+	for _, allowedIP := range whitelist {
+		if allowedIP == *ip {
+			return true
+		}
+	}
+	return false
+}
+
+
+func ifPwdIpWhitelist(ip *string) bool {
+	whitelistIp := global.PasswdAdminWhitelist
+		if whitelistIp == *ip {
+			return true
+		}
+	return false
+}
+
+func getClientIP(r *http.Request) (string, error) {
+	// show client ipaddr
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return "", fmt.Errorf("ERROR: show client ip fail,%s", err.Error())
+	}
+	return ip, nil
+}
+
+
+func SysIpWhitelist(onOff string) gin.HandlerFunc {
 	//if start whitelist
 	if onOff != "true" {
 		return func(c *gin.Context) {
@@ -23,7 +53,7 @@ func IpWhitelistMiddleware(onOff string) gin.HandlerFunc {
 			return
 		}
 		// check clientIp in whitelist
-		if !ifIpInWhitelist(&clientIP) {
+		if !ifSysIpInWhitelist(&clientIP) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"error": "The ip does not have permission, please contact the management personnel to activate the whitelist",
 			})
@@ -34,21 +64,19 @@ func IpWhitelistMiddleware(onOff string) gin.HandlerFunc {
 	}
 }
 
-func ifIpInWhitelist(ip *string) bool {
-	whitelist := global.IpList()
-	for _, allowedIP := range whitelist {
-		if allowedIP == *ip {
-			return true
-		}
-	}
-	return false
-}
 
-func getClientIP(r *http.Request) (string, error) {
-	// show client ipaddr
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		return "", fmt.Errorf("ERROR: show client ip fail,%s", err.Error())
+func PasswdAdminWhitelist()gin.HandlerFunc{
+	return func(c *gin.Context) {
+		clientIP, err := getClientIP(c.Request)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+		if !ifPwdIpWhitelist(&clientIP) {
+			log.Printf("%s host does not allow access.", clientIP)
+			c.Redirect(http.StatusFound, "/")
+			return
+		}
+		c.Next()
 	}
-	return ip, nil
 }
