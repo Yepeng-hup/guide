@@ -6,6 +6,7 @@ import (
 	"guide/global"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type (
@@ -15,6 +16,8 @@ type (
 		Passwd string
 		Notes string
 	}
+
+
 )
 
 
@@ -50,11 +53,46 @@ func SavePwdToDb(c *gin.Context){
 	}
 	c.Redirect(http.StatusFound, "/pwd/index")
 	return
+}
 
-	//dpwd, err := core.PasswordDecrypt(encryptionPassword, global.NowKey)
-	//if err != nil {
-	//	log.Printf("ERROR: %s", err)
-	//}
-	//fmt.Println("解密后-》 ", dpwd)
+
+func ShowPwdList(c *gin.Context){
+	// show all user and passwd
+	list, err := core.SelectUserPwd()
+	if err != nil {
+		log.Println(err.Error())
+		c.Redirect(http.StatusFound, "/pwd/index")
+		return
+	}
+	c.HTML(http.StatusOK, "pwdcat.tmpl", gin.H{
+			"userPwdList": list,
+	})
+}
+
+
+func CatPwd(c *gin.Context){
+	encryptionPassword := c.PostForm("pwd")
+	ePasswordList := strings.Fields(encryptionPassword)
+	dpwd, err := core.PasswordDecrypt(ePasswordList[2], global.NowKey)
+	if err != nil {
+		log.Printf("ERROR: %s", err)
+		c.Redirect(http.StatusFound, "/pwd/list")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"dPassword": dpwd,
+	})
+	return
+}
+
+
+func DelUP(c *gin.Context){
+
+}
+
+
+func UserPwdBackup(c *gin.Context){
 
 }

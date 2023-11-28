@@ -215,6 +215,36 @@ func SelectActSTools(selectSql string)([]ServiceTools, error){
 }
 
 
+func SelectUserPwd()([]UserPwd, error){
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	sql := "SELECT * FROM user_passwd"
+	rows, err := db.Query(sql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query user_passwd table fail,%s",err.Error())
+	}
+	defer rows.Close()
+	var userPwd struct{
+		Id string
+		ServiceName string
+		User string
+		Passwd string
+		Notes string
+	}
+	userPwdList := make([]UserPwd, 0)
+	for rows.Next() {
+		err := rows.Scan(&userPwd.Id,&userPwd.ServiceName,&userPwd.User,&userPwd.Passwd,&userPwd.Notes)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		userPwdList = append(userPwdList, userPwd)
+	}
+	return userPwdList, nil
+}
+
+
 func DeleteAct(p ...string)error{
 	db, err := ConnDb()
 	if err != nil {

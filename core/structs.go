@@ -23,4 +23,12 @@ type (
 		StartCmd string
 		ServiceNotes string
 	}
+
+	UserPwd struct {
+		Id string
+		ServiceName string
+		User string
+		Passwd string
+		Notes string
+	}
 )
