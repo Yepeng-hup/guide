@@ -1,0 +1,54 @@
+{{define "pwdcat.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>密码列表</title>
+        <script src="/sta/js/pwd.js"></script>
+        <script src="/sta/js/alert.js"></script>
+    </head>
+    {{template "base" .}}
+
+    <body>
+        <table class="table table-hover">
+            <thead>
+            <th>@</th>
+            <th>服务名</th>
+            <th>用户名</th>
+            <th>密码(已加密)</th>
+            <th>备注</th>
+            <th>动作</th>
+            </thead>
+            <tbody>
+            {{range $k ,$v := .userPwdList}}
+
+                <tr>
+                    <td><input class="cb" type="checkbox"/></td>
+                    <td>{{$v.ServiceName}}</td>
+                    <td>{{$v.User}}</td>
+                    <td>{{$v.Passwd}}</td>
+                    <td>{{$v.Notes}}</td>
+                    <td>
+                        <button data-toggle="modal" data-target="#mtk" style="margin-left: 15px" class="btn btn-info" onclick="catdPwd()">解密查询</button>
+                        <button class="btn btn-danger" onclick="">删除</button>
+                    </td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+
+        <div class="modal" id="mtk">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title">原始密码</h6>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="texts" style="background-color: #7a7a7a"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+{{end}}
