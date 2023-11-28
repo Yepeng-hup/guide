@@ -286,3 +286,24 @@ func DeleteActSTools(p ...string)error{
 }
 
 
+func DeleteUserPwd(p ...string)error{
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM user_passwd WHERE serviceName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	log.Printf("INFO: delete user_passwd ok. name -> [%s].", p[0])
+	return nil
+}
+
+
+

@@ -89,7 +89,16 @@ func CatPwd(c *gin.Context){
 
 
 func DelUP(c *gin.Context){
-
+	str := c.PostForm("pwd")
+	list := strings.Fields(str)
+	err := core.DeleteUserPwd(list[0])
+	if err != nil {
+		log.Println(err.Error())
+		c.Redirect(http.StatusFound, "/pwd/list")
+		return
+	}
+	c.Redirect(http.StatusFound, "/pwd/list")
+	return
 }
 
 
