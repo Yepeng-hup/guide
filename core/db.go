@@ -45,7 +45,7 @@ func checkTableIfCreate()[]string{
 }
 
 
-func CreateMeAllTable()error{
+func CreateGuideAllTable()error{
 	db, err := ConnDb()
 	if err != nil {
 		log.Fatal(err.Error())

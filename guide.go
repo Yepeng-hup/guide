@@ -13,7 +13,7 @@ import (
 func main() {
 	cmd.CliInit()
 	r := route.InitRoute()
-	err := core.CreateMeAllTable()
+	err := core.CreateGuideAllTable()
 	if err != nil {
 		log.Fatalln(err,"guide database init fail.")
 	}
