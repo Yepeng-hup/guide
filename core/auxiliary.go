@@ -14,7 +14,14 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 )
+
+func BackupPrefix()string{
+	t := time.Now()
+	return t.Format("2006-01-02")
+}
+
 
 func ShowUrl()[]News{
 	var structSlice []News
