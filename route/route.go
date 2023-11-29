@@ -14,8 +14,7 @@ import (
 
 
 func InitRoute() *gin.Engine {
-	//gin.SetMode("release")
-	gin.SetMode("debug")
+	gin.SetMode("release")
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
