@@ -9,6 +9,7 @@
     {{template "base" .}}
 
     <body>
+
         <table class="table table-hover">
             <thead>
             <th>@</th>
@@ -17,6 +18,7 @@
             <th>密码(已加密)</th>
             <th>备注</th>
             <th>动作</th>
+            <th><button class="btn btn-info" onclick="backupData()">一键备份</button></th>
             </thead>
             <tbody>
             {{range $k ,$v := .userPwdList}}

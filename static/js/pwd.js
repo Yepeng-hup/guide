@@ -53,3 +53,20 @@ function catdPwd() {
         }
     }
 }
+
+
+function backupData() {
+            $.get({
+                "url": "/pwd/bak",
+                "success": function (data) {
+                    if (data["code"] === 200) {
+                            alert(data["msg"]);
+                    } else {
+                            alert(data["msg"]);
+                    }
+                },
+                "fail": function (error) {
+                    console.log(error);
+                }
+            });
+}

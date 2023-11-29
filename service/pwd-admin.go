@@ -6,6 +6,7 @@ import (
 	"guide/global"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -103,5 +104,40 @@ func DelUP(c *gin.Context){
 
 
 func UserPwdBackup(c *gin.Context){
-
+	list, err := core.SelectUserPwd()
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": 500,
+			"msg": "error: db select fail.",
+		})
+		return
+	}
+	p := core.BackupPrefix()
+	file, err := os.OpenFile("backup_"+p+".txt", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0766)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": 500,
+			"msg": "error: create file fail.",
+		})
+		return
+	}
+	defer file.Close()
+	for _,v := range list {
+		text := v.ServiceName+"  "+ v.User+"  "+ v.Passwd+"\n"
+		if _, err := file.WriteString(text); err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg": "error: bakup data write file fail.",
+			})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg": "data backup success.",
+	})
+	return
 }

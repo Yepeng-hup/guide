@@ -84,6 +84,7 @@ func InitRoute() *gin.Engine {
 	pwd := r.Group("/pwd")
 		pwd.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.PwdIndex)
 		pwd.GET("/list", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.ShowPwdList)
+		pwd.GET("/bak", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.UserPwdBackup)
 		pwd.POST("/cfg",core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.SavePwdToDb)
 		pwd.POST("/cat", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.CatPwd)
 		pwd.POST("/delete",core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),service.DelUP)
