@@ -10,6 +10,21 @@ import (
 	"strings"
 )
 
+var (
+	cronMap = make(map[string]cron.EntryID)
+	globalCron *cron.Cron
+)
+
+
+func init() {
+	globalCron = cron.New()
+}
+
+func cronSaveDb(){
+	// code
+	return
+}
+
 func CoutomCron(c *gin.Context)  {
 	f := CronsFrom{
 		Cname: c.PostForm("cname"),
@@ -38,10 +53,9 @@ func CoutomCron(c *gin.Context)  {
 	if len(v) < 1 {
 		core.InsertAct(f.Cname, f.Ctime, f.Ccode, f.Cnotes)
 		go func() {
-			c := cron.New()
-			_, err := c.AddFunc(f.Ctime, func() {
+			entryId, err := globalCron.AddFunc(f.Ctime, func() {
 				log.Printf("INFO: corn use success, use name -> [%s].", f.Cname)
-				//定时任务逻辑代码
+				// Timed task logic code
 				err := cmd.UseCmd(f.Ccode)
 				if err != nil {
 					log.Println(err.Error())
@@ -49,10 +63,16 @@ func CoutomCron(c *gin.Context)  {
 				}
 
 			})
+			/*
+				If persistence can be written to storage, I won't use persistence here.
+				Restarting will result in all failures.
+			*/
+			cronMap[f.Cname] = entryId
+			log.Printf("INFO: cron Job add with ID [%v] for name [%s]", entryId, f.Cname)
 			if err != nil {
-				log.Printf("ERROR: cron add function error : %v",err.Error())
+				log.Printf("ERROR: cron add function error %v",err.Error())
 			}
-			c.Start()
+			defer globalCron.Start()
 			//select {}
 		}()
 	}else {
@@ -76,9 +96,21 @@ func ShowCron(c *gin.Context)  {
 }
 
 
+// Delete cron func
+func deleteMaptoCronjob(id cron.EntryID, jobName string){
+	delete(cronMap, jobName)
+	globalCron.Remove(id)
+	log.Printf("INFO: delete cron job [%s] ok.", jobName)
+	return
+}
+
+
+// Delete cron route
 func DelCron(c *gin.Context){
 	crons := c.PostForm("cron")
 	cronList := strings.Fields(crons)
+	v := cronMap[cronList[0]]
+	deleteMaptoCronjob(v, cronList[0])
 	err := core.DeleteAct(cronList[0])
 	if err != nil {
 		log.Printf("ERROR: delete cron fail -> [%s].", cronList[0])
