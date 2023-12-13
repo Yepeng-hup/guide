@@ -261,7 +261,7 @@ func DeleteAct(p ...string)error{
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete cron ok. name -> [%s].", p[0])
+	log.Printf("INFO: delete cron database record ok. name -> [%s].", p[0])
 	return nil
 }
 
