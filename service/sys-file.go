@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/mholt/archiver"
 	"guide/core"
@@ -132,6 +133,25 @@ func CatFile(c *gin.Context){
 		log.Println("ERROR: Not in character [.] .")
 		return
 	}
+}
+
+
+func UpdateFile(c *gin.Context){
+	u := Update{
+		FileName: c.PostForm("file"),
+		Centent: c.PostForm("content"),
+		FilePath: c.PostForm("path"),
+	}
+	fileList := strings.Fields(u.FileName)
+	fileWritePath := global.SaveDataDir+"/"+u.FilePath+"/"+fileList[0]
+	err := ioutil.WriteFile(fileWritePath, []byte(u.Centent), 0644)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+	})
 }
 
 

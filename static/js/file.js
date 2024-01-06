@@ -121,3 +121,36 @@ function pushFile() {
     });
 
 };
+
+
+function updateContent() {
+    let content = document.getElementById('texts').innerText;
+    let items=document.getElementsByClassName('cb');
+    let len=items.length;
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+
+            $.post({
+                "url": "/file/edit",
+                "data": {
+                    "content": content,
+                    "file": divlr,
+                    "path": location.pathname
+                },
+                "success": function (data) {
+                    if (data["code"] === 200) {
+                        alert("update success")
+                    } else {
+                        alert("err: update fail")
+                    }
+                },
+                "fail": function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+}

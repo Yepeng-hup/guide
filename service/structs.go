@@ -59,4 +59,10 @@ type (
 		SvcCmd string
 		SvcNotes string
 	}
+
+	Update struct {
+		FileName string
+		Centent string
+		FilePath string
+	}
 )

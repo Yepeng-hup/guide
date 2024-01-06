@@ -61,6 +61,7 @@ func InitRoute() *gin.Engine {
 		file.POST("/ys", core.SysIpWhitelist(global.IsStartWhitelist), service.CompressZipTar)
 		file.POST("/jy", core.SysIpWhitelist(global.IsStartWhitelist), service.DecompressionZipTar)
 		file.GET("/cat", core.SysIpWhitelist(global.IsStartWhitelist), service.CatFile)
+		file.POST("/edit", core.SysIpWhitelist(global.IsStartWhitelist), service.UpdateFile)
 
 	cron := r.Group("/cron")
 		cron.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
