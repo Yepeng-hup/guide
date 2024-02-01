@@ -49,6 +49,7 @@ function deleteCheckbox() {
 function catFileCheckbox() {
     let items=document.getElementsByClassName('cb');
     let len=items.length;
+    var checkboxes = document.getElementsByClassName('cb');
     for (var i=len-1; i>=0;i--) {
         let is_checkd = items[i].checked;
         if (is_checkd) {
@@ -67,6 +68,9 @@ function catFileCheckbox() {
                             return
                         } else {
                             alertMontage("不支持的文件格式.","alert-danger");
+                            for (let i = 0; i < checkboxes.length; i++) {
+                                checkboxes[i].checked = false;
+                            }
                             setTimeout(function() {
                                 window.location = location.pathname;
                             }, 1000);
@@ -78,6 +82,13 @@ function catFileCheckbox() {
                 },
             )
         }
+    }
+}
+
+function down() {
+    var checkboxes = document.getElementsByClassName('cb');
+    for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
     }
 }
 
