@@ -126,6 +126,7 @@ function pushFile() {
 function updateContent() {
     let content = document.getElementById('texts').innerText;
     let items=document.getElementsByClassName('cb');
+    var checkboxes = document.getElementsByClassName('cb');
     let len=items.length;
     for (var i=len-1; i>=0;i--) {
         let is_checkd = items[i].checked;
@@ -143,8 +144,15 @@ function updateContent() {
                 "success": function (data) {
                     if (data["code"] === 200) {
                         alert("update success")
+                        for (let i = 0; i < checkboxes.length; i++) {
+                            checkboxes[i].checked = false;
+                        }
+                        document.getElementById("down").click();
                     } else {
                         alert("err: update fail")
+                        for (let i = 0; i < checkboxes.length; i++) {
+                            checkboxes[i].checked = false;
+                        }
                     }
                 },
                 "fail": function (error) {
