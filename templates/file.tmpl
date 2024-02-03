@@ -5,28 +5,12 @@
         <title>文件管理</title>
     </head>
     {{template "base" .}}
-    <style>
-        .fw-df-btn {
-            height: 40px;
-            width: 80px;
-            padding: 0 auto;
-            background-color: #5938ea;
-            color: #fff;
-            text-align: center;
-            font-size: 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-    </style>
-
     <body>
         <div id="alert" style="margin-top: 80px"></div>
         <div id="jdt"></div>
         <div class="folder">
             <h5 style="margin-top: 15px; margin-left: 15px">
-                ROOT: <span style="color: #007bff">{{.rootDir}}</span>
+                <span style="color: #007bff">{{.rootDir}}</span>
             </h5>
             <div style="float: left; display: flex; align-items: center;margin-left: 15px;">
                 <form  id="sForm">
