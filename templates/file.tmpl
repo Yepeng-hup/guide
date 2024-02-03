@@ -6,20 +6,6 @@
     </head>
     {{template "base" .}}
     <style>
-        .fw-btn {
-            height: 40px;
-            width: 50px;
-            padding: 0 auto;
-            background-color: #5938ea;
-            color: #fff;
-            text-align: center;
-            font-size: 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
         .fw-df-btn {
             height: 40px;
             width: 80px;
@@ -40,18 +26,16 @@
         <div id="jdt"></div>
         <div class="folder">
             <h5 style="margin-top: 15px; margin-left: 15px">
-                ROOT: {{.rootDir}}
+                ROOT: <span style="color: #007bff">{{.rootDir}}</span>
             </h5>
             <div style="float: left; display: flex; align-items: center;margin-left: 15px;">
                 <form  id="sForm">
-                    <input class="btn btn-dark" type="file" name="file" id="f" multiple>
-                    <button class="fw-df-btn" id="sButton" onclick="pushFile()" hidden="true ">上传文件</button>
+                    <input class="btn btn-primary" type="file" name="file" id="f" multiple>
+                    <button class="btn btn-primary" id="sButton" onclick="pushFile()" hidden="true " style="margin-left: 5px">上传文件</button>
                 </form>
-                <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="dir" id="dir" placeholder="目录名">
-                <button class="fw-btn" id="createdir">创建</button>
-                <input style="margin-left: 30px;width: 150px;height: 40px" type="text" name="file" id="file" placeholder="文件名">
-                <button class="fw-btn" id="createfile">创建</button>
-                <button style="margin-left: 30px;" class="fw-btn" onclick="location.reload()">刷新</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" style="margin-left: 20px">创建目录</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo" style="margin-left: 20px">创建文件</button>
+                {{/*<button style="margin-left: 30px;" class="btn btn-primary" onclick="location.reload()">刷新</button>*/}}
             </div>
             <table class="table table-hover" style="margin-top: 70px">
                 <thead>
@@ -103,6 +87,7 @@
                 </tbody>
             </table>
         </div>
+
         <div class="modal" id="mtk">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -116,6 +101,56 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="updateContent()">确认更新</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal" id="down" onclick="down()">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">目录名</label>
+                                <input type="text" class="form-control" name="dir" id="recipient-dir">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="createdir">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">文件名</label>
+                                <input type="text" class="form-control" name="file" id="recipient-file">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="createfile">确定</button>
                     </div>
                 </div>
             </div>
