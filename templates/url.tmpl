@@ -9,54 +9,26 @@
         body {
             background-color: #ffffff;
         }
-        .delete-btn {
-            height: 35px;
-            width: 50px;
-            padding: 0 auto;
-            background-color: #dc3545;
-            color: #fff;
-            text-align: center;
-            font-size: 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .add-btn {
-            height: 35px;
-            width: 50px;
-            padding: 0 auto;
-            background-color: #5938ea;
-            color: #fff;
-            text-align: center;
-            font-size: 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .fw-btn {
-            height: 30px;
-            width: 50px;
-            padding: 0 auto;
-            background-color: #28a745;
-            color: #fff;
-            text-align: center;
-            font-size: 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
     </style>
 
     <body>
-        <form action="/url/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 80px">
-            名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name">
-            网址: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="url">
-            备注: <input style="margin-top: 10px; height: 35px; width: 400px" type="text" name="txt" placeholder="默认'无备注'字段">
-            <input  class="add-btn" type="submit" value="添加">
+        <form class="form-inline" action="/url/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 80px">
+            <div class="form-group">
+                <label for="inputPassword6">名称</label>
+                <input type="text" style="width: 300px" class="form-control mx-sm-3" name="u-name">
+                <label for="inputPassword6">网址</label>
+                <input type="text" style="width: 300px" class="form-control mx-sm-3" name="url">
+                <label for="inputPassword6">备注</label>
+                <input type="text" style="width: 400px" class="form-control mx-sm-3" name="txt" placeholder="默认'无备注'">
+                <input  class="btn btn-primary" type="submit" value="添加">
+
+            </div>
         </form>
-        <form action="/url/del" method="post" enctype="multipart/form-data" style="margin-left: 10px;">
-            名称: <input style="margin-top: 10px; height: 35px; width: 300px" type="text" name="u-name" placeholder="模糊匹配，输入全名称">
-            <input  class="delete-btn" type="submit" value="删除">
+
+        <form action="/url/del" method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 20px" class="form-inline" >
+            <label for="inputPassword6">名称</label>
+            <input class="form-control mx-sm-3" style="width: 300px" type="text" name="u-name" placeholder="模糊匹配，输入全名称">
+            <input  class="btn btn-danger" type="submit" value="删除">
         </form>
 
         <div style="margin-top: 50px">
@@ -69,12 +41,11 @@
                 </thead>
                 <tbody>
                 {{range $k ,$v := .UrlPic}}
-
                     <tr>
                         <td>{{$v.UName}}</td>
                         <td>{{$v.Url}}</td>
                         <td>{{$v.Notes}}</td>
-                        <td><a href="{{$v.Url}}" target=_blank><input class="fw-btn" type="button" value="访问"></a></td>
+                        <td><a href="{{$v.Url}}" target=_blank><input class="btn btn-success" type="button" value="访问"></a></td>
                     </tr>
                 {{end}}
                 </tbody>
