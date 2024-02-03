@@ -1,6 +1,6 @@
 $(function () {
     $("#createdir").click(function () {
-        let dirName = $("#dir").val();
+        let dirName = $("#recipient-dir").val();
         if (dirName === '') {
             alertMontage("不允许为空.","alert-danger");
             setTimeout(function() {
@@ -38,7 +38,7 @@ $(function () {
 
 $(function () {
     $("#createfile").click(function () {
-        let fileName = $("#file").val();
+        let fileName = $("#recipient-file").val();
         if (fileName === '') {
             alertMontage("不允许为空.","alert-danger");
             setTimeout(function() {
@@ -161,16 +161,6 @@ function updateContent() {
             });
         }
     }
-}
-
-
-function textpj(text) {
-    let htmlData = `
-        <pre style="color: white">${text}</pre>
-    `;
-
-    let list = document.getElementById('texts');
-    list.innerHTML = htmlData;
 }
 
 

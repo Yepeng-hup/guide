@@ -10,3 +10,13 @@ function alertMontage(info, alertClass){
     let list = document.getElementById('alert');
     list.innerHTML = htmlData;
 }
+
+
+function textpj(text) {
+    let htmlData = `
+        <pre style="color: white">${text}</pre>
+    `;
+
+    let list = document.getElementById('texts');
+    list.innerHTML = htmlData;
+}
