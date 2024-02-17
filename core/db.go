@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-var tableList = []string{"cron", "service_tools", "user_passwd"}
+var tableList = []string{"cron", "service_tools", "user_passwd", "user"}
 
 func ConnDb()(*sql.DB,error){
 	db, err := sql.Open("sqlite3", "guide.db")
@@ -74,6 +74,13 @@ func CreateGuideAllTable()error{
 				_, err = db.Exec(createTableUserPasswd)
 				if err != nil {
 					return fmt.Errorf("ERROR: create table user_passwd fail,%s", err.Error())
+				}
+
+			case "user":
+				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, user TEXT, password TEXT);`
+				_, err = db.Exec(createTableUser)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table user fail,%s", err.Error())
 				}
 
 			default:

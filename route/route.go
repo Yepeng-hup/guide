@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 )
 
-
 func InitRoute() *gin.Engine {
 	gin.SetMode("release")
 	r := gin.Default()
@@ -22,7 +21,7 @@ func InitRoute() *gin.Engine {
 	r.Static("/sta","static")
 	r.LoadHTMLGlob("templates/*.tmpl")
 
-	r.NoRoute(core.SysIpWhitelist(global.IsStartWhitelist), func(c *gin.Context) {
+	r.NoRoute(core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), func(c *gin.Context) {
 		fullPath := filepath.Join(global.SaveDataDir, c.Request.URL.Path)
 		fileInfo, err := os.Stat(fullPath)
 		if err != nil {
@@ -39,55 +38,68 @@ func InitRoute() *gin.Engine {
 
 	})
 
-	r.GET("/readme",core.SysIpWhitelist(global.IsStartWhitelist), func(c *gin.Context){
+	r.GET("/login", service.Login)
+	r.POST("/login", service.LoginCk)
+	r.GET("/logout", func(c *gin.Context) {
+		cookie := http.Cookie{Name: "user", MaxAge: -1}
+		http.SetCookie(c.Writer, &cookie)
+		c.JSON(http.StatusOK,gin.H{
+			"code": http.StatusOK,
+		})
+	})
+
+	user := r.Group("/user")
+		user.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.UserAdmin)
+
+	r.GET("/readme",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), func(c *gin.Context){
 		c.HTML(http.StatusOK, "readme.tmpl",gin.H{})
 	})
 
 	url := r.Group("/url")
-		url.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
+		url.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),func(c *gin.Context) {
 			relStr := core.ShowUrl()
 			c.HTML(http.StatusOK, "url.tmpl", gin.H{
 				"UrlPic": relStr,
 			})
 		})
-		url.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),service.RewriteUrl)
-		url.POST("/del", core.SysIpWhitelist(global.IsStartWhitelist),service.DelUrl)
+		url.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.RewriteUrl)
+		url.POST("/del", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.DelUrl)
 
 	file := r.Group("/file")
-		file.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),service.UploadData)
-		file.POST("/create", core.SysIpWhitelist(global.IsStartWhitelist),service.CreateDir)
-		file.POST("/file/create", core.SysIpWhitelist(global.IsStartWhitelist), service.CreateFile)
-		file.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist),service.DeleteDirAndFile)
-		file.POST("/ys", core.SysIpWhitelist(global.IsStartWhitelist), service.CompressZipTar)
-		file.POST("/jy", core.SysIpWhitelist(global.IsStartWhitelist), service.DecompressionZipTar)
-		file.GET("/cat", core.SysIpWhitelist(global.IsStartWhitelist), service.CatFile)
-		file.POST("/edit", core.SysIpWhitelist(global.IsStartWhitelist), service.UpdateFile)
+		file.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.UploadData)
+		file.POST("/create", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.CreateDir)
+		file.POST("/file/create", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.CreateFile)
+		file.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.DeleteDirAndFile)
+		file.POST("/ys", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.CompressZipTar)
+		file.POST("/jy", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.DecompressionZipTar)
+		file.GET("/cat", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.CatFile)
+		file.POST("/edit", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.UpdateFile)
 
 	cron := r.Group("/cron")
-		cron.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
+		cron.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),func(c *gin.Context) {
 			c.HTML(http.StatusOK, "cron.tmpl", gin.H{
 			})
 		})
-		cron.GET("/list",core.SysIpWhitelist(global.IsStartWhitelist), service.ShowCron)
-		cron.POST("/cfg", core.SysIpWhitelist(global.IsStartWhitelist), service.CoutomCron)
-		cron.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist), service.DelCron)
+		cron.GET("/list",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.ShowCron)
+		cron.POST("/cfg", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.CoutomCron)
+		cron.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.DelCron)
 
 	svc := r.Group("/svc")
-		svc.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),func(c *gin.Context) {
+		svc.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),func(c *gin.Context) {
 			c.HTML(http.StatusOK, "protools.tmpl", gin.H{
 			})
 		})
-		svc.POST("/cfg", core.SysIpWhitelist(global.IsStartWhitelist), service.SvcCfg)
-		svc.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist), service.DeleteSvc)
-		svc.GET("/list", core.SysIpWhitelist(global.IsStartWhitelist), service.ShowSvcCfg)
+		svc.POST("/cfg", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.SvcCfg)
+		svc.POST("/delete", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.DeleteSvc)
+		svc.GET("/list", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.ShowSvcCfg)
 
 	pwd := r.Group("/pwd")
-		pwd.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.PwdIndex)
-		pwd.GET("/list", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.ShowPwdList)
-		pwd.GET("/bak", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.UserPwdBackup)
-		pwd.POST("/cfg",core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.SavePwdToDb)
-		pwd.POST("/cat", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(), service.CatPwd)
-		pwd.POST("/delete",core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),service.DelUP)
+		pwd.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),core.CookieCheck(), service.PwdIndex)
+		pwd.GET("/list", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),core.CookieCheck(), service.ShowPwdList)
+		pwd.GET("/bak", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),core.CookieCheck(), service.UserPwdBackup)
+		pwd.POST("/cfg",core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),core.CookieCheck(), service.SavePwdToDb)
+		pwd.POST("/cat", core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),core.CookieCheck(), service.CatPwd)
+		pwd.POST("/delete",core.SysIpWhitelist(global.IsStartWhitelist),core.PasswdAdminWhitelist(),core.CookieCheck(),service.DelUP)
 
 	return r
 }

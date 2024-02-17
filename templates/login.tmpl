@@ -1,0 +1,36 @@
+{{define "login.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>登录</title>
+        <link rel="stylesheet" href="/sta/css/all.css">
+    </head>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+
+    <body>
+        <div class="sub-main-w3">
+
+            <form action="/login", method="post">
+                <h2 style="color: #212529">Welcome GUIDE</h2>
+
+                <div class="form-style-agile">
+                    <label>用户名</label>
+                    <input id="name" placeholder="" name="Name" type="text" required="" autocomplete="off">
+                </div>
+
+                <div class="form-style-agile">
+                    <label>密码</label>
+                    <input id="passwd" placeholder="" name="Password" type="password" required="" autocomplete="off">
+                </div>
+                <input type="submit" value="登录">
+                <p class=""><b style="color: red">{{.error}}</b></p>
+            </form>
+        </div>
+    </body>
+    </html>
+
+{{end}}
