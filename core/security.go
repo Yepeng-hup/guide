@@ -27,3 +27,5 @@ func (s *Security)CheckForm(formStrList ...string) bool{
 	}
 	return false
 }
+
+

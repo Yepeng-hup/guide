@@ -48,12 +48,16 @@ func InitRoute() *gin.Engine {
 		})
 	})
 
-	user := r.Group("/user")
-		user.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.UserAdmin)
-
 	r.GET("/readme",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), func(c *gin.Context){
 		c.HTML(http.StatusOK, "readme.tmpl",gin.H{})
 	})
+
+	user := r.Group("/user")
+		user.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.UserAdmin)
+		user.POST("/create", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.CreateUser)
+		user.POST("/update/pwd", service.UpdatePwd)
+		user.DELETE("/delete",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.DeleteUser)
+		user.POST("/update/info",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.UpdateUserInfo)
 
 	url := r.Group("/url")
 		url.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),func(c *gin.Context) {

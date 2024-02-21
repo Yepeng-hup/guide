@@ -31,4 +31,15 @@ type (
 		Passwd string
 		Notes string
 	}
+
+	User struct {
+		User string
+	}
+
+	UserAll struct {
+		Id string
+		UserName string
+		NewUserDate string
+		Password string
+	}
 )

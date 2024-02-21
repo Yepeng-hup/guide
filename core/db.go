@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"os"
 )
 
 var tableList = []string{"cron", "service_tools", "user_passwd", "user"}
@@ -77,7 +78,7 @@ func CreateGuideAllTable()error{
 				}
 
 			case "user":
-				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, user TEXT, password TEXT);`
+				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, newUserDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), password TEXT);`
 				_, err = db.Exec(createTableUser)
 				if err != nil {
 					return fmt.Errorf("ERROR: create table user fail,%s", err.Error())
@@ -89,6 +90,48 @@ func CreateGuideAllTable()error{
 		}
 	}
 	return nil
+}
+
+
+func InitUser(){
+	db, err := ConnDb()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	sql := "SELECT userName FROM user WHERE userName = \"admin\""
+	rows, err := db.Query(sql)
+	if err != nil {
+		log.Println("ERROR: init fail.")
+		log.Println("ERROR: query user table fail,",err.Error())
+		os.Exit(1)
+	}
+	defer rows.Close()
+	var user struct{
+		User string
+	}
+	userList := make([]User, 0)
+	for rows.Next() {
+		err := rows.Scan(&user.User)
+		if err != nil {
+			log.Println("ERROR: init fail.")
+			log.Println(err.Error())
+			os.Exit(1)
+		}
+		userList = append(userList, user)
+	}
+
+	if len(userList) < 1 {
+		insertSQL := `INSERT INTO user (userName, password) VALUES (?,?);`
+		_, err = db.Exec(insertSQL,"admin", "guide")
+		if err != nil {
+			log.Println("ERROR: init db user fail, ", err.Error())
+			return
+		}
+	}else {
+		return
+	}
 }
 
 
@@ -130,6 +173,20 @@ func InsertUserPwd(p ...string)error{
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2], p[3])
 	if err != nil {
 		return fmt.Errorf("ERROR: insert data to user_passwd fail,%s", err.Error())
+	}
+	return nil
+}
+
+
+func InsertUser(p ...string)error{
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s",err)
+	}
+	insertSQL := `INSERT INTO user (userName,password) VALUES (?, ?);`
+	_, err = db.Exec(insertSQL, p[0], p[1])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data to user fail,%s", err.Error())
 	}
 	return nil
 }
@@ -252,6 +309,34 @@ func SelectUserPwd()([]UserPwd, error){
 }
 
 
+func SelectUser(selectSql string)([]UserAll, error){
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query user table fail,%s",err.Error())
+	}
+	defer rows.Close()
+	var user struct{
+		Id string
+		UserName string
+		NewUserDate string
+		Password string
+	}
+	userList := make([]UserAll, 0)
+	for rows.Next() {
+		err := rows.Scan(&user.Id,&user.UserName,&user.NewUserDate,&user.Password)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		userList = append(userList, user)
+	}
+	return userList, nil
+}
+
+
 func DeleteAct(p ...string)error{
 	db, err := ConnDb()
 	if err != nil {
@@ -263,7 +348,6 @@ func DeleteAct(p ...string)error{
 		return fmt.Errorf(err.Error())
 	}
 	defer stmt.Close()
-	// use sql and afferent delete parameter
 	_, err = stmt.Exec(p[0])
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -312,5 +396,35 @@ func DeleteUserPwd(p ...string)error{
 	return nil
 }
 
+func DeleteUser(p ...string)error{
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM user WHERE userName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	log.Printf("INFO: delete user ok. name -> [%s].", p[0])
+	return nil
+}
 
+
+func UpdateUser(p ...string)error{
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	_, err = db.Exec("UPDATE user SET userName = ? WHERE newUserDate = ? AND id = ?", p[0], p[1], p[2])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	return nil
+}
 
