@@ -206,7 +206,7 @@ function catFileCheckbox() {
                     },
                     "success": function (data) {
                         if (data["code"] === 200) {
-                            textpj(data["fileText"]);
+                            textpj(data["fileText"], data["fileName"]);
                             return
                         } else {
                             alertMontage("不支持的文件格式.","alert-danger");

@@ -12,11 +12,16 @@ function alertMontage(info, alertClass){
 }
 
 
-function textpj(text) {
+function textpj(text, fileName) {
     let htmlData = `
         <pre style="color: white">${text}</pre>
+    `;
+    let htmlTitle = `
+        <h5 class="modal-title">${fileName}</h5>
     `;
 
     let list = document.getElementById('texts');
     list.innerHTML = htmlData;
+    let title = document.getElementById('fileName');
+    title.innerHTML = htmlTitle;
 }

@@ -126,6 +126,7 @@ func CatFile(c *gin.Context){
 			c.JSON(http.StatusOK, gin.H{
 				"code": http.StatusOK,
 				"fileText": string(fileContents),
+				"fileName": fileList[0],
 			})
 		}
 
