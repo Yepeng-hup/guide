@@ -10,7 +10,7 @@ import (
 
 var tableList = []string{"cron", "service_tools", "user_passwd", "user"}
 
-func ConnDb()(*sql.DB,error){
+func ConnDb() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "guide.db")
 	if err != nil {
 		return nil, fmt.Errorf("EEROR: conn db sqlite fail, %v", err.Error())
@@ -18,9 +18,8 @@ func ConnDb()(*sql.DB,error){
 	return db, nil
 }
 
-
-func checkTableIfCreate()[]string{
-	t := make([]string , 0)
+func checkTableIfCreate() []string {
+	t := make([]string, 0)
 	database, err := ConnDb()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -45,8 +44,7 @@ func checkTableIfCreate()[]string{
 	return t
 }
 
-
-func CreateGuideAllTable()error{
+func CreateGuideAllTable() error {
 	db, err := ConnDb()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -56,7 +54,7 @@ func CreateGuideAllTable()error{
 	for _, v := range tableList {
 		if IfElement(list, v) {
 
-		}else {
+		} else {
 			switch v {
 			case "cron":
 				createTableCron := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
@@ -92,8 +90,7 @@ func CreateGuideAllTable()error{
 	return nil
 }
 
-
-func InitUser(){
+func InitUser() {
 	db, err := ConnDb()
 	if err != nil {
 		log.Println(err)
@@ -104,11 +101,11 @@ func InitUser(){
 	rows, err := db.Query(sql)
 	if err != nil {
 		log.Println("ERROR: init fail.")
-		log.Println("ERROR: query user table fail,",err.Error())
+		log.Println("ERROR: query user table fail,", err.Error())
 		os.Exit(1)
 	}
 	defer rows.Close()
-	var user struct{
+	var user struct {
 		User string
 	}
 	userList := make([]User, 0)
@@ -124,18 +121,17 @@ func InitUser(){
 
 	if len(userList) < 1 {
 		insertSQL := `INSERT INTO user (userName, password) VALUES (?,?);`
-		_, err = db.Exec(insertSQL,"admin", "guide")
+		_, err = db.Exec(insertSQL, "admin", "guide")
 		if err != nil {
 			log.Println("ERROR: init db user fail, ", err.Error())
 			return
 		}
-	}else {
+	} else {
 		return
 	}
 }
 
-
-func InsertAct(params ...string){
+func InsertAct(params ...string) {
 	db, err := ConnDb()
 	if err != nil {
 		log.Println(err)
@@ -149,11 +145,10 @@ func InsertAct(params ...string){
 	}
 }
 
-
-func InsertActSTools(p ...string)error{
+func InsertActSTools(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
-		return fmt.Errorf("%s",err)
+		return fmt.Errorf("%s", err)
 	}
 	insertSQL := `INSERT INTO service_tools (serviceName, startCmd, serviceNotes) VALUES (?, ?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2])
@@ -163,11 +158,10 @@ func InsertActSTools(p ...string)error{
 	return nil
 }
 
-
-func InsertUserPwd(p ...string)error{
+func InsertUserPwd(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
-		return fmt.Errorf("%s",err)
+		return fmt.Errorf("%s", err)
 	}
 	insertSQL := `INSERT INTO user_passwd (serviceName,user ,password ,Notes) VALUES (?, ?, ?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2], p[3])
@@ -177,11 +171,10 @@ func InsertUserPwd(p ...string)error{
 	return nil
 }
 
-
-func InsertUser(p ...string)error{
+func InsertUser(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
-		return fmt.Errorf("%s",err)
+		return fmt.Errorf("%s", err)
 	}
 	insertSQL := `INSERT INTO user (userName,password) VALUES (?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1])
@@ -191,8 +184,7 @@ func InsertUser(p ...string)error{
 	return nil
 }
 
-
-func SelectAct(k,v string, b bool)([]Cron, error){
+func SelectAct(k, v string, b bool) ([]Cron, error) {
 	db, err := ConnDb()
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
@@ -201,20 +193,20 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 	if b {
 		rows, err := db.Query("SELECT * FROM cron")
 		if err != nil {
-			return nil, fmt.Errorf("ERROR: query cron table fail,%s",err.Error())
+			return nil, fmt.Errorf("ERROR: query cron table fail,%s", err.Error())
 		}
 		defer rows.Close()
-		var cron struct{
-			CronId string
+		var cron struct {
+			CronId      string
 			CronNewDate string
-			CronName string
-			CronTime string
-			CronCode string
-			CronNotes string
+			CronName    string
+			CronTime    string
+			CronCode    string
+			CronNotes   string
 		}
 		cronList := make([]Cron, 0)
 		for rows.Next() {
-			err := rows.Scan(&cron.CronId,&cron.CronNewDate,&cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
+			err := rows.Scan(&cron.CronId, &cron.CronNewDate, &cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
 			if err != nil {
 				return nil, fmt.Errorf(err.Error())
 			}
@@ -222,24 +214,24 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 		}
 		return cronList, nil
 
-	}else {
+	} else {
 		ssql := "SELECT * FROM cron  WHERE ? = ?"
 		rows, err := db.Query(ssql, k, v)
 		if err != nil {
-			return nil, fmt.Errorf("ERROR: query cron table fail,%s",err.Error())
+			return nil, fmt.Errorf("ERROR: query cron table fail,%s", err.Error())
 		}
 		defer rows.Close()
-		var cron struct{
-			CronId string
+		var cron struct {
+			CronId      string
 			CronNewDate string
-			CronName string
-			CronTime string
-			CronCode string
-			CronNotes string
+			CronName    string
+			CronTime    string
+			CronCode    string
+			CronNotes   string
 		}
 		cronList := make([]Cron, 0)
 		for rows.Next() {
-			err := rows.Scan(&cron.CronId,&cron.CronNewDate,&cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
+			err := rows.Scan(&cron.CronId, &cron.CronNewDate, &cron.CronName, &cron.CronTime, &cron.CronCode, &cron.CronNotes)
 			if err != nil {
 				return nil, fmt.Errorf(err.Error())
 			}
@@ -249,27 +241,26 @@ func SelectAct(k,v string, b bool)([]Cron, error){
 	}
 }
 
-
-func SelectActSTools(selectSql string)([]ServiceTools, error){
+func SelectActSTools(selectSql string) ([]ServiceTools, error) {
 	db, err := ConnDb()
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query service_tools table fail,%s",err.Error())
+		return nil, fmt.Errorf("ERROR: query service_tools table fail,%s", err.Error())
 	}
 	defer rows.Close()
-	var serviceTools struct{
-		Id string
-		ServiceName string
-		ServiceDate string
-		StartCmd string
+	var serviceTools struct {
+		Id           string
+		ServiceName  string
+		ServiceDate  string
+		StartCmd     string
 		ServiceNotes string
 	}
 	serviceToolsList := make([]ServiceTools, 0)
 	for rows.Next() {
-		err := rows.Scan(&serviceTools.Id,&serviceTools.ServiceName,&serviceTools.ServiceDate, &serviceTools.StartCmd, &serviceTools.ServiceNotes)
+		err := rows.Scan(&serviceTools.Id, &serviceTools.ServiceName, &serviceTools.ServiceDate, &serviceTools.StartCmd, &serviceTools.ServiceNotes)
 		if err != nil {
 			return nil, fmt.Errorf(err.Error())
 		}
@@ -278,8 +269,7 @@ func SelectActSTools(selectSql string)([]ServiceTools, error){
 	return serviceToolsList, nil
 }
 
-
-func SelectUserPwd()([]UserPwd, error){
+func SelectUserPwd() ([]UserPwd, error) {
 	db, err := ConnDb()
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
@@ -287,19 +277,19 @@ func SelectUserPwd()([]UserPwd, error){
 	sql := "SELECT * FROM user_passwd"
 	rows, err := db.Query(sql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query user_passwd table fail,%s",err.Error())
+		return nil, fmt.Errorf("ERROR: query user_passwd table fail,%s", err.Error())
 	}
 	defer rows.Close()
-	var userPwd struct{
-		Id string
+	var userPwd struct {
+		Id          string
 		ServiceName string
-		User string
-		Passwd string
-		Notes string
+		User        string
+		Passwd      string
+		Notes       string
 	}
 	userPwdList := make([]UserPwd, 0)
 	for rows.Next() {
-		err := rows.Scan(&userPwd.Id,&userPwd.ServiceName,&userPwd.User,&userPwd.Passwd,&userPwd.Notes)
+		err := rows.Scan(&userPwd.Id, &userPwd.ServiceName, &userPwd.User, &userPwd.Passwd, &userPwd.Notes)
 		if err != nil {
 			return nil, fmt.Errorf(err.Error())
 		}
@@ -308,26 +298,25 @@ func SelectUserPwd()([]UserPwd, error){
 	return userPwdList, nil
 }
 
-
-func SelectUser(selectSql string)([]UserAll, error){
+func SelectUser(selectSql string) ([]UserAll, error) {
 	db, err := ConnDb()
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query user table fail,%s",err.Error())
+		return nil, fmt.Errorf("ERROR: query user table fail,%s", err.Error())
 	}
 	defer rows.Close()
-	var user struct{
-		Id string
-		UserName string
+	var user struct {
+		Id          string
+		UserName    string
 		NewUserDate string
-		Password string
+		Password    string
 	}
 	userList := make([]UserAll, 0)
 	for rows.Next() {
-		err := rows.Scan(&user.Id,&user.UserName,&user.NewUserDate,&user.Password)
+		err := rows.Scan(&user.Id, &user.UserName, &user.NewUserDate, &user.Password)
 		if err != nil {
 			return nil, fmt.Errorf(err.Error())
 		}
@@ -336,8 +325,7 @@ func SelectUser(selectSql string)([]UserAll, error){
 	return userList, nil
 }
 
-
-func DeleteAct(p ...string)error{
+func DeleteAct(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -356,8 +344,7 @@ func DeleteAct(p ...string)error{
 	return nil
 }
 
-
-func DeleteActSTools(p ...string)error{
+func DeleteActSTools(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -376,8 +363,7 @@ func DeleteActSTools(p ...string)error{
 	return nil
 }
 
-
-func DeleteUserPwd(p ...string)error{
+func DeleteUserPwd(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -396,7 +382,7 @@ func DeleteUserPwd(p ...string)error{
 	return nil
 }
 
-func DeleteUser(p ...string)error{
+func DeleteUser(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -415,8 +401,7 @@ func DeleteUser(p ...string)error{
 	return nil
 }
 
-
-func UpdateUser(p ...string)error{
+func UpdateUser(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
 		return fmt.Errorf(err.Error())
@@ -428,3 +413,14 @@ func UpdateUser(p ...string)error{
 	return nil
 }
 
+func UpdateUserPwd(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	_, err = db.Exec("UPDATE user SET password = ? WHERE userName = ?", p[0], p[1])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	return nil
+}

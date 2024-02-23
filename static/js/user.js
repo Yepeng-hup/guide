@@ -3,8 +3,6 @@ function logout() {
         {
             url: "/logout",
             type: "GET",
-            // contentType: 'application/json',
-            // data: JSON.stringify({"id": 1}),
             success: function (data) {
                 if (data.code === 200) {
                     window.location = "/login"
@@ -23,11 +21,11 @@ function createUser() {
     let password = $("#recipient-userPasswd").val();
     let password2 = $("#recipient-userPasswd2").val();
 
-    if (userName === "" || password === "" || password2 === ""){
+    if (userName === "" || password === "" || password2 === "") {
         alert("不允许为空");
         return;
     }
-    if (password !== password2){
+    if (password !== password2) {
         alert("密码输入不一致");
         return;
     }
@@ -193,3 +191,18 @@ function updateUser() {
 //     });
 // }
 
+
+function hostReboot() {
+    $.ajax(
+        {
+            url: "/reboot",
+            type: "GET",
+            success: function (data) {
+                if (data.code !== 200) {
+                    alert("机器重启失败");
+                    document.getElementById("close4").click();
+                }
+            }
+        },
+    );
+}

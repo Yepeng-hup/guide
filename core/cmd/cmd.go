@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-func showSys()string{
+func ShowSys()string{
 	return runtime.GOOS
 }
 
@@ -43,7 +43,7 @@ func winC(code string)error{
 }
 
 func UseCmd(code string)(error,){
-	osType := showSys()
+	osType := ShowSys()
 	switch osType {
 	case "linux":
 		err := linuxC(code)

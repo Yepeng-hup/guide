@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"guide/core"
+	"guide/core/cmd"
 	"guide/global"
 	"log"
 	"net/http"
@@ -72,6 +73,7 @@ func CreateUser(c *gin.Context) {
 	})
 }
 
+// ***** 待测试函数
 func UpdatePwd(c *gin.Context) {
 	// data {"key": xxxx, "userName": "xx", "password": "xxxx"}
 
@@ -90,8 +92,10 @@ func UpdatePwd(c *gin.Context) {
 			"msg":  "error,illegal request.",
 		})
 	} else {
-		// update password
-
+		if err := core.UpdateUserPwd(userPassword, userName); err != nil {
+			log.Println(err)
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusOK,
 		})
@@ -103,7 +107,6 @@ func DeleteUser(c *gin.Context) {
 	var body map[string]string
 	_ = json.Unmarshal(data, &body)
 	userName := body["userName"]
-	// if cookie user
 	user, err := c.Cookie("user")
 	if err != nil {
 		log.Println(err.Error())
@@ -117,7 +120,6 @@ func DeleteUser(c *gin.Context) {
 		log.Println("ERROR: This login user does not have permission --> ", user)
 		return
 	}
-	// del code
 	if err := core.DeleteUser(userName); err != nil {
 		log.Println(err)
 		return
@@ -134,7 +136,6 @@ func UpdateUserInfo(c *gin.Context) {
 	userId := body["userId"]
 	userName := body["userName"]
 	newUserDate := body["newUserDate"]
-	// update code
 	if err := core.UpdateUser(userName, newUserDate, userId); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusOK, gin.H{
@@ -145,4 +146,42 @@ func UpdateUserInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 	})
+}
+
+func RebootHost(c *gin.Context) {
+	osType := cmd.ShowSys()
+	switch osType {
+	case "linux":
+		cmdCode := "reboot"
+		if err := cmd.UseCmd(cmdCode); err != nil {
+			log.Println("ERROR: reboot host fail,", err)
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadGateway,
+			})
+			return
+		}
+		//log.Println("INFO: reboot host ok.")
+		//c.JSON(http.StatusOK, gin.H{
+		//	"code": http.StatusOK,
+		//})
+		return
+	case "windows":
+		cmdCode := "shutdown.exe -r -f -t 0"
+		if err := cmd.UseCmd(cmdCode); err != nil {
+			log.Println("ERROR: reboot host fail,", err)
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadGateway,
+			})
+			return
+		}
+		//log.Println("INFO: reboot host ok.")
+		//c.JSON(http.StatusOK, gin.H{
+		//	"code": http.StatusOK,
+		//})
+		return
+	default:
+		log.Printf("%s", "WARN: unsupported operating system.")
+		return
+	}
+
 }

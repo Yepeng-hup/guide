@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 )
 
+
 func InitRoute() *gin.Engine {
 	gin.SetMode("release")
 	r := gin.Default()
@@ -51,6 +52,7 @@ func InitRoute() *gin.Engine {
 	r.GET("/readme",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), func(c *gin.Context){
 		c.HTML(http.StatusOK, "readme.tmpl",gin.H{})
 	})
+	r.GET("/reboot",core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.RebootHost)
 
 	user := r.Group("/user")
 		user.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.UserAdmin)
