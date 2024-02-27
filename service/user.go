@@ -136,6 +136,19 @@ func UpdateUserInfo(c *gin.Context) {
 	userId := body["userId"]
 	userName := body["userName"]
 	newUserDate := body["newUserDate"]
+	user, err := c.Cookie("user")
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+
+	if user != "admin" {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusBadGateway,
+		})
+		log.Println("ERROR: This login user does not have permission --> ", user)
+		return
+	}
 	if err := core.UpdateUser(userName, newUserDate, userId); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusOK, gin.H{
