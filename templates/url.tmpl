@@ -3,6 +3,7 @@
     <html lang="en">
     <head>
         <title>网址管理</title>
+        <script src="/sta/js/url.js"></script>
     </head>
     {{template "base" .}}
     <style>
@@ -34,22 +35,60 @@
         <div style="margin-top: 50px">
             <table class="table table-hover">
                 <thead>
-                <th>名称</th>
-                <th>网址</th>
-                <th>备注</th>
-                <th>动作</th>
+                    <th>@</th>
+                    <th>名称</th>
+                    <th>网址</th>
+                    <th>备注</th>
+                    <th>动作</th>
                 </thead>
                 <tbody>
                 {{range $k ,$v := .UrlPic}}
                     <tr>
+                        <td><input class="cb" type="checkbox"/></td>
                         <td>{{$v.UName}}</td>
                         <td>{{$v.Url}}</td>
                         <td>{{$v.Notes}}</td>
-                        <td><a href="{{$v.Url}}" target=_blank><input class="btn btn-success" type="button" value="访问"></a></td>
+                        <td>
+                            <a href="{{$v.Url}}" target=_blank><input class="btn btn-success" type="button" value="访问"></a>
+                            <input  class="btn btn-primary" type="button" value="编辑" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" onclick="editUrlInfo()">
+                        </td>
                     </tr>
                 {{end}}
                 </tbody>
             </table>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">编辑网址信息</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">名称</label>
+                                <input type="text" class="form-control" name="userName" id="recipient-urlName">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">网址</label>
+                                <input type="text" class="form-control" name="userPasswd" id="recipient-url" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">备注</label>
+                                <input type="text" class="form-control" name="userPasswd2" id="recipient-notes" autocomplete="off">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close" onclick="delUrlEditInput()">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="updateUrlInfo()">确定</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
     </html>

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"encoding/json"
 )
 
 var (
@@ -52,18 +53,16 @@ func delUrlService(serviceName string) error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		rel := strings.Contains(line, serviceName)
-		if rel != true {
+		if rel := strings.Contains(line, serviceName);rel != true {
 			lines = append(lines, line)
 		}
 	}
-	err = file.Close()
-	if err != nil {
+	if err := file.Close();	err != nil {
 		return fmt.Errorf(err.Error())
 	}
+
 	log.Printf("INFO: service and url has been delete ---> [%v]", serviceName)
-	err = rewriteFile()
-	if err != nil {
+	if err := rewriteFile();err != nil {
 		return fmt.Errorf(err.Error())
 	}
 	return nil
@@ -104,4 +103,75 @@ func DelUrl(c *gin.Context){
 		}
 	}
 	c.Redirect(http.StatusFound, "/url/index")
+}
+
+type UrlInfo struct {
+	SrcUrlName string `json:"srcUrlName"`
+	SrcUrl     string `json:"srcUrl"`
+	SrcNotes   string `json:"srcNotes"`
+	UrlName    string `json:"urlName"`
+	Url        string `json:"url"`
+	Notes      string `json:"notes"`
+}
+
+func UpdateUrlInfo(c *gin.Context) {
+	data, err := c.GetRawData()
+	if err != nil {
+		log.Printf("Error getting raw data: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	var body UrlInfo
+	err = json.Unmarshal(data, &body)
+	if err != nil {
+		log.Printf("Error unmarshaling JSON: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	file, err := os.Open(global.FilePath)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": err.Error(),
+		})
+		return
+	}
+	scanner := bufio.NewScanner(file)
+	srcText := body.SrcUrlName + " " + body.SrcUrl + " " + body.SrcNotes
+	text := body.UrlName + " " + body.Url + " " + body.Notes
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == srcText{
+			line = text
+		}
+		lines = append(lines, line)
+	}
+
+	if err := file.Close();	err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if err := rewriteFile();err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+	})
 }

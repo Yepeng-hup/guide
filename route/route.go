@@ -70,6 +70,7 @@ func InitRoute() *gin.Engine {
 		})
 		url.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.RewriteUrl)
 		url.POST("/del", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.DelUrl)
+		url.POST("/update", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(), service.UpdateUrlInfo)
 
 	file := r.Group("/file")
 		file.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist),core.CookieCheck(),service.UploadData)
