@@ -14,7 +14,7 @@ function alertMontage(info, alertClass){
 
 function textpj(text, fileName) {
     let htmlData = `
-        <pre style="color: white">${text}</pre>
+        <pre style="color: white; padding: 10px">${text}</pre>
     `;
     let htmlTitle = `
         <h5 class="modal-title">${fileName}</h5>
