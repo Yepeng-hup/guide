@@ -83,7 +83,6 @@ func UpdatePwd(c *gin.Context) {
 	key := body["key"]
 	userName := body["userName"]
 	userPassword := body["password"]
-	fmt.Println(userName, userPassword, key)
 
 	// 根据全局key做约束
 	if key != global.NowKey {
