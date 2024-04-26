@@ -172,10 +172,6 @@ func RebootHost(c *gin.Context) {
 			})
 			return
 		}
-		//log.Println("INFO: reboot host ok.")
-		//c.JSON(http.StatusOK, gin.H{
-		//	"code": http.StatusOK,
-		//})
 		return
 	case "windows":
 		cmdCode := "shutdown.exe -r -f -t 0"
@@ -186,10 +182,6 @@ func RebootHost(c *gin.Context) {
 			})
 			return
 		}
-		//log.Println("INFO: reboot host ok.")
-		//c.JSON(http.StatusOK, gin.H{
-		//	"code": http.StatusOK,
-		//})
 		return
 	default:
 		log.Printf("%s", "WARN: unsupported operating system.")
