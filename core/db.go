@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var tableList = []string{"cron", "service_tools", "user_passwd", "user"}
+var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log"}
 
 func ConnDb() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "guide.db")
@@ -74,12 +74,17 @@ func CreateGuideAllTable() error {
 				if err != nil {
 					return fmt.Errorf("ERROR: create table user_passwd fail,%s", err.Error())
 				}
-
 			case "user":
 				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, newUserDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), password TEXT);`
 				_, err = db.Exec(createTableUser)
 				if err != nil {
 					return fmt.Errorf("ERROR: create table user fail,%s", err.Error())
+				}
+			case "error_log":
+				createTableErrorLog := `CREATE TABLE IF NOT EXISTS error_log (id INTEGER PRIMARY KEY, newLogDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), types TEXT, logtext TEXT);`
+				_, err = db.Exec(createTableErrorLog)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table error_log fail,%s", err.Error())
 				}
 
 			default:
@@ -180,6 +185,19 @@ func InsertUser(p ...string) error {
 	_, err = db.Exec(insertSQL, p[0], p[1])
 	if err != nil {
 		return fmt.Errorf("ERROR: insert data to user fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertActErrorLog(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO error_log (types, logtext) VALUES (?, ?);`
+	_, err = db.Exec(insertSQL, p[0], p[1])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data error_log fail,%s", err.Error())
 	}
 	return nil
 }
@@ -323,6 +341,33 @@ func SelectUser(selectSql string) ([]UserAll, error) {
 		userList = append(userList, user)
 	}
 	return userList, nil
+}
+
+func SelectLog(selectSql string) ([]ErrorLog, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query error_log table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var logs struct {
+		Id         string
+		Date       string
+		LogType    string
+		LogContent string
+	}
+	logList := make([]ErrorLog, 0)
+	for rows.Next() {
+		err := rows.Scan(&logs.Id, &logs.Date, &logs.LogType, &logs.LogContent)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		logList = append(logList, logs)
+	}
+	return logList, nil
 }
 
 func DeleteAct(p ...string) error {
