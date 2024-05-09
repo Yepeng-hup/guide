@@ -59,15 +59,15 @@ function getWarnLog(){
 }
 
 function deleteLogLimit(){
-    let logNum = 50
+    // let logNum = 50
 
     $.ajax({
         url: "/log/d",
         type: "POST",
-        contentType: 'application/json',
-        data: JSON.stringify({
-            "logNum": logNum,
-        }),
+        // contentType: 'application/json',
+        // data: JSON.stringify({
+        //     "logNum": logNum,
+        // }),
         success: function (data) {
             if (data.code === 200) {
                 console.log("ok")

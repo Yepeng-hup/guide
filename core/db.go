@@ -408,6 +408,25 @@ func DeleteActSTools(p ...string) error {
 	return nil
 }
 
+func DeleteErrLog() error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM error_log WHERE rowid IN (SELECT rowid FROM error_log LIMIT 100);"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	log.Printf("INFO: delete table error_log data ok.")
+	return nil
+}
+
 func DeleteUserPwd(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {

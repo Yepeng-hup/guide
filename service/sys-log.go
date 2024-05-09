@@ -16,6 +16,9 @@ type (
 	LogType struct {
 		Type string `json:"logType"`
 	}
+	//DelLogNum struct {
+	//	LogNum int `json:"logNum"`
+	//}
 )
 
 func InsertLogToDb(c *gin.Context) {
@@ -44,9 +47,25 @@ func ShowLog(c *gin.Context) {
 	rel, err := core.SelectLog(fmt.Sprintf("SELECT id,newLogDate,types,logtext FROM error_log WHERE types = \"%s\"", logType.Type))
 	if err != nil {
 		log.Println(err.Error())
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code":   http.StatusOK,
 		"logRel": rel,
+	})
+}
+
+func DeleteLimitLog(c *gin.Context) {
+	//var delLogNum DelLogNum
+	//if err := c.BindJSON(&delLogNum); err != nil {
+	//	log.Println(err.Error())
+	//	return
+	//}
+	if err := core.DeleteErrLog(); err != nil {
+		log.Println(err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
 	})
 }

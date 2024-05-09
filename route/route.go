@@ -111,6 +111,12 @@ func InitRoute() *gin.Engine {
 	})
 	log.POST("/w", service.InsertLogToDb)
 	log.POST("/r", service.ShowLog)
+	log.POST("d", service.DeleteLimitLog)
+
+	security := r.Group("/security")
+	security.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), func(c *gin.Context) {
+		c.HTML(http.StatusOK, "security.tmpl", gin.H{})
+	})
 
 	return r
 }
