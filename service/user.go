@@ -34,7 +34,6 @@ func LoginCk(c *gin.Context) {
 	}
 	if len(user) >= 1 {
 		pwd, err := core.PasswordDecrypt(user[0].Password, global.NowKey)
-		fmt.Println(pwd)
 		if err != nil {
 			log.Println(err)
 			c.HTML(http.StatusOK, "login.tmpl", gin.H{
