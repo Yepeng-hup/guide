@@ -4,6 +4,7 @@
     <head>
         <title>安全管理</title>
         <script src="/sta/js/security.js"></script>
+        <script src="/sta/js/jstools/echarts.js"></script>
     </head>
     {{template "base" .}}
     <style>
@@ -14,9 +15,85 @@
 
     <body>
     <div style="margin-left: 10px; margin-top: 80px">
-        anquan
+        <input class="btn btn-primary" type="button"  name="showsys" id="showsys" value="系统安全状态" onclick="">
+        <input class="btn btn-primary" type="button"  name="audit" id="audit" value="审计" onclick="">
+        <select id="xuanzhe" class="custom-select" style="width: 70px; margin-left: 50px;">
+            <option selected>30</option>
+            <option value="1">60</option>
+            <option value="2">300</option>
+            <option value="3">600</option>
+        </select>
+        <button class="btn btn-primary" type="button" onclick="startAutoRefresh()">自动刷新</button>
+    </div>
+    <hr>
+
+    <div class="d-flex flex-column bd-highlight mb-3" style="margin-top: 10px">
+        <div id="cpu" style="height: 300px" class="p-2 bd-highlight">
+        </div>
+
+        <div id="mem" style="height: 300px" class="p-2 bd-highlight">
+            Flex item 2
+        </div>
     </div>
 
+
+    <script  type="text/javascript">
+        var cpu = {{.CPU}}
+        var myChart = echarts.init(document.getElementById('cpu'));
+        var option = {
+            title: {
+                text: 'CPU'
+            },
+            tooltip: {},
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: 'cpu-free',
+                    type: 'line',
+                    color: '#0871da',
+                    data: cpu
+                }
+            ]
+        };
+        myChart.setOption(option)
+    </script>
+
+    <script  type="text/javascript">
+        var mem = {{.MEM}}
+        var myChart = echarts.init(document.getElementById('mem'));
+        var option = {
+            title: {
+                text: 'MEM(G)'
+            },
+            tooltip: {},
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: 'mem-free',
+                    type: 'line',
+                    color: '#0871da',
+                    data: mem
+                }
+            ]
+        };
+        myChart.setOption(option)
+    </script>
+
+
+    <script>
+        function startAutoRefresh() {
+             var ss = $("#xuanzhe").val();
+             setInterval(function() {
+                 location.reload();
+             }, ss * 1000);
+        }
+    </script>
 
     </body>
     </html>

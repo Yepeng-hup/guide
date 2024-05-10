@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log"}
+var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem"}
 
 func ConnDb() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "guide.db")
@@ -86,6 +86,18 @@ func CreateGuideAllTable() error {
 				if err != nil {
 					return fmt.Errorf("ERROR: create table error_log fail,%s", err.Error())
 				}
+			case "cpu":
+				createTableCPU := `CREATE TABLE IF NOT EXISTS cpu (id INTEGER PRIMARY KEY, cpunum INT);`
+				_, err = db.Exec(createTableCPU)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table cpu fail,%s", err.Error())
+				}
+			case "mem":
+				createTableMEM := `CREATE TABLE IF NOT EXISTS mem (id INTEGER PRIMARY KEY, memnum FLOAT);`
+				_, err = db.Exec(createTableMEM)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table mem fail,%s", err.Error())
+				}
 
 			default:
 				return nil
@@ -126,7 +138,7 @@ func InitUser() {
 
 	if len(userList) < 1 {
 		insertSQL := `INSERT INTO user (userName, password) VALUES (?,?);`
-		_, err = db.Exec(insertSQL, "admin", "guide")
+		_, err = db.Exec(insertSQL, "admin", "bFfrm25SGrccpaNMP126cgP62n5HTA==")
 		if err != nil {
 			log.Println("ERROR: init db user fail, ", err.Error())
 			return
@@ -198,6 +210,32 @@ func InsertActErrorLog(p ...string) error {
 	_, err = db.Exec(insertSQL, p[0], p[1])
 	if err != nil {
 		return fmt.Errorf("ERROR: insert data error_log fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertActCPU(p ...int) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO cpu (cpunum) VALUES (?);`
+	_, err = db.Exec(insertSQL, p[0])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data cpu fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertActMEM(p ...float64) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO mem (memnum) VALUES (?);`
+	_, err = db.Exec(insertSQL, p[0])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data mem fail,%s", err.Error())
 	}
 	return nil
 }
@@ -370,6 +408,54 @@ func SelectLog(selectSql string) ([]ErrorLog, error) {
 	return logList, nil
 }
 
+func SelectCPU(selectSql string) ([]Cpu, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query cpu table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var cpu struct {
+		CpuNum int
+	}
+	cpuList := make([]Cpu, 0)
+	for rows.Next() {
+		err := rows.Scan(&cpu.CpuNum)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		cpuList = append(cpuList, cpu)
+	}
+	return cpuList, nil
+}
+
+func SelectMEM(selectSql string) ([]Mem, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query mem table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var mem struct {
+		MemNum float64
+	}
+	memList := make([]Mem, 0)
+	for rows.Next() {
+		err := rows.Scan(&mem.MemNum)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		memList = append(memList, mem)
+	}
+	return memList, nil
+}
+
 func DeleteAct(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
@@ -413,7 +499,7 @@ func DeleteErrLog() error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	deleteSQL := "DELETE FROM error_log WHERE rowid IN (SELECT rowid FROM error_log LIMIT 100);"
+	deleteSQL := "DELETE FROM error_log WHERE id IN (SELECT id FROM error_log LIMIT 100);"
 	stmt, err := db.Prepare(deleteSQL)
 	if err != nil {
 		return fmt.Errorf(err.Error())

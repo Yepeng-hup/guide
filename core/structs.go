@@ -49,4 +49,12 @@ type (
 		LogType    string
 		LogContent string
 	}
+
+	Cpu struct {
+		CpuNum int
+	}
+
+	Mem struct {
+		MemNum float64
+	}
 )

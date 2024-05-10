@@ -33,10 +33,19 @@ func LoginCk(c *gin.Context) {
 		return
 	}
 	if len(user) >= 1 {
-		if f.User == user[0].UserName && f.Password == user[0].Password {
-			cookie := http.Cookie{Name: "user", Value: f.User, MaxAge: 108000}
+		pwd, err := core.PasswordDecrypt(user[0].Password, global.NowKey)
+		fmt.Println(pwd)
+		if err != nil {
+			log.Println(err)
+			c.HTML(http.StatusOK, "login.tmpl", gin.H{
+				"error": err,
+			})
+			return
+		}
+		if f.User == user[0].UserName && f.Password == pwd {
+			cookie := http.Cookie{Name: "user", Value: f.User, MaxAge: 408000}
 			http.SetCookie(c.Writer, &cookie)
-			c.Redirect(http.StatusMovedPermanently, "/user/index")
+			c.Redirect(http.StatusMovedPermanently, "/url/index")
 			return
 		}
 	}
@@ -62,8 +71,9 @@ func CreateUser(c *gin.Context) {
 	_ = json.Unmarshal(data, &body)
 	userName := body["userName"]
 	userPassword := body["password"]
-	err := core.InsertUser(userName, userPassword)
-	if err != nil {
+	pwd, err := core.PasswordEncryption(userPassword, global.NowKey)
+	if err != nil {log.Println(err)}
+	if err := core.InsertUser(userName, pwd); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,
 		})
@@ -73,7 +83,7 @@ func CreateUser(c *gin.Context) {
 	})
 }
 
-// ***** 待测试函数
+// ***** not test function
 func UpdatePwd(c *gin.Context) {
 	// data {"key": xxxx, "userName": "xx", "password": "xxxx"}
 
@@ -84,17 +94,31 @@ func UpdatePwd(c *gin.Context) {
 	userName := body["userName"]
 	userPassword := body["password"]
 
-	// 根据全局key做约束
+	// Constrain based on global key
 	if key != global.NowKey {
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,
 			"msg":  "error,illegal request.",
 		})
+		return
 	} else {
-		if err := core.UpdateUserPwd(userPassword, userName); err != nil {
+		pwd, err := core.PasswordEncryption(userPassword, global.NowKey)
+		if err != nil {
 			log.Println(err)
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadGateway,
+			})
 			return
 		}
+
+		if err := core.UpdateUserPwd(pwd, userName); err != nil {
+			log.Println(err)
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadGateway,
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusOK,
 		})
@@ -161,7 +185,7 @@ func UpdateUserInfo(c *gin.Context) {
 }
 
 func RebootHost(c *gin.Context) {
-	osType := cmd.ShowSys()
+	osType := core.ShowSys()
 	switch osType {
 	case "linux":
 		cmdCode := "reboot"

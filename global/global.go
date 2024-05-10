@@ -18,6 +18,7 @@ var (
 	PasswdAdminWhitelist = os.Getenv("GUIDE_PWD_ADMIN_WHITELIST")
 	NowKey = os.Getenv("GUIDE_KEY")
 	//InterfaceName = os.Getenv("GUIDE_INTERFACE_NAME")
+	Mon = os.Getenv("GUIDE_MON")
 )
 
 

@@ -2,6 +2,7 @@ package core
 
 import (
 	"bufio"
+	"bytes"
 	"compress/gzip"
 	"crypto/aes"
 	"crypto/cipher"
@@ -10,26 +11,31 @@ import (
 	"fmt"
 	"guide/global"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 	"time"
+
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
-func BackupPrefix()string{
+func BackupPrefix() string {
 	t := time.Now()
 	return t.Format("2006-01-02")
 }
 
-
-func ShowUrl()[]News{
+func ShowUrl() []News {
 	var structSlice []News
 	file, err := os.Open(global.FilePath)
 	if err != nil {
 		err := os.Mkdir("text", 0755)
 		if err != nil {
-			log.Println("ERROR: create dir fail,",err.Error())
+			log.Println("ERROR: create dir fail,", err.Error())
 			return nil
 		}
 		return nil
@@ -42,22 +48,21 @@ func ShowUrl()[]News{
 		line := scanner.Text()
 		slice := strings.Split(line, " ")
 		txtStruct := News{
-			UName:   slice[0],
-			Url: slice[1],
+			UName: slice[0],
+			Url:   slice[1],
 			Notes: slice[2],
 		}
 		structSlice = append(structSlice, txtStruct)
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Println("ERROR: ",err.Error())
+		log.Println("ERROR: ", err.Error())
 		return nil
 	}
 	return structSlice
 }
 
-
-func ShowLocalIp(interfaceName *string)(string, error){
+func ShowLocalIp(interfaceName *string) (string, error) {
 	iface, err := net.InterfaceByName(*interfaceName)
 	if err != nil {
 		return "", fmt.Errorf("Unable to obtain network interface %s：%v\n", *interfaceName, err.Error())
@@ -69,12 +74,11 @@ func ShowLocalIp(interfaceName *string)(string, error){
 	}
 	for _, addr := range addrs {
 		ipnet, ok := addr.(*net.IPNet)
-			if ok && !ipnet.IP.IsLoopback() {
-				if ipnet.IP.To4() != nil {
-					return ipnet.IP.String()+":"+global.Port, nil
-				}
+		if ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String() + ":" + global.Port, nil
 			}
-
+		}
 
 	}
 
@@ -97,7 +101,7 @@ func ShowLocalIp(interfaceName *string)(string, error){
 	//		}
 	//	}
 	//}
-	return "127.0.0.1"+":"+global.Port, nil
+	return "127.0.0.1" + ":" + global.Port, nil
 }
 
 //func BitConvert(bit int64)(int64, string){
@@ -117,7 +121,6 @@ func ShowLocalIp(interfaceName *string)(string, error){
 //	}
 //}
 
-
 func SliceCheck(slices []string, targets string) bool {
 	for _, value := range slices {
 		if value == targets {
@@ -135,7 +138,6 @@ func IfElement(slice []string, element string) bool {
 	}
 	return false
 }
-
 
 func UnGz(gzSrcPath string) error {
 	//open file
@@ -165,8 +167,7 @@ func UnGz(gzSrcPath string) error {
 	return nil
 }
 
-
-func PasswordEncryption(p, key string)(string, error) {
+func PasswordEncryption(p, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", fmt.Errorf("new key fail,%s", err.Error())
@@ -182,8 +183,7 @@ func PasswordEncryption(p, key string)(string, error) {
 	return encryptedPassword, nil
 }
 
-
-func PasswordDecrypt(p, key string)(string, error){
+func PasswordDecrypt(p, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", fmt.Errorf("new key fail,%s", err.Error())
@@ -198,4 +198,35 @@ func PasswordDecrypt(p, key string)(string, error){
 	stream.XORKeyStream(ciphertext, ciphertext)
 	decryptedPassword := string(ciphertext)
 	return decryptedPassword, nil
+}
+
+func ShowSys() string {
+	return runtime.GOOS
+}
+
+func LinuxC(code string) error {
+	cmd := exec.Command("/bin/bash", "-c", code)
+	out, err := cmd.Output()
+	if err != nil {
+		return fmt.Errorf("use command error,%s", err)
+	}
+	fmt.Println("****************************************************************************************************************************\n", string(out))
+	fmt.Println("****************************************************************************************************************************")
+	return nil
+}
+
+func WinC(code string) error {
+	cmd := exec.Command("cmd", "/c", code)
+	out, err := cmd.Output()
+	if err != nil {
+		return fmt.Errorf("use command error,%s", err)
+	}
+	reader := transform.NewReader(bytes.NewReader(out), simplifiedchinese.GBK.NewDecoder())
+	output, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return fmt.Errorf("byte encoding conversion error,%s", err.Error())
+	}
+	fmt.Println("****************************************************************************************************************************\n", string(output))
+	fmt.Println("****************************************************************************************************************************")
+	return nil
 }
