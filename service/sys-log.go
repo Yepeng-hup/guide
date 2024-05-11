@@ -27,7 +27,7 @@ func InsertLogToDb(c *gin.Context) {
 		log.Println(err.Error())
 		return
 	}
-	
+
 	if err := core.InsertActErrorLog(data.LogType, data.Log); err != nil {
 		log.Println(err.Error())
 		return

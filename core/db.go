@@ -3,9 +3,10 @@ package core
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	"guide/global"
 	"log"
 	"os"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem"}
@@ -138,7 +139,12 @@ func InitUser() {
 
 	if len(userList) < 1 {
 		insertSQL := `INSERT INTO user (userName, password) VALUES (?,?);`
-		_, err = db.Exec(insertSQL, "admin", "bFfrm25SGrccpaNMP126cgP62n5HTA==")
+		encryptionPwd, err := PasswordEncryption("guide654321", global.NowKey)
+		if err != nil {
+			log.Println("ERROR: init user encryption passwd fail, ", err.Error())
+			return
+		}
+		_, err = db.Exec(insertSQL, "admin", encryptionPwd)
 		if err != nil {
 			log.Println("ERROR: init db user fail, ", err.Error())
 			return

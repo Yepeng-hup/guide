@@ -170,7 +170,7 @@ func UnGz(gzSrcPath string) error {
 func PasswordEncryption(p, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		return "", fmt.Errorf("new key fail,%s", err.Error())
+		return "", fmt.Errorf("ERROR: New key fail,%s", err.Error())
 	}
 	ciphertext := make([]byte, aes.BlockSize+len(p))
 	iv := ciphertext[:aes.BlockSize]
@@ -186,11 +186,14 @@ func PasswordEncryption(p, key string) (string, error) {
 func PasswordDecrypt(p, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		return "", fmt.Errorf("new key fail,%s", err.Error())
+		return "", fmt.Errorf("ERROR: New key fail,%s", err.Error())
 	}
 	ciphertext, err := base64.URLEncoding.DecodeString(p)
 	if err != nil {
 		return "", fmt.Errorf(err.Error())
+	}
+	if len(ciphertext) < aes.BlockSize {
+		return "", fmt.Errorf("ERROR: %s", "The ciphertext character is too short.")
 	}
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]

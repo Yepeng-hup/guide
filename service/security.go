@@ -111,7 +111,7 @@ func SecurityIndex(c *gin.Context){
 
 
 // Only applicable to linux
-func ShowSysAll(c *gin.Context){
+func ShowSys(c *gin.Context){
 	lCmd := ""
 	if err := cmd.UseCmd(lCmd); err != nil {
 		log.Println(err)
