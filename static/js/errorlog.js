@@ -58,6 +58,34 @@ function getWarnLog(){
     });
 }
 
+function getOtherLog(){
+    $.ajax({
+        url: "/log/r",
+        type: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "logType": "other",
+        }),
+        success: function (data) {
+            if (data.code === 200) {
+                let html= '';
+                for (const item of data.logRel) {
+                    html += '<tr>';
+                    html += '<td>' + item.LogType + '</td>';
+                    html += '<td><pre>' + item.LogContent + '</pre></td>';
+                    html += '</tr>';
+                }
+                document.getElementById('data').innerHTML = html;
+            } else {
+                console.log("add other log fail.");
+            }
+        },
+        error: function () {
+            console.log("get other log request fail.");
+        }
+    });
+}
+
 function deleteLogLimit(){
     // let logNum = 50
 
