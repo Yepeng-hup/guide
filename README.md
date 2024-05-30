@@ -13,6 +13,7 @@ guide是一个内部集合工具,故而没有权限管理等。只是简单的�
     GUIDE_START_WHITE_LIST 是否开启白名单(false/true)
     GUIDE_PWD_ADMIN_WHITELIST 密码管理页面可访问的主机,必须是管理人员ip,出于安全不支持多个ip.
     GUIDE_KEY 加密字符串
+    GUIDE_MON  是否开启系统资源调用 (false/true)
 ```
 
 ```
