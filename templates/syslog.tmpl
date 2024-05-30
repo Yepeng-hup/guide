@@ -16,6 +16,7 @@
         <div style="margin-left: 10px; margin-top: 80px">
             <input style="color: #af0e0e" class="btn btn-primary" type="button" name="error" id="error" value="错误日志" onclick="getErrorLog()">
             <input style="color: #d6c721" class="btn btn-primary" type="button" name="warn" id="warn" value="警告日志" onclick="getWarnLog()">
+            <input class="btn btn-primary" type="button" name="other" id="other" value="其他日志" onclick="getOtherLog()">
             <input style="margin-left: 40px" class="btn btn-danger" type="button" name="del" id="del" value="删除日志" onclick="deleteLogLimit()">
             <span style="color: #62625a">默认删除前100行数据</span>
         </div>
@@ -28,17 +29,6 @@
                     <th>日志详情</th>
                 </thead>
                 <tbody id="data"></tbody>
-
-{{/*                <tbody>*/}}
-{{/*                    {{range $k ,$v := .logType}}*/}}
-{{/*                        <tr>*/}}
-{{/*                            <td>{{$v.Date}}</td>*/}}
-{{/*                            <td>{{$v.LogType}}</td>*/}}
-{{/*                            <td><pre>{{$v.LogContent}}</pre></td>*/}}
-{{/*                        </tr>*/}}
-{{/*                    {{end}}*/}}
-
-{{/*                </tbody>*/}}
             </table>
         </div>
 
