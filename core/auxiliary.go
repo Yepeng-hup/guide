@@ -233,3 +233,19 @@ func WinC(code string) error {
 	fmt.Println("****************************************************************************************************************************")
 	return nil
 }
+
+
+func WriteFile(filePath, fileContent string)error{
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        return fmt.Errorf(err.Error())
+    }
+    defer file.Close()
+
+    _, err = file.WriteString(fileContent+"\n")
+    if err != nil {
+        return fmt.Errorf(err.Error())
+    }
+
+	return nil
+}

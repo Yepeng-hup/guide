@@ -1,17 +1,19 @@
 package service
 
 import (
+	"bufio"
 	"fmt"
 	_ "fmt"
+	"guide/core"
 	_ "guide/core"
-	"regexp"
 	"log"
 	"net/http"
 	"os"
-	"strings"
+	"regexp"
 	_ "strconv"
+	"strings"
 	_ "time"
-	"bufio"  
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/shirou/gopsutil/cpu"
 	_ "github.com/shirou/gopsutil/mem"
@@ -160,6 +162,9 @@ func deleteFile(folderFilePath string)(error){
 }
 
 func getLogIpWriteFile(logPath string, title string)error{
+	if err := core.WriteFile(logPath, "127.0.0.1"); err != nil {
+		return err
+	}
 	file, err := os.Open(logPath)
     if err != nil {
         return err
