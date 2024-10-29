@@ -20,17 +20,11 @@ func writeUrlDb(urlName, urlAddr, urlType, urlNotes string) error {
 
 
 func ShowDbUrl(c *gin.Context){
-	// urlRel, err := core.SelectUrl("SELECT urlName,urlAddress,urlType,urlNotes FROM url")
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// }
 	urlTypeRel, err := core.SelectUrlType("SELECT urlType FROM url_type")
 	if err != nil {
 		log.Println(err.Error())
 	}
-	// fmt.Println(urlRel)
 	c.HTML(http.StatusOK, "url2.tmpl", gin.H{
-		// "urlList": urlRel,
 		"urlTypeList": urlTypeRel,
 	})
 }
@@ -59,7 +53,7 @@ func ShowTypeUrl(c *gin.Context){
 		})
 		return
 	}
-	// show db data
+
 	urlRel, err := core.SelectUrl(fmt.Sprintf("SELECT urlName,urlAddress,urlType,urlNotes FROM url where urlType=\"%s\"", bodys.UrlType))
 	if err != nil {
 		log.Println(err.Error())
