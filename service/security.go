@@ -3,16 +3,12 @@ package service
 import (
 	"bufio"
 	"fmt"
-	_ "fmt"
 	"guide/core"
-	_ "guide/core"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
-	_ "strconv"
 	"strings"
-	_ "time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/shirou/gopsutil/cpu"
@@ -22,10 +18,10 @@ import (
 // const cpuAll int = 100
 // const gm uint64 = 1074000000
 
-const (
-	messagesPath = "/var/log/messages"
-	securePath = "/var/log/secure"
-)
+// const (
+// 	messagesPath = "/var/log/messages"
+// 	securePath = "/var/log/secure"
+// )
 
 
 // func CpuValueWDB() {

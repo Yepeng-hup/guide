@@ -53,7 +53,6 @@ func SavePwdToDb(c *gin.Context){
 		return
 	}
 	c.Redirect(http.StatusFound, "/pwd/index")
-	return
 }
 
 
@@ -85,7 +84,6 @@ func CatPwd(c *gin.Context){
 		"code": http.StatusOK,
 		"dPassword": dpwd,
 	})
-	return
 }
 
 
@@ -99,7 +97,6 @@ func DelUP(c *gin.Context){
 		return
 	}
 	c.Redirect(http.StatusFound, "/pwd/list")
-	return
 }
 
 
@@ -139,5 +136,4 @@ func UserPwdBackup(c *gin.Context){
 		"code": 200,
 		"msg": "data backup success.",
 	})
-	return
 }

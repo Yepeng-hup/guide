@@ -186,7 +186,6 @@ func CreateFile(c *gin.Context){
 	createFilePath := global.SaveDataDir+f.FilePath+"/"+f.FileName
 	//err := os.Mkdir(createDirPath, 0755)
 	file, err := os.Create(createFilePath)
-	defer file.Close()
 	if err != nil {
 		log.Println("ERROR: create file fail.", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -195,6 +194,7 @@ func CreateFile(c *gin.Context){
 		})
 	}
 	log.Printf("INFO: create  file success ---> [%v].", f.FileName)
+	defer file.Close()
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 		"message": "文件创建成功.",

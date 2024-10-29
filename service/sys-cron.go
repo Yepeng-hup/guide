@@ -20,11 +20,6 @@ func init() {
 	globalCron = cron.New()
 }
 
-func cronSaveDb(){
-	// code
-	return
-}
-
 func CoutomCron(c *gin.Context)  {
 	f := CronsFrom{
 		Cname: c.PostForm("cname"),
@@ -80,7 +75,6 @@ func CoutomCron(c *gin.Context)  {
 		return
 	}
 	c.Redirect(http.StatusFound, "/cron/index")
-	return
 }
 
 
@@ -101,7 +95,6 @@ func deleteMaptoCronjob(id cron.EntryID, jobName string){
 	delete(cronMap, jobName)
 	globalCron.Remove(id)
 	log.Printf("INFO: delete cron job [%s] ok.", jobName)
-	return
 }
 
 
@@ -117,5 +110,4 @@ func DelCron(c *gin.Context){
 		return
 	}
 	c.Redirect(http.StatusFound, "/cron/list")
-	return
 }

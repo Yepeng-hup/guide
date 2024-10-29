@@ -35,7 +35,6 @@ func InsertLogToDb(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 	})
-	return
 }
 
 func ShowLog(c *gin.Context) {

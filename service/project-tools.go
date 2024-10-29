@@ -29,7 +29,6 @@ func SvcCfg(c *gin.Context)  {
 	}
 	log.Printf("INFO: service-tools use success, use name -> [%s].", s.SvcName)
 	c.Redirect(http.StatusFound, "/svc/index")
-	return
 }
 
 
@@ -54,5 +53,4 @@ func DeleteSvc(c *gin.Context){
 		return
 	}
 	c.Redirect(http.StatusFound, "/svc/list")
-	return
 }
