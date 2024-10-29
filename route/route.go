@@ -14,6 +14,7 @@ import (
 
 func InitRoute() *gin.Engine {
 	gin.SetMode("release")
+
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
@@ -61,15 +62,14 @@ func InitRoute() *gin.Engine {
 	user.POST("/update/info", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.UpdateUserInfo)
 
 	url := r.Group("/url")
-	url.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), func(c *gin.Context) {
-		relStr := core.ShowUrl()
-		c.HTML(http.StatusOK, "url.tmpl", gin.H{
-			"UrlPic": relStr,
-		})
-	})
-	url.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.RewriteUrl)
-	url.POST("/del", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.DelUrl)
-	url.POST("/update", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.UpdateUrlInfo)
+	url.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.ShowDbUrl)
+	url.POST("/show", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.ShowTypeUrl)
+	url.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.RewriteUrl2)
+	url.POST("/del", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.DelUrl2)
+	url.POST("/update", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.UpdateUrlInfo2)
+	url.POST("/type/create", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.CreateType)
+	url.GET("/type/list", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.ShowUrlType)
+	url.POST("/type/del", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.DelUrlType)
 
 	file := r.Group("/file")
 	file.POST("/upload", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.UploadData)

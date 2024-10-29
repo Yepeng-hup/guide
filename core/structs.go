@@ -57,4 +57,16 @@ type (
 	Mem struct {
 		MemNum float64
 	}
+
+	Url struct {
+		// Id string
+		UrlName string
+		UrlAddress string
+		UrlType string
+		UrlNotes string
+	}
+
+	UrlType struct {
+		TypeName string
+	}
 )

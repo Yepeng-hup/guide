@@ -5,6 +5,17 @@ import (
 )
 
 type (
+	UrlType struct {
+		TypeName string
+	}
+
+	From2 struct {
+		UrlName   string
+		UrlAddr string
+		UrlType string
+		UrlNotes string
+	}
+
 	From struct {
 		Url   string
 		UName string

@@ -1,0 +1,180 @@
+{{define "url2.tmpl"}}
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+        <title>网址管理</title>
+    </head>
+    {{template "base" .}}
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+
+    <body>
+        <form class="form-inline" action="/url/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 80px">
+            <div class="form-group">
+                <label for="inputPassword6">名称</label>
+                <input type="text" style="width: 200px" class="form-control mx-sm-3" name="url-name">
+                <label for="inputPassword6">网址</label>
+                <input type="text" style="width: 300px" class="form-control mx-sm-3" name="url-addr">
+                <label for="inputPassword6">类型</label>
+                <select name="url-type" id="url-type" class="form-control mx-sm-3">
+                    {{range $_, $v := .urlTypeList}}
+                        {{if eq $v.TypeName "other"}}
+                            <option selected="other">{{$v.TypeName}} (default)</option>
+                        {{else}}
+                            <option>{{$v.TypeName}}</option>
+                        {{end}}
+                    {{end}}
+                </select>
+                <label for="inputPassword6">备注</label>
+                <input type="text" style="width: 400px" class="form-control mx-sm-3" name="url-txt" placeholder="默认'无备注'">
+                <input  class="btn btn-primary" type="submit" value="添加">
+            </div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo" style="margin-left: 5px">添加类型</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo" style="margin-left: 5px" onclick="showUrlType()">查看类型</button>
+        </form>
+
+        <form action="/url/del" method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 20px" class="form-inline" >
+            <label for="inputPassword6">名称</label>
+            <input class="form-control mx-sm-3" style="width: 200px" type="text" name="u-name" placeholder="模糊匹配，输入全名称">
+            <input  class="btn btn-danger" type="submit" value="删除">
+        </form>
+
+
+
+        <div style="margin-top: 50px; margin-left: 10px">
+
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                {{ range $k, $v := .urlTypeList}}
+                    {{if eq $v.TypeName  "国内"}}
+                    <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-toggle="pill" type="button" onclick="getTypeUrlData({{$v.TypeName}})"><b>{{$v.TypeName}}</b></button>
+                    </li>
+                    {{else}}
+                    <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-toggle="pill" type="button" onclick="getTypeUrlData({{$v.TypeName}})"><b>{{$v.TypeName}}</b></button>
+                    </li>
+                    {{end}}
+                {{end}}
+            </ul>
+
+           
+            <div class="tab-content" id="pills-tabContent">
+                    <table class="table table-hover" style="margin-top: 5px" id="url-data">
+                        <thead>
+                            <th>@</th>
+                            <th>名称</th>
+                            <th>网址</th>
+                            <th>类名</th>
+                            <th>备注</th>
+                            <th>动作</td>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+            </div>
+
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">编辑网址信息</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">名称</label>
+                                <input type="text" class="form-control" name="urlName" id="recipient-urlName">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">网址</label>
+                                <input type="text" class="form-control" name="urlAddr" id="recipient-url" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">类名</label>
+                                <input type="text" class="form-control" name="urlType" id="recipient-type" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">备注</label>
+                                <input type="text" class="form-control" name="urlNotes" id="recipient-notes" autocomplete="off">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close" onclick="delUrlEditInput()">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="updateUrlInfo()">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">添加类型</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">类型名</label>
+                                <input type="text" class="form-control" name="file" id="recipient-file">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="createtype">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">类型</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-hover" id="type-data">
+                            <thead>
+                                <th>@</th>
+                                <th>类型名</th>
+                                <th>动作</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/sta/js/url2.js"></script>
+        <script src="/sta/js/alert.js"></script>
+        <script>
+            function start(){
+                getTypeUrlData("国内")
+            }
+            start()
+        </script>
+
+    </body>
+    </html>
+{{end}}

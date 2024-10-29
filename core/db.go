@@ -9,7 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem"}
+var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem", "url", "url_type"}
 
 func ConnDb() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "guide.db")
@@ -98,6 +98,18 @@ func CreateGuideAllTable() error {
 				_, err = db.Exec(createTableMEM)
 				if err != nil {
 					return fmt.Errorf("ERROR: create table mem fail,%s", err.Error())
+				}
+			case "url":
+				createTableUrl := `CREATE TABLE IF NOT EXISTS url (id INTEGER PRIMARY KEY, urlName TEXT, urlAddress TEXT, urlType TEXT, urlNotes TEXT);`
+				_, err = db.Exec(createTableUrl)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table url fail,%s", err.Error())
+				}
+			case "url_type":
+				createTableUrlType := `CREATE TABLE IF NOT EXISTS url_type (id INTEGER PRIMARY KEY, urlType TEXT);`
+				_, err = db.Exec(createTableUrlType)
+				if err != nil {
+					return fmt.Errorf("ERROR: create table url_type fail,%s", err.Error())
 				}
 
 			default:
@@ -242,6 +254,33 @@ func InsertActMEM(p ...float64) error {
 	_, err = db.Exec(insertSQL, p[0])
 	if err != nil {
 		return fmt.Errorf("ERROR: insert data mem fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertActUrl(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO url (urlName, urlAddress, urlType, urlNotes) VALUES (?, ?, ?, ?);`
+	_, err = db.Exec(insertSQL, p[0], p[1], p[2], p[3])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data url fail,%s", err.Error())
+	}
+	return nil
+}
+
+
+func InsertActUrlType(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO url_type (urlType) VALUES (?);`
+	_, err = db.Exec(insertSQL, p[0])
+	if err != nil {
+		return fmt.Errorf("ERROR: insert data url_type fail,%s", err.Error())
 	}
 	return nil
 }
@@ -462,6 +501,61 @@ func SelectMEM(selectSql string) ([]Mem, error) {
 	return memList, nil
 }
 
+
+func SelectUrl(selectSql string) ([]Url, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query url table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var url struct {
+		// Id         string
+		UrlName       string
+		UrlAddress    string
+		UrlType 	  string
+		UrlNotes	  string
+	}
+	urlList := make([]Url, 0)
+	for rows.Next() {
+		err := rows.Scan(&url.UrlName, &url.UrlAddress, &url.UrlType, &url.UrlNotes)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		urlList = append(urlList, url)
+	}
+	return urlList, nil
+}
+
+
+func SelectUrlType(selectSql string) ([]UrlType, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: query typeName table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var urlType struct {
+		// Id         string
+		TypeName       string
+	}
+	urlTypeList := make([]UrlType, 0)
+	for rows.Next() {
+		err := rows.Scan(&urlType.TypeName)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		urlTypeList = append(urlTypeList, urlType)
+	}
+	return urlTypeList, nil
+}
+
 func DeleteAct(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
@@ -557,6 +651,45 @@ func DeleteUser(p ...string) error {
 	return nil
 }
 
+
+func DeleteUrl(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM url WHERE urlName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	log.Printf("INFO: delete url ok. name -> [%s].", p[0])
+	return nil
+}
+
+func DeleteUrlType(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM url_type WHERE urlType = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	log.Printf("INFO: delete url_type ok. name -> [%s].", p[0])
+	return nil
+}
+
 func UpdateUser(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
@@ -580,3 +713,4 @@ func UpdateUserPwd(p ...string) error {
 	}
 	return nil
 }
+
