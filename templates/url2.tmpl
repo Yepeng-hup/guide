@@ -22,7 +22,7 @@
                 <select name="url-type" id="url-type" class="form-control mx-sm-3">
                     {{range $_, $v := .urlTypeList}}
                         {{if eq $v.TypeName "other"}}
-                            <option selected="other">{{$v.TypeName}} (default)</option>
+                            <option selected="other">{{$v.TypeName}}</option>
                         {{else}}
                             <option>{{$v.TypeName}}</option>
                         {{end}}
