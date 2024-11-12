@@ -14,7 +14,6 @@ import (
 
 func InitRoute() *gin.Engine {
 	gin.SetMode("release")
-
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
 		"checkFileTailStr": core.CheckFileTailStr,
@@ -109,9 +108,10 @@ func InitRoute() *gin.Engine {
 	log.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "syslog.tmpl", gin.H{})
 	})
-	log.POST("/w", service.InsertLogToDb)
-	log.POST("/r", service.ShowLog)
-	log.POST("d", service.DeleteLimitLog)
+	// log.POST("/w", service.InsertLogToDb)
+	log.POST("/r", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.ShowLog)
+	log.POST("d", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.DeleteLimitLog)
+	log.POST("/bit", service.FluentBit)
 
 	security := r.Group("/security")
 	security.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.SecurityIndex)
