@@ -15,15 +15,9 @@ $(function () {
                 },
                 "success": function (data) {
                     if (data["code"] === 200) {
-                        alertMontage(data["message"],"alert-success");
-                        setTimeout(function() {
-                            window.location = location.pathname;
-                        }, 1000);
+                        window.location = location.pathname;
                     } else {
-                        alertMontage(data["message"],"alert-danger");
-                        setTimeout(function() {
-                            window.location = location.pathname;
-                        }, 1000);
+                        alert(data["message"]);
                     }
                 },
                 "fail": function (error) {
@@ -53,15 +47,13 @@ $(function () {
                 },
                 "success": function (data) {
                     if (data["code"] === 200) {
-                        alertMontage(data["message"],"alert-success");
-                        setTimeout(function() {
-                            window.location = location.pathname;
-                        }, 1000);
+                        window.location = location.pathname;
                     } else {
-                        alertMontage(data["message"],"alert-danger");
-                        setTimeout(function() {
-                            window.location = location.pathname;
-                        }, 1000);
+                        alert(data["message"]);
+                        // alertMontage(data["message"],"alert-danger");
+                        // setTimeout(function() {
+                            // window.location = location.pathname;
+                        // }, 1000);
                     }
                 },
                 "fail": function (error) {

@@ -167,7 +167,7 @@ func CreateDir(c *gin.Context){
 		log.Println("ERROR: create dir fail.", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
-			"message": "目录创建失败.",
+			"message": "ERROR: create dir fail." + err.Error(),
 		})
 	}
 	log.Printf("INFO: create dir success ---> [%v].", f.DirName)
@@ -190,7 +190,7 @@ func CreateFile(c *gin.Context){
 		log.Println("ERROR: create file fail.", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
-			"message": "文件创建失败.",
+			"message": "ERROR: create file fail." + err.Error(),
 		})
 	}
 	log.Printf("INFO: create  file success ---> [%v].", f.FileName)
