@@ -11,7 +11,7 @@ $(function () {
                 "url": "/file/create",
                 "data": {
                     "name": dirName,
-                    "path": location.pathname
+                    "path": decodeURIComponent(location.pathname),
                 },
                 "success": function (data) {
                     if (data["code"] === 200) {
@@ -43,7 +43,7 @@ $(function () {
                 "url": "/file/file/create",
                 "data": {
                     "name": fileName,
-                    "path": location.pathname
+                    "path": decodeURIComponent(location.pathname),
                 },
                 "success": function (data) {
                     if (data["code"] === 200) {
@@ -83,7 +83,7 @@ function pushFile() {
 
         const progressBar = document.getElementById('progressBar');
         const formData = new FormData(forms);
-        formData.append('path', location.pathname);
+        formData.append('path', decodeURIComponent(location.pathname));
         const xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/file/upload', true);
@@ -99,12 +99,12 @@ function pushFile() {
         xhr.onload = function () {
             if (xhr.status === 200) {
                 setTimeout(function () {
-                    window.location = location.pathname;
+                    window.location = decodeURIComponent(location.pathname);
                 }, 500);
             } else {
                 console.error('push file fail.');
                 setTimeout(function () {
-                    window.location = location.pathname;
+                    window.location = decodeURIComponent(location.pathname);
                 }, 500);
             }
         };
@@ -131,7 +131,7 @@ function updateContent() {
                 "data": {
                     "content": content,
                     "file": divlr,
-                    "path": location.pathname
+                    "path": decodeURIComponent(location.pathname)
                 },
                 "success": function (data) {
                     if (data["code"] === 200) {
@@ -169,7 +169,7 @@ function deleteCheckbox() {
                     "url": "/file/delete",
                     "data": {
                         "FDname": divlr,
-                        "FDpath": location.pathname
+                        "FDpath": decodeURIComponent(location.pathname)
                     }
                 },
 
@@ -194,7 +194,7 @@ function catFileCheckbox() {
                     "url": "/file/cat",
                     "data": {
                         "fileName": divlr,
-                        "filePath": location.pathname
+                        "filePath": decodeURIComponent(location.pathname)
                     },
                     "success": function (data) {
                         if (data["code"] === 200) {
@@ -206,7 +206,7 @@ function catFileCheckbox() {
                                 checkboxes[i].checked = false;
                             }
                             setTimeout(function() {
-                                window.location = location.pathname;
+                                window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         }
                     },
@@ -240,18 +240,18 @@ function ysCheckbox() {
                     "url": "/file/ys",
                     "data": {
                         "fileName": divlr,
-                        "filePath": location.pathname
+                        "filePath": decodeURIComponent(location.pathname)
                     },
                     "success": function (data) {
                         if (data["code"] === 200) {
                             alertMontage(data["message"],"alert-success");
                             setTimeout(function() {
-                                window.location = location.pathname;
+                                window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         } else {
                             alertMontage("文件或目录压缩失败.","alert-danger");
                             setTimeout(function() {
-                                window.location = location.pathname;
+                                window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         }
                     },
@@ -277,18 +277,18 @@ function jyCheckbox() {
                     "url": "/file/jy",
                     "data": {
                         "fileName": divlr,
-                        "filePath": location.pathname
+                        "filePath": decodeURIComponent(location.pathname)
                     },
                     "success": function (data) {
                         if (data["code"] === 200) {
                             alertMontage(data["message"],"alert-success");
                             setTimeout(function() {
-                                window.location = location.pathname;
+                                window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         } else {
                             alertMontage("解压失败.","alert-danger");
                             setTimeout(function() {
-                                window.location = location.pathname;
+                                window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         }
                     },

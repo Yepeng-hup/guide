@@ -145,7 +145,7 @@ func UpdateFile(c *gin.Context){
 	}
 	fileList := strings.Fields(u.FileName)
 	fileWritePath := global.SaveDataDir+"/"+u.FilePath+"/"+fileList[0]
-	err := ioutil.WriteFile(fileWritePath, []byte(u.Centent), 0644)
+	err := os.WriteFile(fileWritePath, []byte(u.Centent), 0644)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -161,6 +161,7 @@ func CreateDir(c *gin.Context){
 		DirName: c.PostForm("name"),
 		DirPath: c.PostForm("path"),
 	}
+
 	createDirPath := global.SaveDataDir+f.DirPath+"/"+f.DirName
 	err := os.Mkdir(createDirPath, 0755)
 	if err != nil {
@@ -169,12 +170,12 @@ func CreateDir(c *gin.Context){
 			"code": http.StatusInternalServerError,
 			"message": "ERROR: create dir fail." + err.Error(),
 		})
+	}else {
+		log.Printf("INFO: create dir success ---> [%v].", f.DirName)
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
+		})
 	}
-	log.Printf("INFO: create dir success ---> [%v].", f.DirName)
-	c.JSON(http.StatusOK, gin.H{
-		"code": http.StatusOK,
-		"message": "目录创建成功.",
-	})
 }
 
 
@@ -184,7 +185,6 @@ func CreateFile(c *gin.Context){
 		FilePath: c.PostForm("path"),
 	}
 	createFilePath := global.SaveDataDir+f.FilePath+"/"+f.FileName
-	//err := os.Mkdir(createDirPath, 0755)
 	file, err := os.Create(createFilePath)
 	if err != nil {
 		log.Println("ERROR: create file fail.", err.Error())
@@ -192,13 +192,13 @@ func CreateFile(c *gin.Context){
 			"code": http.StatusInternalServerError,
 			"message": "ERROR: create file fail." + err.Error(),
 		})
+	}else {
+		log.Printf("INFO: create  file success ---> [%v].", f.FileName)
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
+		})
 	}
-	log.Printf("INFO: create  file success ---> [%v].", f.FileName)
 	defer file.Close()
-	c.JSON(http.StatusOK, gin.H{
-		"code": http.StatusOK,
-		"message": "文件创建成功.",
-	})
 }
 
 
