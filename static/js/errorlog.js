@@ -15,7 +15,7 @@ function getErrorLog(){
                     // html += '<td>' + item.ID + '</td>';
                     // html += '<td>' + item.Date + '</td>';
                     html += '<td>' + item.LogType + '</td>';
-                    html += '<td><pre>' + item.LogContent + '</pre></td>';
+                    html += '<td><pre style="white-space: pre-wrap; word-wrap: break-word;">' + item.LogContent + '</pre></td>';
                     html += '</tr>';
                 }
                 document.getElementById('data').innerHTML = html;
@@ -98,7 +98,7 @@ function deleteLogLimit(){
         // }),
         success: function (data) {
             if (data.code === 200) {
-                console.log("ok")
+                document.getElementById("close4").click();
             } else {
                 console.log("delete log fail.");
             }
