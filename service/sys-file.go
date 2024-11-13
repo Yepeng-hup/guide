@@ -2,16 +2,18 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/mholt/archiver"
 	"guide/core"
 	"guide/global"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/mholt/archiver"
 )
 
 
@@ -202,6 +204,83 @@ func CreateFile(c *gin.Context){
 }
 
 
+func copyDir(src string, dst string) error {
+	src = filepath.Clean(src)
+	dst = filepath.Clean(dst)
+
+	srcInfo, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	if !srcInfo.IsDir() {
+		return fmt.Errorf("source is not a directory")
+	}
+
+	// _, err = os.Open(dst)
+	// if !os.IsNotExist(err) {
+	// 	return fmt.Errorf("destination already exists")
+	// }
+
+	err = os.MkdirAll(dst, srcInfo.Mode())
+	if err != nil {
+		return err
+	}
+
+	entries, err := os.ReadDir(src)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		srcPath := filepath.Join(src, entry.Name())
+		dstPath := filepath.Join(dst, entry.Name())
+
+		if entry.IsDir() {
+			err = copyDir(srcPath, dstPath)
+			if err != nil {
+				return err
+			}
+		} else {
+			// Perform file copy
+			err = copyFile(srcPath, dstPath)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func copyFile(src, dst string) error {
+	inFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer inFile.Close()
+
+	outFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, inFile)
+	if err != nil {
+		return err
+	}
+
+	fileInfo, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	return os.Chmod(dst, fileInfo.Mode())
+}
+
+
+
+
 
 
 func DeleteDirAndFile(c *gin.Context){
@@ -221,14 +300,23 @@ func DeleteDirAndFile(c *gin.Context){
 		return
 	}
 	if v.IsDir() {
-		err := os.RemoveAll(folderFilePath)
-		if err != nil {
+		if err := copyDir(folderFilePath, global.Hs); err != nil {
+			log.Println("ERROR: mv dir and file to [hs] fail.",err.Error())
+			return
+		}
+
+		if err := os.RemoveAll(folderFilePath); err != nil {
 			log.Println("ERROR: delete dir fail.", err.Error())
 			return
 		}
 		log.Printf("INFO: delete dir success. ---> [%s]", fileAndDirList[0])
 		return
 	}else {
+		if err := core.CopyFile(folderFilePath, global.Hs); err != nil {
+			log.Println("ERROR: mv file to [hs] fail.",err.Error())
+			return
+		}
+
 		err := os.Remove(folderFilePath)
 		if err != nil {
 			log.Println("ERROR: delete file fail.", err.Error())
@@ -307,7 +395,7 @@ func CompressZipTar(c *gin.Context){
 		log.Printf("ERROR: zip file and dir fail, %v\n", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
-			"message": "压缩失败.",
+			"message": "压缩失败."+err.Error(),
 		})
 		return
 	}
@@ -318,3 +406,38 @@ func CompressZipTar(c *gin.Context){
 }
 
 
+func ShowRecycle(c *gin.Context){
+	fileDirSlice := make([]string, 0)
+
+	d, err := os.Open(global.Hs)
+    if err != nil {
+        log.Println(err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"data": err.Error(),
+		})
+		return
+    }
+    defer d.Close()
+
+	// -1 read all file
+    files, err := d.Readdir(-1)
+    if err != nil {
+        log.Println(err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"data": err.Error(),
+		})
+		return
+    }
+
+    for _, file := range files {
+		fileDirSlice = append(fileDirSlice, file.Name())
+    }
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"data": fileDirSlice,
+	})
+
+}

@@ -19,6 +19,7 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"path/filepath"
 
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -248,4 +249,31 @@ func WriteFile(filePath, fileContent string)error{
     }
 
 	return nil
+}
+
+func CopyFile(src, dst string) error {
+    sourceFile, err := os.Open(src)
+    if err != nil {
+        return fmt.Errorf("unable to open source file: %v", err)
+    }
+    defer sourceFile.Close()
+
+    destinationFile, err := os.Create(dst+"/"+filepath.Base(src))
+    if err != nil {
+        return fmt.Errorf("unable to create destination file: %v", err)
+    }
+    defer destinationFile.Close()
+
+    _, err = io.Copy(destinationFile, sourceFile)
+    if err != nil {
+        return fmt.Errorf("failed to copy file contents: %v", err)
+    }
+
+    // sync disk
+    err = destinationFile.Sync()
+    if err != nil {
+        return fmt.Errorf("failed to sync file: %v", err)
+    }
+
+    return nil
 }

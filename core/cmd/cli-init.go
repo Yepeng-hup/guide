@@ -14,6 +14,7 @@ func CliInit (){
 	passwdAdminWhitelist := global.PasswdAdminWhitelist
 	newKey := global.NowKey
 	mon := global.Mon
+	hs := global.Hs
 	//interfaceName := global.InterfaceName
 	if saveDataDir == ""{
 		log.Fatalln("ERROR: GUIDE_FILEDATA_DIR is undefined")
@@ -31,6 +32,7 @@ func CliInit (){
 		log.Fatalln("ERROR: GUIDE_KEY is undefined")
 	}else if mon == "" {
 		log.Fatalln("ERROR: GUIDE_MON is undefined")
+	}else if hs == "" {
+		log.Fatalln("ERROR: GUIDE_HS_DIR is undefined")
 	}
-	return
 }
