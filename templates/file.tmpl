@@ -20,6 +20,7 @@
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" style="margin-left: 20px">创建目录</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo" style="margin-left: 20px">创建文件</button>
                 {{/*<button style="margin-left: 30px;" class="btn btn-primary" onclick="location.reload()">刷新</button>*/}}
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo" style="margin-left: 100px" onclick="showRecycle()">回收站</button>
             </div>
             <table class="table table-hover" style="margin-top: 70px">
                 <thead>
@@ -135,6 +136,31 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" id="createfile">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">临时回收站</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <th>信息</th>
+                            </thead>
+                            <tbody id="hs-data">
+                            </tbody>
+                        </table>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                     </div>
                 </div>
             </div>

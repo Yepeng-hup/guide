@@ -300,3 +300,40 @@ function jyCheckbox() {
         }
     }
 }
+
+function addDelData(data){
+    var tbody_rm= document.getElementById('hs-data').querySelector('tbody'); 
+    tbody_rm.innerHTML = '';
+    const tbody = document.getElementById('hs-data').getElementsByTagName('tbody')[0];
+    data.forEach(t => {
+        const row = document.createElement('tr');
+        const typeNameCell = document.createElement('td');  
+        typeNameCell.textContent = t[0];  
+        row.appendChild(typeNameCell);
+
+        tbody.appendChild(row);
+    })    
+}
+
+function showRecycle(){
+    $.get(
+        {
+            "url": "/file/hs",
+            "success": function (data) {
+                if (data["code"] === 200) {  
+                    let htmlData = ""
+                    for (let i=0; i<data.data.length; i++){
+                        htmlData += `<tr><td>${data.data[i]}</td></tr>`
+                    }
+                    let h = document.getElementById('hs-data');
+                    h.innerHTML=htmlData;
+                } else {
+                    alert(data["data"]);
+                }
+            },
+            "fail": function (error) {
+                console.log(error);
+            }
+        },
+    )
+}
