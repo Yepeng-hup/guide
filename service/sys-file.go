@@ -443,7 +443,7 @@ func ShowRecycle(c *gin.Context){
 }
 
 
-func listFilesAndDirs(root *string, searchStr string, ssPath string, c *gin.Context)([]FileAnchor, error){
+func listFilesAndDirs(root *string, searchStr string, ssPath string)([]FileAnchor, error){
 	fileList := make([]FileAnchor, 0)
     err := filepath.Walk(*root, func(path string, info os.FileInfo, err error) error {
         if err != nil {
@@ -480,13 +480,18 @@ func FileSearch(c *gin.Context){
 		c.PostForm("filePath"),
 	}
 
+	if f.SsFilePath == "/" {
+		c.Redirect(http.StatusMovedPermanently, "/")
+		return
+	}
+
 	folderFilePath := global.SaveDataDir+f.SsFilePath
-	fileList, err := listFilesAndDirs(&folderFilePath, f.SsFile, f.SsFilePath, c)
+	fileList, err := listFilesAndDirs(&folderFilePath, f.SsFile, f.SsFilePath)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"fileList": fileList,
 		"rootDir": folderFilePath,
