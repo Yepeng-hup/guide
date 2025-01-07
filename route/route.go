@@ -80,6 +80,7 @@ func InitRoute() *gin.Engine {
 	file.GET("/cat", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.CatFile)
 	file.POST("/edit", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.UpdateFile)
 	file.GET("/hs", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.ShowRecycle)
+	file.POST("/ss", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.FileSearch)
 
 	cron := r.Group("/cron")
 	cron.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), func(c *gin.Context) {

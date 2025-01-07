@@ -414,7 +414,7 @@ func ShowRecycle(c *gin.Context){
         log.Println(err.Error())
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusInternalServerError,
-			"data": err.Error(),
+			"data": err.Error(), 
 		})
 		return
     }
@@ -440,4 +440,55 @@ func ShowRecycle(c *gin.Context){
 		"data": fileDirSlice,
 	})
 
+}
+
+
+func listFilesAndDirs(root *string, searchStr string, ssPath string, c *gin.Context)([]FileAnchor, error){
+	fileList := make([]FileAnchor, 0)
+    err := filepath.Walk(*root, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            log.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
+            return err
+        }
+        
+        // 检查是否是文件及是否包含搜索关键字的文件
+        if !info.IsDir() && strings.Contains(info.Name(), searchStr) {
+			href := ssPath+"/"+info.Name()
+			fileList = append(fileList, FileAnchor{
+				FileName: info.Name(),
+				Href:     href,
+				Size: info.Size()/1024/1024,
+				Time: info.ModTime().Format("2006-01-02 15:04:05"),
+				Power: info.Mode(),
+			})
+        }
+        
+        return nil
+    })
+
+    if err != nil {
+        return nil, err
+    }
+
+	return fileList, nil
+}
+
+
+func FileSearch(c *gin.Context){
+	f := SsText{
+		c.PostForm("fileName"),
+		c.PostForm("filePath"),
+	}
+
+	folderFilePath := global.SaveDataDir+f.SsFilePath
+	fileList, err := listFilesAndDirs(&folderFilePath, f.SsFile, f.SsFilePath, c)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	
+	c.JSON(http.StatusOK, gin.H{
+		"fileList": fileList,
+		"rootDir": folderFilePath,
+	})
 }

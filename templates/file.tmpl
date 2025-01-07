@@ -20,7 +20,10 @@
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" style="margin-left: 20px">创建目录</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo" style="margin-left: 20px">创建文件</button>
                 {{/*<button style="margin-left: 30px;" class="btn btn-primary" onclick="location.reload()">刷新</button>*/}}
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo" style="margin-left: 100px" onclick="showRecycle()">回收站</button>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo" style="margin-left: 20px" onclick="showRecycle()">回收站</button>
+
+                <input type="text" id="context" name="context" style="margin-left: 200px;cursor: text;" class="btn btn-secondary" placeholder="输入搜索内容 ">
+                <button  id="search" style="margin-left: 5px;" class="btn btn-primary" onclick="fileSearch()">搜索</button>
             </div>
             <table class="table table-hover" style="margin-top: 70px">
                 <thead>
@@ -31,7 +34,7 @@
                     <th>权限</th>
                     <th>动作</th>
                 </thead>
-                <tbody>
+                <tbody id="ss">
                 {{range .dirList}}
                     <tr>
                         <td><input class="cb" type="checkbox"/></td>
@@ -173,6 +176,13 @@
             const submitButton = document.getElementById('sButton');
             fileInput.addEventListener('change', function () {
                 submitButton.removeAttribute('hidden');
+            });
+
+
+            document.getElementById('search').addEventListener('click', function() {
+                    const searchBox = document.getElementById('context');
+                    // 清空搜索框
+                    searchBox.value = '';
             });
         </script>
     </body>

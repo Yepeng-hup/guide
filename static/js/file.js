@@ -337,3 +337,62 @@ function showRecycle(){
         },
     )
 }
+
+function unit32ToStrPermissions(octal) {
+    // 将数字转换为八进制字符串
+    const permissions = (octal).toString(8).padStart(3, '0'); // 确保有三位数
+
+    let result = '';
+
+    for (let i = 0; i < 3; i++) {
+        const digit = parseInt(permissions[i], 8); // 将每个八进制数字转换为十进制
+
+        // 计算权限字符
+        result += (digit & 4) ? 'r' : '-';
+        result += (digit & 2) ? 'w' : '-';
+        result += (digit & 1) ? 'x' : '-';
+    }
+
+    return result;
+}
+
+function fileSearch(){
+    let ssText = $("#context").val();
+
+    $.post(
+        {
+            "url": "/file/ss",
+            "data": {
+                "fileName": ssText,
+                "filePath": decodeURIComponent(location.pathname)
+            },
+            "success": function (data) {
+                let htmlData = "";
+
+                for( var i=0; i<data.fileList.length; i++){
+                    const permissionString = unit32ToStrPermissions(data.fileList[i].Power);
+                    htmlData += `
+                        <tr>
+                            <td><input class="cb" type="checkbox"/></td>
+                            <td><a href="${data.fileList[i].Href}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/file.png" style="width: 20px; height: 20px"> ${data.fileList[i].FileName}</a></td>
+                            <td>${data.fileList[i].Size}MB</td>
+                            <td>${data.fileList[i].Time}</td>
+                            <td>${permissionString}</td>
+                            <td>
+                                <button data-toggle="modal" data-target="#mtk" style="margin-left: 15px" class="btn btn-success" onclick="catFileCheckbox()">查看</button>
+                            </td>
+                        </tr>
+                    `;
+
+                };
+                
+                let list = document.getElementById('ss');
+                list.innerHTML = htmlData;
+            },
+            "fail": function (error) {
+                console.log(error);
+            }
+        },
+    )
+
+}

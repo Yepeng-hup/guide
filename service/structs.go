@@ -76,4 +76,9 @@ type (
 		Centent string
 		FilePath string
 	}
+
+	SsText struct {
+		SsFile string
+		SsFilePath string
+	}
 )
