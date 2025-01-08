@@ -320,10 +320,14 @@ function showRecycle(){
         {
             "url": "/file/hs",
             "success": function (data) {
-                if (data["code"] === 200) {  
+                if (data["code"] === 200) {
                     let htmlData = ""
                     for (let i=0; i<data.data.length; i++){
-                        htmlData += `<tr><td>${data.data[i]}</td></tr>`
+                        htmlData += `<tr>
+                        <td><input class="cb" type="checkbox"/></td>
+                        <td>${data.data[i]}</td>
+                        <td><button class="btn btn-danger" onclick="deleteRecycleFile()">删除</button></td>
+                        </tr>`
                     }
                     let h = document.getElementById('hs-data');
                     h.innerHTML=htmlData;
@@ -336,6 +340,34 @@ function showRecycle(){
             }
         },
     )
+}
+
+function deleteRecycleFile(){
+    let items=document.getElementsByClassName('cb');
+    let len=items.length;
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+            $.post(
+                {
+                    "url": "/file/hs/delete",
+                    "data": {
+                        "fileName": divlr
+                    },
+                    "success": function (data) {
+                        if (data["code"] !== 200) {
+                            alert(data.msg)
+                        } 
+                    },
+                },
+                
+
+            );
+            divItems.parentNode.removeChild(divItems);
+        }
+    }
 }
 
 function unit32ToStrPermissions(octal) {

@@ -443,6 +443,21 @@ func ShowRecycle(c *gin.Context){
 }
 
 
+func DeleteRecycleFile(c *gin.Context){
+	fileName := c.PostForm("fileName")
+	fileList := strings.Fields(fileName)
+	deleteFilePath := global.Hs+"/"+fileList[0]
+	err := os.Remove(deleteFilePath)
+    if err != nil {
+		if err := os.RemoveAll(deleteFilePath); err != nil {
+			log.Println("delete file or dir ok -> ", deleteFilePath, err.Error())
+			return
+		}
+    }
+	log.Println("delete file or dir ok -> ", deleteFilePath)
+}
+
+
 func listFilesAndDirs(root *string, searchStr string, ssPath string)([]FileAnchor, error){
 	fileList := make([]FileAnchor, 0)
     err := filepath.Walk(*root, func(path string, info os.FileInfo, err error) error {
