@@ -450,7 +450,7 @@ func DeleteRecycleFile(c *gin.Context){
 	err := os.Remove(deleteFilePath)
     if err != nil {
 		if err := os.RemoveAll(deleteFilePath); err != nil {
-			log.Println("delete file or dir ok -> ", deleteFilePath, err.Error())
+			log.Println("delete file or dir fail -> ", deleteFilePath, err.Error())
 			return
 		}
     }
