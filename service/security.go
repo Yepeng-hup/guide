@@ -15,13 +15,14 @@ import (
 	_ "github.com/shirou/gopsutil/mem"
 )
 
-// const cpuAll int = 100
-// const gm uint64 = 1074000000
 
-// const (
-// 	messagesPath = "/var/log/messages"
-// 	securePath = "/var/log/secure"
-// )
+const (
+	// messagesPath = "/var/log/messages"
+	// securePath = "/var/log/secure"
+	// cpuAll int = 100
+    // gm uint64 = 1074000000
+	ipMaxNum = 20
+)
 
 
 // func CpuValueWDB() {
@@ -215,11 +216,13 @@ func showMessagesLog()([]Messages, error){
 	if err := scanner.Err(); err != nil {  
 		return nil, fmt.Errorf(err.Error())
 	} 
-	for k, v := range ipCounts {  
-		ipSlice = append(ipSlice, Messages{  
-			Ip:   k,  
-		 	IpNum: v,  
-		})  
+	for k, v := range ipCounts {
+		if v > ipMaxNum {
+			ipSlice = append(ipSlice, Messages{  
+				Ip:   k,  
+				 IpNum: v,  
+			}) 
+		} 
 	}
 	return ipSlice, nil
 }
@@ -248,11 +251,14 @@ func showSecureLog()([]Secures, error){
 	if err := scanner.Err(); err != nil {  
 		return nil, fmt.Errorf(err.Error())
 	} 
-	for k, v := range ipCounts {  
-		ipSlice = append(ipSlice, Secures{  
-			Ip:   k,  
-		 	IpNum: v,  
-		})  
+	for k, v := range ipCounts {
+		// ip次数超过x次
+		if v > ipMaxNum  {
+			ipSlice = append(ipSlice, Secures{  
+				Ip:   k,  
+				IpNum: v,  
+			}) 
+		}
 	}
 	return ipSlice, nil
 }

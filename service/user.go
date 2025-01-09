@@ -84,7 +84,11 @@ func CreateUser(c *gin.Context) {
 
 // ***** not test function
 func UpdatePwd(c *gin.Context) {
-	// data {"key": xxxx, "userName": "xx", "password": "xxxx"}
+	// data {
+	//		"key": "xxxxxxxxxxxxxxxxxxxxxxxx", 24字节
+	//		"userName": "xiaomi",
+	//		"password": "xiaomi.666"
+	//	}
 
 	data, _ := c.GetRawData()
 	var body map[string]string
