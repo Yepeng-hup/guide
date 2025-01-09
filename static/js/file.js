@@ -357,9 +357,9 @@ function deleteRecycleFile(){
                         "fileName": divlr
                     },
                     "success": function (data) {
-                        if (data["code"] !== 200) {
-                            alert(data.msg)
-                        } 
+                        // if (data["code"] !== 200) {
+                        //     alert(data.msg);
+                        // } 
                     },
                 },
                 
