@@ -20,6 +20,7 @@ var (
 	//InterfaceName = os.Getenv("GUIDE_INTERFACE_NAME")
 	// Mon = os.Getenv("GUIDE_MON")
 	Hs = os.Getenv("GUIDE_HS_DIR")
+	Mode = os.Getenv("GUIDE_DEBUG_MODE")
 )
 
 

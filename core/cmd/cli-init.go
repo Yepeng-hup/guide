@@ -15,6 +15,7 @@ func CliInit (){
 	newKey := global.NowKey
 	// mon := global.Mon
 	hs := global.Hs
+	mode := global.Mode
 	//interfaceName := global.InterfaceName
 	if saveDataDir == ""{
 		log.Fatalln("ERROR: GUIDE_FILEDATA_DIR is undefined")
@@ -34,5 +35,7 @@ func CliInit (){
 	// 	log.Fatalln("ERROR: GUIDE_MON is undefined")
 	}else if hs == "" {
 		log.Fatalln("ERROR: GUIDE_HS_DIR is undefined")
+	}else if mode == "" {
+		log.Fatalln("ERROR: GUIDE_DEBUG_MODE is undefined")
 	}
 }
