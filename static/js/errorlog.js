@@ -99,6 +99,7 @@ function deleteLogLimit(){
         success: function (data) {
             if (data.code === 200) {
                 document.getElementById("close4").click();
+                window.location = location.pathname;
             } else {
                 console.log("delete log fail.");
             }
