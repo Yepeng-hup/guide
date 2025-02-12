@@ -14,7 +14,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-dark bg-dark" style="background-color: #0b87e7;top: 0;z-index: 999;position: fixed;width: 100%;">
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto" style="display: flex; width: 100%;">
                 <li class="nav-item btn btn-dark">
                     <a class="nav-link" href="/user/index">用户管理</a>
                 </li>
@@ -45,8 +45,11 @@
                     </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/readme">使用文档</a>
-                        <button class="dropdown-item" style="color: #c69500" onclick="logout()">退出登录</button>
+                        <button class="dropdown-item" >###</button>
                     </div>
+                </li>
+                <li class="nav-item btn btn-dark" style="margin-left: auto;">
+                    <a class="nav-link" style="color: #c69500" onclick="logout()" >退出登录</a>
                 </li>
             </ul>
 

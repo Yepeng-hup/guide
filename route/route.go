@@ -23,6 +23,29 @@ func InitRoute() *gin.Engine {
 
 	r.NoRoute(core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), func(c *gin.Context) {
 		fullPath := filepath.Join(global.SaveDataDir, c.Request.URL.Path)
+		if c.Request.URL.Path == "/root" {
+			var body map[string]string
+			c.BindJSON(&body)
+			password := body["password"]
+			jmDirPwd, _ := core.PasswordEncryption(global.DirAccessPwd, global.NowKey)
+			jmPwd, _ := core.PasswordEncryption(password, global.NowKey)
+			dirPwd, _ := core.PasswordDecrypt(jmDirPwd, global.NowKey)
+			pwd, _ := core.PasswordDecrypt(jmPwd, global.NowKey)
+
+			if pwd != dirPwd {
+				c.JSON(http.StatusOK, gin.H{
+					"code": http.StatusInternalServerError,
+				})
+				return
+			}
+			//c.Redirect(http.StatusMovedPermanently, "/root/?password="+password)
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusOK,
+				"pwd":  jmPwd,
+			})
+			return
+		}
+
 		fileInfo, err := os.Stat(fullPath)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -82,6 +105,7 @@ func InitRoute() *gin.Engine {
 	file.GET("/hs", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.ShowRecycle)
 	file.POST("/hs/delete", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.DeleteRecycleFile)
 	file.POST("/ss", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.FileSearch)
+	file.POST("/dir/check", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), service.RootDirCheck)
 
 	cron := r.Group("/cron")
 	cron.GET("/index", core.SysIpWhitelist(global.IsStartWhitelist), core.CookieCheck(), func(c *gin.Context) {

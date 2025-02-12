@@ -71,7 +71,9 @@ func CreateUser(c *gin.Context) {
 	userName := body["userName"]
 	userPassword := body["password"]
 	pwd, err := core.PasswordEncryption(userPassword, global.NowKey)
-	if err != nil {log.Println(err)}
+	if err != nil {
+		log.Println(err)
+	}
 	if err := core.InsertUser(userName, pwd); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,

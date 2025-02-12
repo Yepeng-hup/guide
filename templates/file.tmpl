@@ -3,6 +3,54 @@
     <html lang="en">
     <head>
         <title>文件管理</title>
+        <style>
+            #overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+
+            #password-modal {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+            }
+
+            #password-modal input {
+                padding: 5px;
+                margin-bottom: 10px;
+                width: 90%;
+            }
+
+            #password-modal button {
+                padding: 5px 10px;
+                background: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+            #password-modal button#close-modal {
+                background: #6c757d;
+                margin-left: 10px;
+            }
+
+            #error-message {
+                color: red;
+                display: none;
+            }
+        </style>
     </head>
     {{template "base" .}}
     <body>
@@ -35,17 +83,29 @@
                     <th>动作</th>
                 </thead>
                 <tbody id="ss">
-                {{range .dirList}}
+                {{range $_,$v := .dirList}}
                     <tr>
-                        <td><input class="cb" type="checkbox"/></td>
-                        <td><a href="{{.Href}}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/dir.png" style="width: 20px; height: 20px"><b> {{.DirectoryName}}</b></a></td>
-                        <td>{{.Size}}MB</td>
-                        <td>{{.Time}}</td>
-                        <td>{{.Power}}</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
-                            <button style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
-                        </td>
+                        {{if eq $v.Href "/root"}}
+                            <td><input class="cb" type="checkbox"/></td>
+                            <td><a id="root-link" href="{{$v.Href}}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/dir.png" style="width: 20px; height: 20px"><b> {{.DirectoryName}}</b></a></td>
+                            <td>{{$v.Size}}MB</td>
+                            <td>{{$v.Time}}</td>
+                            <td>{{$v.Power}}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                                <button style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                            </td>
+                        {{else}}
+                            <td><input class="cb" type="checkbox"/></td>
+                            <td><a href="{{$v.Href}}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/dir.png" style="width: 20px; height: 20px"><b> {{.DirectoryName}}</b></a></td>
+                            <td>{{$v.Size}}MB</td>
+                            <td>{{$v.Time}}</td>
+                            <td>{{$v.Power}}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteCheckbox()">删除</button>
+                                <button style="margin-left: 15px" class="btn btn-warning" onclick="ysCheckbox()">压缩</button>
+                            </td>
+                        {{end}}
                     </tr>
                 {{end}}
                 {{range .fileList}}
@@ -74,6 +134,16 @@
                 {{end}}
                 </tbody>
             </table>
+        </div>
+
+        <div id="overlay"></div>
+
+        <div id="password-modal">
+            <p><b>此目录访问需要密码</b></p>
+            <input type="password" id="password-input" placeholder="Password">
+            <button id="submit-password">确定</button>
+            <button id="close-modal">取消</button>
+            <p id="error-message">password error!</p>
         </div>
 
         <div class="modal" id="mtk">
@@ -173,9 +243,9 @@
         <script src="/sta/js/file.js"></script>
         <script>
             const fileInput = document.getElementById('f');
-            const submitButton = document.getElementById('sButton');
+            const qdButton = document.getElementById('sButton');
             fileInput.addEventListener('change', function () {
-                submitButton.removeAttribute('hidden');
+                qdButton.removeAttribute('hidden');
             });
 
 
@@ -183,6 +253,53 @@
                     const searchBox = document.getElementById('context');
                     // 清空搜索框
                     searchBox.value = '';
+            });
+        </script>
+
+        <script>
+            const rootLink = document.getElementById('root-link');
+            const passwordModal = document.getElementById('password-modal');
+            const overlay = document.getElementById('overlay');
+            const passwordInput = document.getElementById('password-input');
+            const submitButton = document.getElementById('submit-password');
+            const closeModalButton = document.getElementById('close-modal');
+            const errorMessage = document.getElementById('error-message');
+
+            rootLink.addEventListener('click', (e) => {
+                e.preventDefault(); // 阻止默认跳转行为
+                errorMessage.style.display = 'none';
+                passwordModal.style.display = 'block';
+                overlay.style.display = 'block'; // 显示遮罩层
+            });
+
+            closeModalButton.addEventListener('click', () => {
+                document.getElementById('password-input').value = "";
+                passwordModal.style.display = 'none';
+                overlay.style.display = 'none'; // 隐藏遮罩层
+            });
+
+            submitButton.addEventListener('click', () => {
+                 const password = passwordInput.value;
+                 $.ajax({
+                     url: "/root",
+                     type: "POST",
+                     contentType: 'application/json',
+                     data: JSON.stringify({
+                         "password": password,
+                     }),
+                     success: function (data) {
+                         if (data.code === 200) {
+                             document.getElementById('password-input').value = "";
+                             document.getElementById("close-modal").click();
+                             window.location = "/root/?password="+data.pwd;
+                         } else {
+                             errorMessage.style.display = 'block';
+                         }
+                     },
+                     error: function () {
+                         alert("请求失败！");
+                     }
+                 });
             });
         </script>
     </body>
