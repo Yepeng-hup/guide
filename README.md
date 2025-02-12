@@ -15,6 +15,8 @@ guide是一个内部集合工具,故而没有权限管理等。只是简单的�
     GUIDE_KEY 加密字符串
     GUIDE_HS_DIR 自定义回收站目录
     # GUIDE_MON  是否开启系统资源调用 (false/true)
+    GUIDE_DEBUG_MODE  程序启动模式 (debug/release)
+    GUIDE_DIR_ACCESS_PWD  特殊目录查看密码设置
 ```
 
 ```
