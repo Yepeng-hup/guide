@@ -57,7 +57,7 @@ func CutDirAndFile(c *gin.Context, fullPath *string) {
 	c.HTML(http.StatusOK, "file.tmpl", gin.H{
 		"dirList":  dirList,
 		"fileList": fileList,
-		"rootDir":  c.Request.URL.Path,
+		//"rootDir":  c.Request.URL.Path,
 	})
 }
 

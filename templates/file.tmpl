@@ -58,7 +58,7 @@
         <div id="jdt"></div>
         <div class="folder">
             <h5 style="margin-top: 15px; margin-left: 15px">
-                <span style="color: #007bff">{{.rootDir}}</span>
+                <span style="color: #000000" id="breadcrumb-container"></span>
             </h5>
             <div style="float: left; display: flex; align-items: center;margin-left: 15px;">
                 <form  id="sForm">
@@ -224,6 +224,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <li style="margin-left: 15px; color: #ab6617">文件恢复需自行去服务器手动恢复</li>
                         <table class="table table-hover">
                             <thead>
                                 <th>文件列表</th>
@@ -302,6 +303,49 @@
                  });
             });
         </script>
+
+        <script>
+            function getBreadcrumbs() {
+                const path = window.location.pathname;
+                const pathParts = path.split('/').filter(part => part);
+
+                // 生成面包屑链接
+                const breadcrumbs = pathParts.map((part, index) => {
+                    const href = '/' + pathParts.slice(0, index + 1).join('/'); // 拼接每一层的链接
+                    return {
+                        text: part,
+                        href: href
+                    };
+                });
+
+                return breadcrumbs;
+            }
+
+            // 更新面包屑导航
+            function updateBreadcrumbs() {
+                const breadcrumbs = getBreadcrumbs();
+                const breadcrumbContainer = document.getElementById('breadcrumb-container');
+                breadcrumbContainer.innerHTML = '';
+
+                breadcrumbs.forEach((breadcrumb, index) => {
+                    const breadcrumbElement = document.createElement('span');
+                    const breadcrumbLink = document.createElement('a');
+                    breadcrumbLink.href = breadcrumb.href;
+                    breadcrumbLink.textContent = breadcrumb.text;
+                    breadcrumbLink.style.textDecoration = 'none';
+                    breadcrumbElement.appendChild(breadcrumbLink);
+
+                    if (index < breadcrumbs.length - 1) {
+                        breadcrumbElement.innerHTML += ' > ';
+                    }
+
+                    breadcrumbContainer.appendChild(breadcrumbElement);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', updateBreadcrumbs);
+        </script>
+
     </body>
     </html>
 {{end}}
