@@ -53,6 +53,9 @@
         </style>
     </head>
     {{template "base" .}}
+    <link rel="stylesheet" href="/sta/css/csstools/codemirror.min.css">
+    <script src="/sta/js/jstools/codemirror.min.js"></script>
+
     <body>
         <div id="alert" style="margin-top: 80px"></div>
         <div id="jdt"></div>
@@ -146,16 +149,16 @@
             <p id="error-message">password error!</p>
         </div>
 
-        <div class="modal" id="mtk">
+        <div class="modal" id="mtk" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div id="fileName"></div>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="close" data-dismiss="modal" onclick="down()">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <div id="texts" contenteditable="true" style="background-color: #343a40"></div>
-                    </div>
+                        <div class="container mt-4">
+                            <div id="texts"></div>
+                        </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="updateContent()">确认更新</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal" id="down" onclick="down()">关闭</button>

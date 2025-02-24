@@ -120,6 +120,8 @@ function updateContent() {
     let items=document.getElementsByClassName('cb');
     var checkboxes = document.getElementsByClassName('cb');
     let len=items.length;
+    // console.log(content)
+    // return;
     for (var i=len-1; i>=0;i--) {
         let is_checkd = items[i].checked;
         if (is_checkd) {
@@ -198,7 +200,26 @@ function catFileCheckbox() {
                     },
                     "success": function (data) {
                         if (data["code"] === 200) {
-                            textpj(data["fileText"], data["fileName"]);
+                            textpj(data["fileName"]);
+
+                            const editor = CodeMirror(document.getElementById('texts'), {
+                                 value: data["fileText"],
+                                 lineNumbers: false,
+                                 theme: "default", // 可选其他主题
+                                 indentUnit: 4,
+                                 smartIndent: true,
+                                 matchBrackets: true,
+                                 autoCloseBrackets: true,
+                                 styleActiveLine: true,
+                                 viewportMargin: Infinity
+                            });
+
+                            // editor.on('change', (cm) => {
+                            //     const modifiedContent = cm.getValue();
+                            //     console.log("-----------",modifiedContent)
+                            //
+                            // });
+
                             return
                         } else {
                             alertMontage("不支持的文件格式.","alert-danger");
@@ -219,10 +240,15 @@ function catFileCheckbox() {
     }
 }
 
+
 function down() {
     var checkboxes = document.getElementsByClassName('cb');
     for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = false;
+    }
+    var element = document.getElementById('texts');
+    if (element) {
+        element.innerHTML = '';
     }
 }
 
