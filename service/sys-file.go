@@ -330,6 +330,10 @@ func DecompressionZipTar(c *gin.Context) {
 			err := archiver.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
 			if err != nil {
 				log.Println("ERROR: unarchive zip fail,", err.Error())
+				c.JSON(http.StatusOK, gin.H{
+					"code":    http.StatusInternalServerError,
+					"message": fmt.Sprint("ERROR: unarchive zip fail,", err.Error()),
+				})
 				return
 			}
 		case "gz":
@@ -340,6 +344,10 @@ func DecompressionZipTar(c *gin.Context) {
 				err := core.UnGz(global.SaveDataDir + f.FileDirPath + "/" + fileList[0])
 				if err != nil {
 					log.Println("ERROR: unarchive gz fail,", err.Error())
+					c.JSON(http.StatusOK, gin.H{
+						"code":    http.StatusInternalServerError,
+						"message": fmt.Sprint("ERROR: unarchive gz fail,", err.Error()),
+					})
 					return
 				}
 			}
@@ -348,14 +356,26 @@ func DecompressionZipTar(c *gin.Context) {
 			err := t.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
 			if err != nil {
 				log.Printf("ERROR: unarchive tar fail %s\n", err.Error())
+				c.JSON(http.StatusOK, gin.H{
+					"code":    http.StatusInternalServerError,
+					"message": fmt.Sprint("ERROR: unarchive tar fail,", err.Error()),
+				})
 				return
 			}
 		default:
 			log.Println("ERROR: Invalid decompression format.")
+			c.JSON(http.StatusOK, gin.H{
+				"code":    http.StatusInternalServerError,
+				"message": "ERROR: Invalid decompression format.",
+			})
 			return
 		}
 	} else {
 		log.Println("ERROR: Not in character [.] .")
+		c.JSON(http.StatusOK, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": "ERROR: Not in character [.] .",
+		})
 		return
 	}
 
@@ -378,9 +398,9 @@ func CompressZipTar(c *gin.Context) {
 	err := archiver.Archive([]string{global.SaveDataDir + f.FileDirPath + "/" + fileList[0]}, global.SaveDataDir+f.FileDirPath+"/"+fileList[0]+".zip")
 	if err != nil {
 		log.Printf("ERROR: zip file and dir fail, %v\n", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"code":    http.StatusInternalServerError,
-			"message": "压缩失败." + err.Error(),
+			"message": fmt.Sprint("ERROR: zip file and dir fail,", err.Error()),
 		})
 		return
 	}

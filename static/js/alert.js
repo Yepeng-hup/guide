@@ -1,9 +1,10 @@
 function alertMontage(info, alertClass){
-    let htmlData = `
-        <div class="container mt-5">
-            <div id="myAlert" class="alert ${alertClass}" role="alert">
-                ${info}
-            </div>
+    let htmlData = `      
+        <div id="myAlert" class="alert ${alertClass} alert-dismissible fade show" role="alert">
+          <strong>${info}</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
     `;
 

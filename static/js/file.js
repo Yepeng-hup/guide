@@ -3,9 +3,9 @@ $(function () {
         let dirName = $("#recipient-dir").val();
         if (dirName === '') {
             alertMontage("不允许为空.","alert-danger");
-            setTimeout(function() {
-                window.location = "/";
-            }, 1000);
+            // setTimeout(function() {
+            //     window.location = "/";
+            // }, 1000);
         } else {
             $.post({
                 "url": "/file/create",
@@ -35,9 +35,9 @@ $(function () {
         let fileName = $("#recipient-file").val();
         if (fileName === '') {
             alertMontage("不允许为空.","alert-danger");
-            setTimeout(function() {
-                window.location = "/";
-            }, 1000);
+            // setTimeout(function() {
+            //     window.location = "/";
+            // }, 1000);
         } else {
             $.post({
                 "url": "/file/file/create",
@@ -227,9 +227,6 @@ function catFileCheckbox() {
                             for (let i = 0; i < checkboxes.length; i++) {
                                 checkboxes[i].checked = false;
                             }
-                            setTimeout(function() {
-                                window.location = decodeURIComponent(location.pathname);
-                            }, 1000);
                         }
                     },
                     "fail": function (error) {
@@ -276,10 +273,10 @@ function ysCheckbox() {
                                 window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         } else {
-                            alertMontage("文件或目录压缩失败.","alert-danger");
-                            setTimeout(function() {
-                                window.location = decodeURIComponent(location.pathname);
-                            }, 1000);
+                            alertMontage(data["message"],"alert-danger");
+                            for (let i = 0; i < items.length; i++) {
+                                items[i].checked = false;
+                            }
                         }
                     },
                     "fail": function (error) {
@@ -313,10 +310,10 @@ function jyCheckbox() {
                                 window.location = decodeURIComponent(location.pathname);
                             }, 1000);
                         } else {
-                            alertMontage("解压失败.","alert-danger");
-                            setTimeout(function() {
-                                window.location = decodeURIComponent(location.pathname);
-                            }, 1000);
+                            alertMontage(data["message"],"alert-danger");
+                            for (let i = 0; i < items.length; i++) {
+                                items[i].checked = false;
+                            }
                         }
                     },
                     "fail": function (error) {
@@ -455,3 +452,7 @@ function fileSearch(){
     )
 
 }
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
