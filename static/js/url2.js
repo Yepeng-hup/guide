@@ -27,6 +27,7 @@ function editUrlInfo() {
             temporaryStorage.push(updateObj.url);
             temporaryStorage.push(updateObj.type);
             temporaryStorage.push(updateObj.notes);
+            urlName.setAttribute('readonly', 'true');
             type.setAttribute('readonly', 'true');
         }
     }
