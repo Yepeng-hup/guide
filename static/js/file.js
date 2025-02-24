@@ -208,16 +208,17 @@ function catFileCheckbox() {
                                  theme: "default", // 可选其他主题
                                  indentUnit: 4,
                                  smartIndent: true,
-                                 matchBrackets: true,
+                                 // matchBrackets: true,
                                  autoCloseBrackets: true,
-                                 styleActiveLine: true,
-                                 viewportMargin: Infinity
-                            });
+                                 // styleActiveLine: true,
+                                 viewportMargin: Infinity,
+                                 spellcheck: true,
+                                // 替换匹配不可见字符以及一些特殊符号，比如\u0000到\u001f（ASCII控制字符）、\u007f到\u009f（更多控制字符）等。
+                                 specialChars: /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u2028\u2029\ufeff\ufff9-\ufffc]/g,
+                             });
 
                             // editor.on('change', (cm) => {
-                            //     const modifiedContent = cm.getValue();
-                            //     console.log("-----------",modifiedContent)
-                            //
+                            //     const modifiedContent = cm.getValue()
                             // });
 
                             return
