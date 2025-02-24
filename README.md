@@ -39,8 +39,8 @@ set GUIDE_HOST=0.0.0.0 GUIDE_PORT=7878 GUIDE_FILEDATA_DIR=D:\tmp GUIDE_WHITE_LIS
 
 ```
 
-![](./pic/filesys.png)
+![](./pic/http.png)
 
-![](./pic/pwd.png)
+![](./pic/file.png)
 
-![](./pic/catpwd.png)
+![](./pic/url.png)
