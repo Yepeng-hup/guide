@@ -37,7 +37,7 @@ function catdPwd() {
                     },
                     "success": function (data) {
                         if (data["code"] === 200) {
-                            textpj(data["dPassword"]);
+                            passwdpj(data["dPassword"]);
                             return
                         } else {
                             window.location = location.pathname;

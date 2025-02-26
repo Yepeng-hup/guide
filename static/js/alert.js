@@ -14,15 +14,19 @@ function alertMontage(info, alertClass){
 
 
 function textpj(fileName) {
-    // let htmlData = `
-    //     <pre style="color: white; padding: 10px">${text}</pre>
-    // `;
     let htmlTitle = `
         <h5 class="modal-title">${fileName}</h5>
     `;
 
-    // let list = document.getElementById('texts');
-    // list.innerHTML = htmlData;
     let title = document.getElementById('fileName');
     title.innerHTML = htmlTitle;
+}
+
+function passwdpj(pwd){
+    let htmlData = `
+        <pre style="color: white; padding: 10px">${pwd}</pre>
+    `;
+
+    let list = document.getElementById('pwd-txt');
+    list.innerHTML = htmlData;
 }
