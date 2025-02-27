@@ -1,0 +1,13 @@
+{
+  "file_data_dir": "/opt",
+  "listen_host": "127.0.0.1",
+  "listen_port": "7879",
+  "start_white_list": "false",
+  "white_list": "127.0.0.1,192.168.1.1",
+  "passwd_admin_white_list": "127.0.0.1",
+  "debug_mode": "debug",
+  "access_dir": "/root",
+  "hs_dir": "/tmp",
+  "interface_name": "eth0",
+  "start_mon": "false"
+}

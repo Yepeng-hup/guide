@@ -74,7 +74,7 @@ func UploadData(c *gin.Context) {
 		//	return
 		//}
 		//savePath := filepath.Join(global.SaveDataDir, decodePath, filename)
-		savePath := filepath.Join(global.SaveDataDir, c.PostForm("path"), filename)
+		savePath := filepath.Join(core.Cfg.FileDataDir, c.PostForm("path"), filename)
 		// save file
 		err := c.SaveUploadedFile(file, savePath)
 		if err != nil {
@@ -107,7 +107,7 @@ func CatFile(c *gin.Context) {
 			return
 		} else {
 			//add if file size
-			fileInfo, err := os.Stat(global.SaveDataDir + filePath + "/" + fileList[0])
+			fileInfo, err := os.Stat(core.Cfg.FileDataDir + filePath + "/" + fileList[0])
 			if err != nil {
 				log.Println("ERROR: show file info fail,", err.Error())
 				return
@@ -117,7 +117,7 @@ func CatFile(c *gin.Context) {
 				return
 			}
 			//cat file
-			fileContents, err := ioutil.ReadFile(global.SaveDataDir + filePath + "/" + fileList[0])
+			fileContents, err := ioutil.ReadFile(core.Cfg.FileDataDir + filePath + "/" + fileList[0])
 			if err != nil {
 				log.Printf("ERROR: not is read file, %v\n", err.Error())
 				return
@@ -142,7 +142,7 @@ func UpdateFile(c *gin.Context) {
 		FilePath: c.PostForm("path"),
 	}
 	fileList := strings.Fields(u.FileName)
-	fileWritePath := global.SaveDataDir + "/" + u.FilePath + "/" + fileList[0]
+	fileWritePath := core.Cfg.FileDataDir + "/" + u.FilePath + "/" + fileList[0]
 	err := os.WriteFile(fileWritePath, []byte(u.Centent), 0644)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -159,7 +159,7 @@ func CreateDir(c *gin.Context) {
 		DirPath: c.PostForm("path"),
 	}
 
-	createDirPath := global.SaveDataDir + f.DirPath + "/" + f.DirName
+	createDirPath := core.Cfg.FileDataDir + f.DirPath + "/" + f.DirName
 	err := os.Mkdir(createDirPath, 0755)
 	if err != nil {
 		log.Println("ERROR: create dir fail.", err.Error())
@@ -180,7 +180,7 @@ func CreateFile(c *gin.Context) {
 		FileName: c.PostForm("name"),
 		FilePath: c.PostForm("path"),
 	}
-	createFilePath := global.SaveDataDir + f.FilePath + "/" + f.FileName
+	createFilePath := core.Cfg.FileDataDir + f.FilePath + "/" + f.FileName
 	file, err := os.Create(createFilePath)
 	if err != nil {
 		log.Println("ERROR: create file fail.", err.Error())
@@ -281,14 +281,14 @@ func DeleteDirAndFile(c *gin.Context) {
 		log.Println("ERROR: cannot delete root directory.")
 		return
 	}
-	folderFilePath := global.SaveDataDir + d.FileDirPath + "/" + fileAndDirList[0]
+	folderFilePath := core.Cfg.FileDataDir + d.FileDirPath + "/" + fileAndDirList[0]
 	v, err := os.Stat(folderFilePath)
 	if err != nil {
 		log.Println("ERROR: show dir and file info fail.", err.Error())
 		return
 	}
 	if v.IsDir() {
-		if err := copyDir(folderFilePath, global.Hs); err != nil {
+		if err := copyDir(folderFilePath, core.Cfg.HsDir); err != nil {
 			log.Println("ERROR: mv dir and file to [hs] fail.", err.Error())
 			return
 		}
@@ -300,7 +300,7 @@ func DeleteDirAndFile(c *gin.Context) {
 		log.Printf("INFO: delete dir success. ---> [%s]", fileAndDirList[0])
 		return
 	} else {
-		if err := core.CopyFile(folderFilePath, global.Hs); err != nil {
+		if err := core.CopyFile(folderFilePath, core.Cfg.HsDir); err != nil {
 			log.Println("ERROR: mv file to [hs] fail.", err.Error())
 			return
 		}
@@ -327,7 +327,7 @@ func DecompressionZipTar(c *gin.Context) {
 		fName := fileList[0][lastIndex+1:]
 		switch fName {
 		case "zip":
-			err := archiver.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
+			err := archiver.Unarchive(core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0], core.Cfg.FileDataDir+f.FileDirPath)
 			if err != nil {
 				log.Println("ERROR: unarchive zip fail,", err.Error())
 				c.JSON(http.StatusOK, gin.H{
@@ -338,10 +338,10 @@ func DecompressionZipTar(c *gin.Context) {
 			}
 		case "gz":
 			g := archiver.NewTarGz()
-			err := g.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
+			err := g.Unarchive(core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0], core.Cfg.FileDataDir+f.FileDirPath)
 			if err != nil {
 				log.Println("ERROR: unarchive tar.gz fail,", err.Error())
-				err := core.UnGz(global.SaveDataDir + f.FileDirPath + "/" + fileList[0])
+				err := core.UnGz(core.Cfg.FileDataDir + f.FileDirPath + "/" + fileList[0])
 				if err != nil {
 					log.Println("ERROR: unarchive gz fail,", err.Error())
 					c.JSON(http.StatusOK, gin.H{
@@ -353,7 +353,7 @@ func DecompressionZipTar(c *gin.Context) {
 			}
 		case "tar":
 			t := archiver.NewTar()
-			err := t.Unarchive(global.SaveDataDir+f.FileDirPath+"/"+fileList[0], global.SaveDataDir+f.FileDirPath)
+			err := t.Unarchive(core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0], core.Cfg.FileDataDir+f.FileDirPath)
 			if err != nil {
 				log.Printf("ERROR: unarchive tar fail %s\n", err.Error())
 				c.JSON(http.StatusOK, gin.H{
@@ -395,7 +395,7 @@ func CompressZipTar(c *gin.Context) {
 		log.Println("ERROR: cannot compress zip root directory.")
 		return
 	}
-	err := archiver.Archive([]string{global.SaveDataDir + f.FileDirPath + "/" + fileList[0]}, global.SaveDataDir+f.FileDirPath+"/"+fileList[0]+".zip")
+	err := archiver.Archive([]string{core.Cfg.FileDataDir + f.FileDirPath + "/" + fileList[0]}, core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0]+".zip")
 	if err != nil {
 		log.Printf("ERROR: zip file and dir fail, %v\n", err.Error())
 		c.JSON(http.StatusOK, gin.H{
@@ -413,7 +413,7 @@ func CompressZipTar(c *gin.Context) {
 func ShowRecycle(c *gin.Context) {
 	fileDirSlice := make([]string, 0)
 
-	d, err := os.Open(global.Hs)
+	d, err := os.Open(core.Cfg.HsDir)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusOK, gin.H{
@@ -449,7 +449,7 @@ func ShowRecycle(c *gin.Context) {
 func DeleteRecycleFile(c *gin.Context) {
 	fileName := c.PostForm("fileName")
 	fileList := strings.Fields(fileName)
-	deleteFilePath := global.Hs + "/" + fileList[0]
+	deleteFilePath := core.Cfg.HsDir + "/" + fileList[0]
 	err := os.Remove(deleteFilePath)
 	if err != nil {
 		if err := os.RemoveAll(deleteFilePath); err != nil {
@@ -501,7 +501,7 @@ func FileSearch(c *gin.Context) {
 		return
 	}
 
-	folderFilePath := global.SaveDataDir + f.SsFilePath
+	folderFilePath := core.Cfg.FileDataDir + f.SsFilePath
 	fileList, err := listFilesAndDirs(&folderFilePath, f.SsFile, f.SsFilePath)
 	if err != nil {
 		log.Println(err.Error())

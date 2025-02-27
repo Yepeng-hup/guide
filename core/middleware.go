@@ -3,16 +3,15 @@ package core
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"guide/global"
 	"log"
 	"net"
 	"net/http"
+	"strings"
 )
 
-
 func ifSysIpInWhitelist(ip *string) bool {
-	whitelist := global.IpList()
-	for _, allowedIP := range whitelist {
+	whiteIpList := strings.Split(Cfg.WhiteList, ",")
+	for _, allowedIP := range whiteIpList {
 		if allowedIP == *ip {
 			return true
 		}
@@ -20,12 +19,12 @@ func ifSysIpInWhitelist(ip *string) bool {
 	return false
 }
 
-
+// admin ip num 1
 func ifPwdIpWhitelist(ip *string) bool {
-	whitelistIp := global.PasswdAdminWhitelist
-		if whitelistIp == *ip {
-			return true
-		}
+	whitelistIp := Cfg.PasswdAdminWhiteList
+	if whitelistIp == *ip {
+		return true
+	}
 	return false
 }
 
@@ -37,7 +36,6 @@ func getClientIP(r *http.Request) (string, error) {
 	}
 	return ip, nil
 }
-
 
 func SysIpWhitelist(onOff string) gin.HandlerFunc {
 	//if start whitelist
@@ -64,8 +62,7 @@ func SysIpWhitelist(onOff string) gin.HandlerFunc {
 	}
 }
 
-
-func PasswdAdminWhitelist()gin.HandlerFunc{
+func PasswdAdminWhitelist() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientIP, err := getClientIP(c.Request)
 		if err != nil {
@@ -81,7 +78,6 @@ func PasswdAdminWhitelist()gin.HandlerFunc{
 	}
 }
 
-
 func CookieCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := c.Cookie("user"); err != nil {
@@ -89,7 +85,6 @@ func CookieCheck() gin.HandlerFunc {
 			c.Redirect(http.StatusMovedPermanently, "/login")
 			return
 		}
-		//fmt.Println("================= cookie ok.")
 		return
 	}
 }

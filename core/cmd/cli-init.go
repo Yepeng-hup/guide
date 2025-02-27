@@ -6,38 +6,11 @@ import (
 )
 
 func CliInit() {
-	saveDataDir := global.SaveDataDir
-	w := global.WhiteFile
-	lsStartWhitelist := global.IsStartWhitelist
-	host := global.Host
-	port := global.Port
-	passwdAdminWhitelist := global.PasswdAdminWhitelist
 	newKey := global.NowKey
-	// mon := global.Mon
-	hs := global.Hs
-	mode := global.Mode
 	dirAccessPwd := global.DirAccessPwd
-	//interfaceName := global.InterfaceName
-	if saveDataDir == "" {
-		log.Fatalln("ERROR: GUIDE_FILEDATA_DIR is undefined")
-	} else if w == "" {
-		log.Fatalln("ERROR: GUIDE_WHITE_LIST is undefined")
-	} else if host == "" {
-		log.Fatalln("ERROR: GUIDE_HOST is undefined")
-	} else if port == "" {
-		log.Fatalln("ERROR: GUIDE_PORT is undefined")
-	} else if lsStartWhitelist == "" {
-		log.Fatalln("ERROR: GUIDE_START_WHITE_LIST is undefined")
-	} else if passwdAdminWhitelist == "" {
-		log.Fatalln("ERROR: GUIDE_PWD_ADMIN_WHITELIST is undefined")
-	} else if newKey == "" {
+
+	if newKey == "" {
 		log.Fatalln("ERROR: GUIDE_KEY is undefined")
-		// }else if mon == "" {
-		// 	log.Fatalln("ERROR: GUIDE_MON is undefined")
-	} else if hs == "" {
-		log.Fatalln("ERROR: GUIDE_HS_DIR is undefined")
-	} else if mode == "" {
-		log.Fatalln("ERROR: GUIDE_DEBUG_MODE is undefined")
 	} else if dirAccessPwd == "" {
 		log.Fatalln("ERROR: GUIDE_DIR_ACCESS_PWD is undefined")
 	}

@@ -16,10 +16,10 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
-	"path/filepath"
 
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -77,7 +77,7 @@ func ShowLocalIp(interfaceName *string) (string, error) {
 		ipnet, ok := addr.(*net.IPNet)
 		if ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String() + ":" + global.Port, nil
+				return ipnet.IP.String() + ":" + Cfg.ListenPort, nil
 			}
 		}
 
@@ -97,12 +97,12 @@ func ShowLocalIp(interfaceName *string) (string, error) {
 	//		ipNet, ok := addr.(*net.IPNet)
 	//		if ok && !ipNet.IP.IsLoopback() && ipNet.IP.To4() != nil {
 	//			if ifaceEth.Name == "eth0" || ifaceEth.Name == "WLAN" || ifaceEth.Name == "ens33"{
-	//				return ipNet.IP.String()+":"+global.Port, nil
+	//				return ipNet.IP.String()+":"+Cfg.ListenPort, nil
 	//			}
 	//		}
 	//	}
 	//}
-	return "127.0.0.1" + ":" + global.Port, nil
+	return "127.0.0.1" + ":" + Cfg.ListenPort, nil
 }
 
 //func BitConvert(bit int64)(int64, string){
@@ -235,45 +235,44 @@ func WinC(code string) error {
 	return nil
 }
 
-
-func WriteFile(filePath, fileContent string)error{
+func WriteFile(filePath, fileContent string) error {
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-    if err != nil {
-        return fmt.Errorf(err.Error())
-    }
-    defer file.Close()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer file.Close()
 
-    _, err = file.WriteString(fileContent+"\n")
-    if err != nil {
-        return fmt.Errorf(err.Error())
-    }
+	_, err = file.WriteString(fileContent + "\n")
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
 
 	return nil
 }
 
 func CopyFile(src, dst string) error {
-    sourceFile, err := os.Open(src)
-    if err != nil {
-        return fmt.Errorf("unable to open source file: %v", err)
-    }
-    defer sourceFile.Close()
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return fmt.Errorf("unable to open source file: %v", err)
+	}
+	defer sourceFile.Close()
 
-    destinationFile, err := os.Create(dst+"/"+filepath.Base(src))
-    if err != nil {
-        return fmt.Errorf("unable to create destination file: %v", err)
-    }
-    defer destinationFile.Close()
+	destinationFile, err := os.Create(dst + "/" + filepath.Base(src))
+	if err != nil {
+		return fmt.Errorf("unable to create destination file: %v", err)
+	}
+	defer destinationFile.Close()
 
-    _, err = io.Copy(destinationFile, sourceFile)
-    if err != nil {
-        return fmt.Errorf("failed to copy file contents: %v", err)
-    }
+	_, err = io.Copy(destinationFile, sourceFile)
+	if err != nil {
+		return fmt.Errorf("failed to copy file contents: %v", err)
+	}
 
-    // sync disk
-    err = destinationFile.Sync()
-    if err != nil {
-        return fmt.Errorf("failed to sync file: %v", err)
-    }
+	// sync disk
+	err = destinationFile.Sync()
+	if err != nil {
+		return fmt.Errorf("failed to sync file: %v", err)
+	}
 
-    return nil
+	return nil
 }
