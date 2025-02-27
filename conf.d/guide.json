@@ -5,7 +5,7 @@
   "start_white_list": "false",
   "white_list": "127.0.0.1,192.168.1.1",
   "passwd_admin_white_list": "127.0.0.1",
-  "debug_mode": "debug",
+  "debug_mode": "release",
   "access_dir": "/root",
   "hs_dir": "/tmp",
   "interface_name": "eth0",
