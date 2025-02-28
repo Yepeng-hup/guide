@@ -92,6 +92,17 @@ func DownloadData(c *gin.Context, p *string) {
 	c.File(*p)
 }
 
+//func DownloadFile(c *gin.Context) {
+//	fileName := CreateFiles{
+//		FileName: c.Query("fileName"),
+//		FilePath: c.Query("filePath"),
+//	}
+//
+//	s := filepath.Join(core.Cfg.FileDataDir, fileName.FilePath, fileName.FileName)
+//	c.Header("Content-Type", "application/octet-stream")
+//	c.File(s)
+//}
+
 func CatFile(c *gin.Context) {
 	var fileTailNameList = []string{"go", "sh", "txt", "py", "yaml", "yml", "md", "java", "c", "json", "env", "dockerfile", "conf", "js", "html", "css", "ts",
 		"tmpl", "sql", "bat", "ps1", "php", "tmp", "xml", "ini", "jenkinsfile"}

@@ -102,6 +102,7 @@ func InitRoute() *gin.Engine {
 	file.POST("/jy", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.DecompressionZipTar)
 	file.GET("/cat", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.CatFile)
 	file.POST("/edit", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.UpdateFile)
+	//file.GET("/download", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.DownloadFile)
 	file.GET("/hs", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.ShowRecycle)
 	file.POST("/hs/delete", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.DeleteRecycleFile)
 	file.POST("/ss", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.FileSearch)

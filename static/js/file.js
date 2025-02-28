@@ -456,3 +456,19 @@ function fileSearch(){
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 })
+
+function downloadFile(){
+    let items=document.getElementsByClassName('cb');
+    let len=items.length;
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+            // use Tuple
+            let fileTuple = divlr.split(/\s+/);
+            // window.location.href = `/file/download?fileName=1.py&filePath=${encodeURIComponent(location.pathname)}`;
+            window.location.href = `${location.pathname}/${fileTuple[1]}`
+        }
+    }
+}
