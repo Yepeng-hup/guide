@@ -7,7 +7,6 @@ import (
 	"guide/global"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -78,10 +77,10 @@ func UploadData(c *gin.Context) {
 		// save file
 		err := c.SaveUploadedFile(file, savePath)
 		if err != nil {
-			log.Println("ERROR: file save fail,", err.Error())
+			mlog.Error(fmt.Sprintf("file save fail,%s", err.Error()))
 			return
 		}
-		log.Printf("INFO: file push success ---> [%s]", filename)
+		mlog.Info(fmt.Sprintf("file push success ---> [%s]", filename))
 	}
 }
 
@@ -114,23 +113,23 @@ func CatFile(c *gin.Context) {
 		// starting from the last position of the last point, truncate the string
 		fName := fileList[0][lastIndex+1:]
 		if !core.SliceCheck(fileTailNameList, fName) {
-			log.Println("ERROR: This is not a file.")
+			mlog.Error("This is not a file.")
 			return
 		} else {
 			//add if file size
 			fileInfo, err := os.Stat(core.Cfg.FileDataDir + filePath + "/" + fileList[0])
 			if err != nil {
-				log.Println("ERROR: show file info fail,", err.Error())
+				mlog.Error(fmt.Sprintf("show file info fail,%s", err.Error()))
 				return
 			}
 			if fileInfo.Size()/1024/1024 > 1 {
-				log.Printf("ERROR: only allow viewing files below 1M, the is file size -> [%v]M", fileInfo.Size()/1024/1024)
+				mlog.Error(fmt.Sprintf("only allow viewing files below 1M, the is file size -> [%v]M", fileInfo.Size()/1024/1024))
 				return
 			}
 			//cat file
 			fileContents, err := ioutil.ReadFile(core.Cfg.FileDataDir + filePath + "/" + fileList[0])
 			if err != nil {
-				log.Printf("ERROR: not is read file, %v\n", err.Error())
+				mlog.Error(fmt.Sprintf("not is read file, %v", err.Error()))
 				return
 			}
 			c.JSON(http.StatusOK, gin.H{
@@ -141,7 +140,7 @@ func CatFile(c *gin.Context) {
 		}
 
 	} else {
-		log.Println("ERROR: Not in character [.] .")
+		mlog.Error("Not in character [.] .")
 		return
 	}
 }
@@ -156,7 +155,7 @@ func UpdateFile(c *gin.Context) {
 	fileWritePath := core.Cfg.FileDataDir + "/" + u.FilePath + "/" + fileList[0]
 	err := os.WriteFile(fileWritePath, []byte(u.Centent), 0644)
 	if err != nil {
-		fmt.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -173,13 +172,13 @@ func CreateDir(c *gin.Context) {
 	createDirPath := core.Cfg.FileDataDir + f.DirPath + "/" + f.DirName
 	err := os.Mkdir(createDirPath, 0755)
 	if err != nil {
-		log.Println("ERROR: create dir fail.", err.Error())
+		mlog.Error(fmt.Sprintf("create dir fail,%s", err.Error()))
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
 			"message": "ERROR: create dir fail." + err.Error(),
 		})
 	} else {
-		log.Printf("INFO: create dir success ---> [%v].", f.DirName)
+		mlog.Info(fmt.Sprintf(" create dir success ---> [%v].", f.DirName))
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusOK,
 		})
@@ -194,13 +193,13 @@ func CreateFile(c *gin.Context) {
 	createFilePath := core.Cfg.FileDataDir + f.FilePath + "/" + f.FileName
 	file, err := os.Create(createFilePath)
 	if err != nil {
-		log.Println("ERROR: create file fail.", err.Error())
+		mlog.Error(fmt.Sprintf("create file fail,%s", err.Error()))
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
 			"message": "ERROR: create file fail." + err.Error(),
 		})
 	} else {
-		log.Printf("INFO: create  file success ---> [%v].", f.FileName)
+		mlog.Info(fmt.Sprintf(" create file success ---> [%v].", f.FileName))
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusOK,
 		})
@@ -289,39 +288,39 @@ func DeleteDirAndFile(c *gin.Context) {
 	}
 	fileAndDirList := strings.Fields(d.FileDirName)
 	if fileAndDirList[0] == ".." || fileAndDirList[0] == "." {
-		log.Println("ERROR: cannot delete root directory.")
+		mlog.Error("cannot delete root directory.")
 		return
 	}
 	folderFilePath := core.Cfg.FileDataDir + d.FileDirPath + "/" + fileAndDirList[0]
 	v, err := os.Stat(folderFilePath)
 	if err != nil {
-		log.Println("ERROR: show dir and file info fail.", err.Error())
+		mlog.Error(fmt.Sprintf("show dir and file info fail,%s", err.Error()))
 		return
 	}
 	if v.IsDir() {
 		if err := copyDir(folderFilePath, core.Cfg.HsDir); err != nil {
-			log.Println("ERROR: mv dir and file to [hs] fail.", err.Error())
+			mlog.Error(fmt.Sprintf("mv dir and file to [hs] fail,%s", err.Error()))
 			return
 		}
 
 		if err := os.RemoveAll(folderFilePath); err != nil {
-			log.Println("ERROR: delete dir fail.", err.Error())
+			mlog.Error(fmt.Sprintf("delete dir fail,%s", err.Error()))
 			return
 		}
-		log.Printf("INFO: delete dir success. ---> [%s]", fileAndDirList[0])
+		mlog.Info(fmt.Sprintf("delete dir success. ---> [%s]", fileAndDirList[0]))
 		return
 	} else {
 		if err := core.CopyFile(folderFilePath, core.Cfg.HsDir); err != nil {
-			log.Println("ERROR: mv file to [hs] fail.", err.Error())
+			mlog.Error(fmt.Sprintf("mv file to [hs] fail,%s", err.Error()))
 			return
 		}
 
 		err := os.Remove(folderFilePath)
 		if err != nil {
-			log.Println("ERROR: delete file fail.", err.Error())
+			mlog.Error(fmt.Sprintf("delete file fail,%s", err.Error()))
 			return
 		}
-		log.Printf("INFO: delete file success. ---> [%s]", fileAndDirList[0])
+		mlog.Info(fmt.Sprintf("delete file success. ---> [%s]", fileAndDirList[0]))
 		return
 	}
 
@@ -340,7 +339,6 @@ func DecompressionZipTar(c *gin.Context) {
 		case "zip":
 			err := archiver.Unarchive(core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0], core.Cfg.FileDataDir+f.FileDirPath)
 			if err != nil {
-				log.Println("ERROR: unarchive zip fail,", err.Error())
 				c.JSON(http.StatusOK, gin.H{
 					"code":    http.StatusInternalServerError,
 					"message": fmt.Sprint("ERROR: unarchive zip fail,", err.Error()),
@@ -351,10 +349,9 @@ func DecompressionZipTar(c *gin.Context) {
 			g := archiver.NewTarGz()
 			err := g.Unarchive(core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0], core.Cfg.FileDataDir+f.FileDirPath)
 			if err != nil {
-				log.Println("ERROR: unarchive tar.gz fail,", err.Error())
+				mlog.Error(fmt.Sprintf("unarchive tar.gz fail,%s", err.Error()))
 				err := core.UnGz(core.Cfg.FileDataDir + f.FileDirPath + "/" + fileList[0])
 				if err != nil {
-					log.Println("ERROR: unarchive gz fail,", err.Error())
 					c.JSON(http.StatusOK, gin.H{
 						"code":    http.StatusInternalServerError,
 						"message": fmt.Sprint("ERROR: unarchive gz fail,", err.Error()),
@@ -366,7 +363,6 @@ func DecompressionZipTar(c *gin.Context) {
 			t := archiver.NewTar()
 			err := t.Unarchive(core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0], core.Cfg.FileDataDir+f.FileDirPath)
 			if err != nil {
-				log.Printf("ERROR: unarchive tar fail %s\n", err.Error())
 				c.JSON(http.StatusOK, gin.H{
 					"code":    http.StatusInternalServerError,
 					"message": fmt.Sprint("ERROR: unarchive tar fail,", err.Error()),
@@ -374,7 +370,6 @@ func DecompressionZipTar(c *gin.Context) {
 				return
 			}
 		default:
-			log.Println("ERROR: Invalid decompression format.")
 			c.JSON(http.StatusOK, gin.H{
 				"code":    http.StatusInternalServerError,
 				"message": "ERROR: Invalid decompression format.",
@@ -382,7 +377,6 @@ func DecompressionZipTar(c *gin.Context) {
 			return
 		}
 	} else {
-		log.Println("ERROR: Not in character [.] .")
 		c.JSON(http.StatusOK, gin.H{
 			"code":    http.StatusInternalServerError,
 			"message": "ERROR: Not in character [.] .",
@@ -403,12 +397,11 @@ func CompressZipTar(c *gin.Context) {
 	}
 	fileList := strings.Fields(f.FileDirName)
 	if fileList[0] == ".." || fileList[0] == "." {
-		log.Println("ERROR: cannot compress zip root directory.")
+		mlog.Error("cannot compress zip root directory.")
 		return
 	}
 	err := archiver.Archive([]string{core.Cfg.FileDataDir + f.FileDirPath + "/" + fileList[0]}, core.Cfg.FileDataDir+f.FileDirPath+"/"+fileList[0]+".zip")
 	if err != nil {
-		log.Printf("ERROR: zip file and dir fail, %v\n", err.Error())
 		c.JSON(http.StatusOK, gin.H{
 			"code":    http.StatusInternalServerError,
 			"message": fmt.Sprint("ERROR: zip file and dir fail,", err.Error()),
@@ -426,7 +419,6 @@ func ShowRecycle(c *gin.Context) {
 
 	d, err := os.Open(core.Cfg.HsDir)
 	if err != nil {
-		log.Println(err.Error())
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusInternalServerError,
 			"data": err.Error(),
@@ -438,7 +430,6 @@ func ShowRecycle(c *gin.Context) {
 	// -1 read all file
 	files, err := d.Readdir(-1)
 	if err != nil {
-		log.Println(err.Error())
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusInternalServerError,
 			"data": err.Error(),
@@ -464,18 +455,18 @@ func DeleteRecycleFile(c *gin.Context) {
 	err := os.Remove(deleteFilePath)
 	if err != nil {
 		if err := os.RemoveAll(deleteFilePath); err != nil {
-			log.Println("delete file or dir fail -> ", deleteFilePath, err.Error())
+			mlog.Error(fmt.Sprintf("delete file or dir fail -> [%s],%s", deleteFilePath, err.Error()))
 			return
 		}
 	}
-	log.Println("delete file or dir ok -> ", deleteFilePath)
+	mlog.Info(fmt.Sprintf("delete file or dir ok -> [%s]", deleteFilePath))
 }
 
 func listFilesAndDirs(root *string, searchStr string, ssPath string) ([]FileAnchor, error) {
 	fileList := make([]FileAnchor, 0)
 	err := filepath.Walk(*root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
+			mlog.Error(fmt.Sprintf("prevent panic by handling failure accessing a path %q: %v", path, err.Error()))
 			return err
 		}
 
@@ -515,7 +506,7 @@ func FileSearch(c *gin.Context) {
 	folderFilePath := core.Cfg.FileDataDir + f.SsFilePath
 	fileList, err := listFilesAndDirs(&folderFilePath, f.SsFile, f.SsFilePath)
 	if err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 

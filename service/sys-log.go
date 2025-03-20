@@ -2,13 +2,12 @@ package service
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"guide/core"
-	"log"
 	"net/http"
 	"regexp"
-	"github.com/gin-gonic/gin"
 )
- 
+
 type (
 	Data struct {
 		LogType string `json:"type"`
@@ -62,7 +61,7 @@ func screenErrorAndWarn(logContent string) (bool, string) {
 	return false, ""
 }
 
-func FluentBit(c *gin.Context){
+func FluentBit(c *gin.Context) {
 	var jsonData []map[string]interface{}
 	if err := c.ShouldBindJSON(&jsonData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -72,12 +71,12 @@ func FluentBit(c *gin.Context){
 	for _, v := range jsonData {
 		b, r := screenErrorAndWarn(v["log"].(string))
 		if b {
-			// 
+			//
 			if err := core.InsertActErrorLog(r, v["log"].(string)); err != nil {
-				log.Println(err.Error())
+				mlog.Error(err.Error())
 				return
 			}
-		}else {
+		} else {
 			c.JSON(http.StatusOK, gin.H{
 				"info": "not log type",
 			})
@@ -85,16 +84,15 @@ func FluentBit(c *gin.Context){
 	}
 }
 
-
 func ShowLog(c *gin.Context) {
 	var logType LogType
 	if err := c.BindJSON(&logType); err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 	rel, err := core.SelectLog(fmt.Sprintf("SELECT id,newLogDate,types,logtext FROM error_log WHERE types = \"%s\"", logType.Type))
 	if err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -110,7 +108,7 @@ func DeleteLimitLog(c *gin.Context) {
 	//	return
 	//}
 	if err := core.DeleteErrLog(); err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{

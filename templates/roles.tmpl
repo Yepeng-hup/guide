@@ -1,0 +1,181 @@
+{{define "roles.tmpl"}}
+<html lang="en">
+<head>
+    <title>角色列表</title>
+</head>
+{{template "base" .}}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+</style>
+<body>
+    <div style="margin-top: 80px; margin-left: 10px">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">新建角色</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo" onclick="selectRole()">查看角色权限</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo">查看路由</button>
+    </div>
+
+    <table class="table table-hover" style="margin-top: 15px">
+        <thead>
+        <th>@</th>
+        <th>角色名</th>
+        <th>创建时间</th>
+        <th>动作</th>
+        </thead>
+
+        <tbody>
+        {{range $k ,$v := .roleList}}
+        {{if ne $v.RoleName  "role_admin"}}
+        <tr>
+            <td><input class="cb" type="checkbox"/></td>
+            <td>{{$v.RoleName}}</td>
+            <td>{{$v.NewRoleDate}}</td>
+            <td>
+                <button class="btn btn-danger" onclick="deleteRole()">删除</button>
+            </td>
+        </tr>
+        {{end}}
+        {{end}}
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">新建角色</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" onclick="clearFrom()">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-form-label">*角色名</label>
+                            <input type="text" class="form-control" name="roleName" id="recipient-roleName">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-form-label">*权限设定</label>
+                            <table class="table table-hover" style="margin-top: 5px">
+                                <thead>
+                                    <th>权限</th>
+                                    <th>@</th>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td style="color: #0b87e7">用户管理:user</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">网址管理:url</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">文件管理:file</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">服务管理:service</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">密码管理:passwd</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">日志管理:log</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">安全管理:security</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">定时任务管理:cron</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #0b87e7">其他管理:other</td>
+                                        <td><input class="cb" type="checkbox"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cclose" onclick="clearFrom()">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="createRole()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">角色权限</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" onclick="clearTableData()">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <div class="form-group">
+                                <div class="form-row align-items-center">
+                                    <div class="col-auto my-1">
+                                        <select class="custom-select mr-sm-2" id="roles">
+                                        </select>
+                                    </div>
+                                    <div class="col-auto my-1">
+                                        <button type="button" class="btn btn-primary" onclick="selectRolePermission()">查询</button>
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-form-label">角色权限</label>
+                            <table class="table table-hover" style="margin-top: 5px">
+                                <thead>
+                                    <th>@</th>
+                                    <th>角色名</th>
+                                    <th>权限</th>
+                                </thead>
+
+                                <tbody id="per"></tbody>
+                            </table>
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cclose2" onclick="clearTableData()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/sta/js/rbac.js"></script>
+
+    <script>
+        function clearTableData() {
+            const tbody = document.getElementById("per");
+            tbody.innerHTML = '';
+        }
+
+        function clearFrom(){
+            var checkboxes = document.getElementsByClassName('cb');
+            for (let i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = false;
+            }
+            document.getElementById("recipient-roleName").value = "";
+        }
+    </script>
+
+</body>
+</html>
+{{end}}

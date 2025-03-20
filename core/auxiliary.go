@@ -12,7 +12,6 @@ import (
 	"guide/global"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"os"
 	"os/exec"
@@ -36,7 +35,7 @@ func ShowUrl() []News {
 	if err != nil {
 		err := os.Mkdir("text", 0755)
 		if err != nil {
-			log.Println("ERROR: create dir fail,", err.Error())
+			mlog.Error(fmt.Sprintf("create dir fail,%s", err.Error()))
 			return nil
 		}
 		return nil
@@ -57,7 +56,7 @@ func ShowUrl() []News {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Println("ERROR: ", err.Error())
+		mlog.Error(err.Error())
 		return nil
 	}
 	return structSlice

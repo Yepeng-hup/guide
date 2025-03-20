@@ -43,6 +43,12 @@ type (
 		Password    string
 	}
 
+	UserRole struct {
+		Id       string
+		UserName string
+		RoleName string
+	}
+
 	ErrorLog struct {
 		Id         string
 		Date       string
@@ -60,13 +66,38 @@ type (
 
 	Url struct {
 		// Id string
-		UrlName string
+		UrlName    string
 		UrlAddress string
-		UrlType string
-		UrlNotes string
+		UrlType    string
+		UrlNotes   string
 	}
 
 	UrlType struct {
 		TypeName string
+	}
+
+	Roles struct {
+		Id          string
+		RoleName    string
+		NewRoleDate string
+	}
+
+	RolePermission struct {
+		Id         string
+		RoleName   string
+		Permission string
+		Label      string
+	}
+
+	Permission struct {
+		User     []string `json:"user"`
+		Url      []string `json:"url"`
+		File     []string `json:"file"`
+		Service  []string `json:"service"`
+		Passwd   []string `json:"passwd"`
+		Log      []string `json:"log"`
+		Security []string `json:"security"`
+		Cron     []string `json:"cron"`
+		Other    []string `json:"other"`
 	}
 )

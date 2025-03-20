@@ -18,6 +18,7 @@ function logout() {
 
 function createUser() {
     let userName = $("#recipient-userName").val();
+    let roleName = $("#recipient-roleName").val();
     let password = $("#recipient-userPasswd").val();
     let password2 = $("#recipient-userPasswd2").val();
 
@@ -35,7 +36,8 @@ function createUser() {
         contentType: 'application/json',
         data: JSON.stringify({
             "userName": userName,
-            "password": password2,
+            "roleName": roleName,
+            "password": password2
         }),
         success: function (data) {
             if (data.code === 200) {
@@ -46,13 +48,38 @@ function createUser() {
                 document.getElementById("cclose").click();
                 window.location = "/user/index";
             } else {
-                alert("添加失败");
+                alert(data["msg"]);
             }
         },
         error: function () {
             alert("请求失败！");
         }
     });
+}
+
+
+function createUserTc(){
+    $.get(
+        {
+            "url": "/user/role/select",
+            "success": function (data) {
+                let htmlData = "";
+
+                for( var i=0; i<data.roleList.length; i++){
+                    htmlData += `
+                            <option>${data.roleList[i].RoleName}</option>
+                    `;
+
+                };
+
+                let list = document.getElementById('recipient-roleName');
+                list.innerHTML = htmlData;
+            },
+            "fail": function (error) {
+                console.log(error);
+            }
+        },
+    )
 }
 
 

@@ -19,7 +19,7 @@
                 <label for="inputPassword6">网址</label>
                 <input type="text" style="width: 300px" class="form-control mx-sm-3" name="url-addr">
                 <label for="inputPassword6">类型</label>
-                <select name="url-type" id="url-type" class="form-control mx-sm-3">
+                <select name="url-type" id="url-type" class="custom-select mx-sm-3">
                     {{range $_, $v := .urlTypeList}}
                         {{if eq $v.TypeName "other"}}
                             <option selected="other">{{$v.TypeName}}</option>

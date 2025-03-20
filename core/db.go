@@ -3,18 +3,20 @@ package core
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"guide/global"
 	"log"
 	"os"
-	_ "github.com/mattn/go-sqlite3"
 )
 
-var tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem", "url", "url_type"}
+var (
+	tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem", "url", "url_type", "roles", "user_roles", "roles_permission", "permission"}
+)
 
 func ConnDb() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "guide.db")
 	if err != nil {
-		return nil, fmt.Errorf("EEROR: conn db sqlite fail, %v", err.Error())
+		return nil, fmt.Errorf("conn db sqlite fail, %v", err.Error())
 	}
 	return db, nil
 }
@@ -54,62 +56,85 @@ func CreateGuideAllTable() error {
 	list := checkTableIfCreate()
 	for _, v := range tableList {
 		if IfElement(list, v) {
-
 		} else {
 			switch v {
 			case "cron":
 				createTableCron := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
 				_, err = db.Exec(createTableCron)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table cron fail,%s", err.Error())
+					return fmt.Errorf("create table cron fail,%s", err.Error())
 				}
 			case "service_tools":
 				createTableServiceTools := `CREATE TABLE IF NOT EXISTS service_tools (id INTEGER PRIMARY KEY, serviceName TEXT, serviceDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), startCmd TEXT, serviceNotes TEXT);`
 				_, err = db.Exec(createTableServiceTools)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table service_tools fail,%s", err.Error())
+					return fmt.Errorf("create table service_tools fail,%s", err.Error())
 				}
 			case "user_passwd":
 				createTableUserPasswd := `CREATE TABLE IF NOT EXISTS user_passwd (id INTEGER PRIMARY KEY, serviceName TEXT, user TEXT, password TEXT, Notes TEXT);`
 				_, err = db.Exec(createTableUserPasswd)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table user_passwd fail,%s", err.Error())
+					return fmt.Errorf("create table user_passwd fail,%s", err.Error())
 				}
 			case "user":
-				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, newUserDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), password TEXT);`
+				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, newUserDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), password TEXT, UNIQUE (userName));`
 				_, err = db.Exec(createTableUser)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table user fail,%s", err.Error())
+					return fmt.Errorf("create table user fail,%s", err.Error())
 				}
 			case "error_log":
 				createTableErrorLog := `CREATE TABLE IF NOT EXISTS error_log (id INTEGER PRIMARY KEY, newLogDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), types TEXT, logtext TEXT);`
 				_, err = db.Exec(createTableErrorLog)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table error_log fail,%s", err.Error())
+					return fmt.Errorf("create table error_log fail,%s", err.Error())
 				}
 			case "cpu":
 				createTableCPU := `CREATE TABLE IF NOT EXISTS cpu (id INTEGER PRIMARY KEY, cpunum INT);`
 				_, err = db.Exec(createTableCPU)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table cpu fail,%s", err.Error())
+					return fmt.Errorf("create table cpu fail,%s", err.Error())
 				}
 			case "mem":
 				createTableMEM := `CREATE TABLE IF NOT EXISTS mem (id INTEGER PRIMARY KEY, memnum FLOAT);`
 				_, err = db.Exec(createTableMEM)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table mem fail,%s", err.Error())
+					return fmt.Errorf("create table mem fail,%s", err.Error())
 				}
 			case "url":
 				createTableUrl := `CREATE TABLE IF NOT EXISTS url (id INTEGER PRIMARY KEY, urlName TEXT, urlAddress TEXT, urlType TEXT, urlNotes TEXT);`
 				_, err = db.Exec(createTableUrl)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table url fail,%s", err.Error())
+					return fmt.Errorf("create table url fail,%s", err.Error())
 				}
 			case "url_type":
 				createTableUrlType := `CREATE TABLE IF NOT EXISTS url_type (id INTEGER PRIMARY KEY, urlType TEXT);`
 				_, err = db.Exec(createTableUrlType)
 				if err != nil {
-					return fmt.Errorf("ERROR: create table url_type fail,%s", err.Error())
+					return fmt.Errorf("create table url_type fail,%s", err.Error())
+				}
+			case "roles":
+				createTableUrlType := `CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY, roleName TEXT, newRoleDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), UNIQUE (roleName));`
+				_, err = db.Exec(createTableUrlType)
+				if err != nil {
+					return fmt.Errorf("create table roles fail,%s", err.Error())
+				}
+			case "user_roles":
+				createTableUrlType := `CREATE TABLE IF NOT EXISTS user_roles (id INTEGER PRIMARY KEY, userName TEXT, roleName TEXT, UNIQUE (userName));`
+				_, err = db.Exec(createTableUrlType)
+				if err != nil {
+					return fmt.Errorf("create table user_roles fail,%s", err.Error())
+				}
+			case "roles_permission":
+				createTableUrlType := `CREATE TABLE IF NOT EXISTS roles_permission (id INTEGER PRIMARY KEY, roleName TEXT, permission TEXT, label TEXT);`
+				_, err = db.Exec(createTableUrlType)
+				if err != nil {
+					return fmt.Errorf("create table roles_permission fail,%s", err.Error())
+				}
+			case "permission":
+				createTableUrlType := `CREATE TABLE IF NOT EXISTS permission (id INTEGER PRIMARY KEY, permission_url TEXT);`
+				_, err = db.Exec(createTableUrlType)
+				if err != nil {
+					return fmt.Errorf("create table permission fail,%s", err.Error())
 				}
 
 			default:
@@ -130,8 +155,8 @@ func InitUser() {
 	sql := "SELECT userName FROM user WHERE userName = \"admin\""
 	rows, err := db.Query(sql)
 	if err != nil {
-		log.Println("ERROR: init fail.")
-		log.Println("ERROR: query user table fail,", err.Error())
+		mlog.Error("init fail.")
+		mlog.Error(fmt.Sprintf("query user table fail,%s", err.Error()))
 		os.Exit(1)
 	}
 	defer rows.Close()
@@ -142,8 +167,8 @@ func InitUser() {
 	for rows.Next() {
 		err := rows.Scan(&user.User)
 		if err != nil {
-			log.Println("ERROR: init fail.")
-			log.Println(err.Error())
+			mlog.Error("init fail.")
+			mlog.Error(err.Error())
 			os.Exit(1)
 		}
 		userList = append(userList, user)
@@ -153,12 +178,12 @@ func InitUser() {
 		insertSQL := `INSERT INTO user (userName, password) VALUES (?,?);`
 		encryptionPwd, err := PasswordEncryption("guide654321", global.NowKey)
 		if err != nil {
-			log.Println("ERROR: init user encryption passwd fail, ", err.Error())
+			mlog.Error(fmt.Sprintf("init user encryption passwd fail,%s", err.Error()))
 			return
 		}
 		_, err = db.Exec(insertSQL, "admin", encryptionPwd)
 		if err != nil {
-			log.Println("ERROR: init db user fail, ", err.Error())
+			mlog.Error(fmt.Sprintf("init db user fail,%s", err.Error()))
 			return
 		}
 	} else {
@@ -175,7 +200,7 @@ func InsertAct(params ...string) {
 	insertSQL := `INSERT INTO cron (cronName, cronTime, cronCode, cronNotes) VALUES (?, ?, ?, ?);`
 	_, err = db.Exec(insertSQL, params[0], params[1], params[2], params[3])
 	if err != nil {
-		log.Println("ERROR: insert data to cron fail, ", err.Error())
+		mlog.Error(fmt.Sprintf("insert data to cron fail,%s", err.Error()))
 		return
 	}
 }
@@ -188,7 +213,33 @@ func InsertActSTools(p ...string) error {
 	insertSQL := `INSERT INTO service_tools (serviceName, startCmd, serviceNotes) VALUES (?, ?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data to service_tools fail,%s", err.Error())
+		return fmt.Errorf("insert data to service_tools fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertRole(role string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO roles (roleName) VALUES (?);`
+	_, err = db.Exec(insertSQL, role)
+	if err != nil {
+		return fmt.Errorf("insert data to roles fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertRolePermission(permission ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO roles_permission (roleName, permission, label) VALUES (?,?,?);`
+	_, err = db.Exec(insertSQL, permission[0], permission[1], permission[2])
+	if err != nil {
+		return fmt.Errorf("insert data to role_permission fail,%s", err.Error())
 	}
 	return nil
 }
@@ -201,7 +252,7 @@ func InsertUserPwd(p ...string) error {
 	insertSQL := `INSERT INTO user_passwd (serviceName,user ,password ,Notes) VALUES (?, ?, ?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2], p[3])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data to user_passwd fail,%s", err.Error())
+		return fmt.Errorf("insert data to user_passwd fail,%s", err.Error())
 	}
 	return nil
 }
@@ -214,7 +265,7 @@ func InsertUser(p ...string) error {
 	insertSQL := `INSERT INTO user (userName,password) VALUES (?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data to user fail,%s", err.Error())
+		return fmt.Errorf("insert data to user fail,%s", err.Error())
 	}
 	return nil
 }
@@ -227,7 +278,7 @@ func InsertActErrorLog(p ...string) error {
 	insertSQL := `INSERT INTO error_log (types, logtext) VALUES (?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data error_log fail,%s", err.Error())
+		return fmt.Errorf("insert data error_log fail,%s", err.Error())
 	}
 	return nil
 }
@@ -240,7 +291,7 @@ func InsertActCPU(p ...int) error {
 	insertSQL := `INSERT INTO cpu (cpunum) VALUES (?);`
 	_, err = db.Exec(insertSQL, p[0])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data cpu fail,%s", err.Error())
+		return fmt.Errorf("insert data cpu fail,%s", err.Error())
 	}
 	return nil
 }
@@ -253,7 +304,7 @@ func InsertActMEM(p ...float64) error {
 	insertSQL := `INSERT INTO mem (memnum) VALUES (?);`
 	_, err = db.Exec(insertSQL, p[0])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data mem fail,%s", err.Error())
+		return fmt.Errorf("insert data mem fail,%s", err.Error())
 	}
 	return nil
 }
@@ -266,11 +317,10 @@ func InsertActUrl(p ...string) error {
 	insertSQL := `INSERT INTO url (urlName, urlAddress, urlType, urlNotes) VALUES (?, ?, ?, ?);`
 	_, err = db.Exec(insertSQL, p[0], p[1], p[2], p[3])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data url fail,%s", err.Error())
+		return fmt.Errorf("insert data url fail,%s", err.Error())
 	}
 	return nil
 }
-
 
 func InsertActUrlType(p ...string) error {
 	db, err := ConnDb()
@@ -280,7 +330,20 @@ func InsertActUrlType(p ...string) error {
 	insertSQL := `INSERT INTO url_type (urlType) VALUES (?);`
 	_, err = db.Exec(insertSQL, p[0])
 	if err != nil {
-		return fmt.Errorf("ERROR: insert data url_type fail,%s", err.Error())
+		return fmt.Errorf("insert data url_type fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertUserAndRole(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO user_roles (userName,roleName) VALUES (?,?);`
+	_, err = db.Exec(insertSQL, p[0], p[1])
+	if err != nil {
+		return fmt.Errorf("insert data user_roles fail,%s", err.Error())
 	}
 	return nil
 }
@@ -294,7 +357,7 @@ func SelectAct(k, v string, b bool) ([]Cron, error) {
 	if b {
 		rows, err := db.Query("SELECT * FROM cron")
 		if err != nil {
-			return nil, fmt.Errorf("ERROR: query cron table fail,%s", err.Error())
+			return nil, fmt.Errorf("query cron table fail,%s", err.Error())
 		}
 		defer rows.Close()
 		var cron struct {
@@ -319,7 +382,7 @@ func SelectAct(k, v string, b bool) ([]Cron, error) {
 		ssql := "SELECT * FROM cron  WHERE ? = ?"
 		rows, err := db.Query(ssql, k, v)
 		if err != nil {
-			return nil, fmt.Errorf("ERROR: query cron table fail,%s", err.Error())
+			return nil, fmt.Errorf("query cron table fail,%s", err.Error())
 		}
 		defer rows.Close()
 		var cron struct {
@@ -349,7 +412,7 @@ func SelectActSTools(selectSql string) ([]ServiceTools, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query service_tools table fail,%s", err.Error())
+		return nil, fmt.Errorf("query service_tools table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var serviceTools struct {
@@ -378,7 +441,7 @@ func SelectUserPwd() ([]UserPwd, error) {
 	sql := "SELECT * FROM user_passwd"
 	rows, err := db.Query(sql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query user_passwd table fail,%s", err.Error())
+		return nil, fmt.Errorf("query user_passwd table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var userPwd struct {
@@ -406,7 +469,7 @@ func SelectUser(selectSql string) ([]UserAll, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query user table fail,%s", err.Error())
+		return nil, fmt.Errorf("query user table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var user struct {
@@ -426,6 +489,85 @@ func SelectUser(selectSql string) ([]UserAll, error) {
 	return userList, nil
 }
 
+func SelectUserAndRole(selectSql string) ([]UserRole, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("query user_roles table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var userRole struct {
+		Id       string
+		UserName string
+		RoleName string
+	}
+	userAndRoleList := make([]UserRole, 0)
+	for rows.Next() {
+		err := rows.Scan(&userRole.Id, &userRole.UserName, &userRole.RoleName)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		userAndRoleList = append(userAndRoleList, userRole)
+	}
+	return userAndRoleList, nil
+}
+
+func SelectRole(selectSql string) ([]Roles, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("query roles table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var roles struct {
+		Id          string
+		RoleName    string
+		NewRoleDate string
+	}
+	roleList := make([]Roles, 0)
+	for rows.Next() {
+		err := rows.Scan(&roles.Id, &roles.RoleName, &roles.NewRoleDate)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		roleList = append(roleList, roles)
+	}
+	return roleList, nil
+}
+
+func SelectRolePermission(selectSql string) ([]RolePermission, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("query roles_permission table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var rolePermission struct {
+		Id         string
+		RoleName   string
+		Permission string
+		Label      string
+	}
+	rolePermissionList := make([]RolePermission, 0)
+	for rows.Next() {
+		err := rows.Scan(&rolePermission.Id, &rolePermission.RoleName, &rolePermission.Permission, &rolePermission.Label)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		rolePermissionList = append(rolePermissionList, rolePermission)
+	}
+	return rolePermissionList, nil
+}
+
 func SelectLog(selectSql string) ([]ErrorLog, error) {
 	db, err := ConnDb()
 	if err != nil {
@@ -433,7 +575,7 @@ func SelectLog(selectSql string) ([]ErrorLog, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query error_log table fail,%s", err.Error())
+		return nil, fmt.Errorf("query error_log table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var logs struct {
@@ -460,7 +602,7 @@ func SelectCPU(selectSql string) ([]Cpu, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query cpu table fail,%s", err.Error())
+		return nil, fmt.Errorf("query cpu table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var cpu struct {
@@ -484,7 +626,7 @@ func SelectMEM(selectSql string) ([]Mem, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query mem table fail,%s", err.Error())
+		return nil, fmt.Errorf("query mem table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var mem struct {
@@ -501,7 +643,6 @@ func SelectMEM(selectSql string) ([]Mem, error) {
 	return memList, nil
 }
 
-
 func SelectUrl(selectSql string) ([]Url, error) {
 	db, err := ConnDb()
 	if err != nil {
@@ -509,15 +650,15 @@ func SelectUrl(selectSql string) ([]Url, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query url table fail,%s", err.Error())
+		return nil, fmt.Errorf("query url table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var url struct {
 		// Id         string
-		UrlName       string
-		UrlAddress    string
-		UrlType 	  string
-		UrlNotes	  string
+		UrlName    string
+		UrlAddress string
+		UrlType    string
+		UrlNotes   string
 	}
 	urlList := make([]Url, 0)
 	for rows.Next() {
@@ -530,7 +671,6 @@ func SelectUrl(selectSql string) ([]Url, error) {
 	return urlList, nil
 }
 
-
 func SelectUrlType(selectSql string) ([]UrlType, error) {
 	db, err := ConnDb()
 	if err != nil {
@@ -538,12 +678,12 @@ func SelectUrlType(selectSql string) ([]UrlType, error) {
 	}
 	rows, err := db.Query(selectSql)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: query typeName table fail,%s", err.Error())
+		return nil, fmt.Errorf("query typeName table fail,%s", err.Error())
 	}
 	defer rows.Close()
 	var urlType struct {
 		// Id         string
-		TypeName       string
+		TypeName string
 	}
 	urlTypeList := make([]UrlType, 0)
 	for rows.Next() {
@@ -571,7 +711,7 @@ func DeleteAct(p ...string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete cron database record ok. name -> [%s].", p[0])
+	mlog.Info(fmt.Sprintf("delete cron database record ok. name -> [%s].", p[0]))
 	return nil
 }
 
@@ -590,7 +730,7 @@ func DeleteActSTools(p ...string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete service_tools ok. name -> [%s].", p[0])
+	mlog.Info(fmt.Sprintf("delete service_tools ok. name -> [%s].", p[0]))
 	return nil
 }
 
@@ -609,7 +749,7 @@ func DeleteErrLog() error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete table error_log data ok.")
+	mlog.Info("delete table error_log data ok.")
 	return nil
 }
 
@@ -628,7 +768,7 @@ func DeleteUserPwd(p ...string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete user_passwd ok. name -> [%s].", p[0])
+	mlog.Info(fmt.Sprintf("delete user_passwd ok. name -> [%s].", p[0]))
 	return nil
 }
 
@@ -647,10 +787,9 @@ func DeleteUser(p ...string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete user ok. name -> [%s].", p[0])
+	mlog.Info(fmt.Sprintf("delete user ok. name -> [%s].", p[0]))
 	return nil
 }
-
 
 func DeleteUrl(p ...string) error {
 	db, err := ConnDb()
@@ -667,7 +806,7 @@ func DeleteUrl(p ...string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete url ok. name -> [%s].", p[0])
+	mlog.Info(fmt.Sprintf("delete url ok. name -> [%s].", p[0]))
 	return nil
 }
 
@@ -686,7 +825,7 @@ func DeleteUrlType(p ...string) error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	log.Printf("INFO: delete url_type ok. name -> [%s].", p[0])
+	mlog.Info(fmt.Sprintf("delete url_type ok. name -> [%s].", p[0]))
 	return nil
 }
 
@@ -713,4 +852,3 @@ func UpdateUserPwd(p ...string) error {
 	}
 	return nil
 }
-

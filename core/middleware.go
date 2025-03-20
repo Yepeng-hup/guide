@@ -81,7 +81,7 @@ func PasswdAdminWhitelist() gin.HandlerFunc {
 func CookieCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := c.Cookie("user"); err != nil {
-			log.Println("not login,", err.Error())
+			mlog.Error(fmt.Sprintf("not login,%s", err.Error()))
 			c.Redirect(http.StatusMovedPermanently, "/login")
 			return
 		}

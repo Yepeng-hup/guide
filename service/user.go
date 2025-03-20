@@ -7,7 +7,6 @@ import (
 	"guide/core"
 	"guide/core/cmd"
 	"guide/global"
-	"log"
 	"net/http"
 )
 
@@ -16,6 +15,16 @@ type (
 		User     string
 		Password string
 	}
+
+	User struct {
+		UserName string `json:"userName"`
+		RoleName string `json:"roleName"`
+		Password string `json:"password"`
+	}
+)
+
+var (
+	mlog = core.Wlogs{}
 )
 
 func Login(c *gin.Context) {
@@ -29,13 +38,13 @@ func LoginCk(c *gin.Context) {
 	}
 	user, err := core.SelectUser(fmt.Sprintf("SELECT id,userName,newUserDate,password FROM user WHERE userName = \"%s\"", f.User))
 	if err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 	if len(user) >= 1 {
 		pwd, err := core.PasswordDecrypt(user[0].Password, global.NowKey)
 		if err != nil {
-			log.Println(err)
+			mlog.Error(err.Error())
 			c.HTML(http.StatusOK, "login.tmpl", gin.H{
 				"error": err,
 			})
@@ -44,10 +53,12 @@ func LoginCk(c *gin.Context) {
 		if f.User == user[0].UserName && f.Password == pwd {
 			cookie := http.Cookie{Name: "user", Value: f.User, MaxAge: 408000}
 			http.SetCookie(c.Writer, &cookie)
+			mlog.Info(fmt.Sprintf("user -> [%s] login success.", f.User))
 			c.Redirect(http.StatusMovedPermanently, "/url/index")
 			return
 		}
 	}
+	mlog.Error(fmt.Sprintf("user -> [%s] login fail.", f.User))
 	c.HTML(http.StatusOK, "login.tmpl", gin.H{
 		"error": "user or password input error",
 	})
@@ -56,29 +67,50 @@ func LoginCk(c *gin.Context) {
 func UserAdmin(c *gin.Context) {
 	userList, err := core.SelectUser("SELECT id,userName,newUserDate,password FROM user")
 	if err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
+
+	userAndRoleList, err := core.SelectUserAndRole("SELECT * FROM user_roles")
+	if err != nil {
+		mlog.Error(err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "user.tmpl", gin.H{
-		"userList": userList,
+		"userList":        userList,
+		"userAndRoleList": userAndRoleList,
 	})
 }
 
 func CreateUser(c *gin.Context) {
-	data, _ := c.GetRawData()
-	var body map[string]string
-	_ = json.Unmarshal(data, &body)
-	userName := body["userName"]
-	userPassword := body["password"]
-	pwd, err := core.PasswordEncryption(userPassword, global.NowKey)
-	if err != nil {
-		log.Println(err)
+	var user User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "json analysis parameter error.",
+		})
+		return
 	}
-	if err := core.InsertUser(userName, pwd); err != nil {
+	pwd, err := core.PasswordEncryption(user.Password, global.NowKey)
+	if err != nil {
+		mlog.Error(err.Error())
+	}
+	if err := core.InsertUser(user.UserName, pwd); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,
+			"msg":  err.Error(),
 		})
+		return
 	}
+
+	if err := core.InsertUserAndRole(user.UserName, user.RoleName); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusBadGateway,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	mlog.Info(fmt.Sprintf("add user and user add role [%s] success ---> [%s]", user.RoleName, user.UserName))
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 	})
@@ -109,7 +141,7 @@ func UpdatePwd(c *gin.Context) {
 	} else {
 		pwd, err := core.PasswordEncryption(userPassword, global.NowKey)
 		if err != nil {
-			log.Println(err)
+			mlog.Error(err.Error())
 			c.JSON(http.StatusOK, gin.H{
 				"code": http.StatusBadGateway,
 			})
@@ -117,7 +149,7 @@ func UpdatePwd(c *gin.Context) {
 		}
 
 		if err := core.UpdateUserPwd(pwd, userName); err != nil {
-			log.Println(err)
+			mlog.Error(err.Error())
 			c.JSON(http.StatusOK, gin.H{
 				"code": http.StatusBadGateway,
 			})
@@ -137,7 +169,7 @@ func DeleteUser(c *gin.Context) {
 	userName := body["userName"]
 	user, err := c.Cookie("user")
 	if err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 
@@ -145,13 +177,14 @@ func DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,
 		})
-		log.Println("ERROR: This login user does not have permission --> ", user)
+		mlog.Error(fmt.Sprintf("This login user does not have permission --> %s", user))
 		return
 	}
 	if err := core.DeleteUser(userName); err != nil {
-		log.Println(err)
+		mlog.Error(err.Error())
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 	})
@@ -166,7 +199,7 @@ func UpdateUserInfo(c *gin.Context) {
 	newUserDate := body["newUserDate"]
 	user, err := c.Cookie("user")
 	if err != nil {
-		log.Println(err.Error())
+		mlog.Error(err.Error())
 		return
 	}
 
@@ -174,16 +207,17 @@ func UpdateUserInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,
 		})
-		log.Println("ERROR: This login user does not have permission --> ", user)
+		mlog.Error(fmt.Sprintf("This login user does not have permission --> %s", user))
 		return
 	}
 	if err := core.UpdateUser(userName, newUserDate, userId); err != nil {
-		log.Println(err)
+		mlog.Error(err.Error())
 		c.JSON(http.StatusOK, gin.H{
 			"code": http.StatusBadGateway,
 		})
 		return
 	}
+	mlog.Info(fmt.Sprintf("update user [%s] info ok.", userName))
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 	})
@@ -195,7 +229,7 @@ func RebootHost(c *gin.Context) {
 	case "linux":
 		cmdCode := "reboot"
 		if err := cmd.UseCmd(cmdCode); err != nil {
-			log.Println("ERROR: reboot host fail,", err)
+			mlog.Error(fmt.Sprintf("reboot host fail,%s", err))
 			c.JSON(http.StatusOK, gin.H{
 				"code": http.StatusBadGateway,
 			})
@@ -205,7 +239,7 @@ func RebootHost(c *gin.Context) {
 	case "windows":
 		cmdCode := "shutdown.exe -r -f -t 0"
 		if err := cmd.UseCmd(cmdCode); err != nil {
-			log.Println("ERROR: reboot host fail,", err)
+			mlog.Error(fmt.Sprintf("reboot host fail,%s", err))
 			c.JSON(http.StatusOK, gin.H{
 				"code": http.StatusBadGateway,
 			})
@@ -213,7 +247,7 @@ func RebootHost(c *gin.Context) {
 		}
 		return
 	default:
-		log.Printf("%s", "WARN: unsupported operating system.")
+		mlog.Warn("unsupported operating system.")
 		return
 	}
 

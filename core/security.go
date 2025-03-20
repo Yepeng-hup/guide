@@ -5,7 +5,6 @@ import (
 )
 
 type Security struct {
-
 }
 
 func dangerKeywords(formInput string, keywords []string) bool {
@@ -17,7 +16,9 @@ func dangerKeywords(formInput string, keywords []string) bool {
 	return false
 }
 
-func (s *Security)CheckForm(formStrList ...string) bool{
+// return true is Illegal
+
+func (s *Security) CheckForm(formStrList ...string) bool {
 	dangerKeywordsList := []string{"rm", "delete", ">", "<", "|", "&", "&&", "||", ";", "..", "!", "^", "$", "@", "#", "*"}
 
 	for _, v := range formStrList {
@@ -27,5 +28,3 @@ func (s *Security)CheckForm(formStrList ...string) bool{
 	}
 	return false
 }
-
-

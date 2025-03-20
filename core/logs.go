@@ -1,6 +1,18 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"time"
+)
+
+const (
+	logPath = "logs/guide.log"
+)
+
+var (
+	mlog = Wlogs{}
+)
 
 type Logs interface {
 	Info(string)
@@ -9,20 +21,28 @@ type Logs interface {
 }
 
 type Wlogs struct {
-	Date string
 }
 
-func (w Wlogs) Info(l string){
-	log := fmt.Sprintf("[GUIDE] "+"INFO "+"%s "+l, w.Date)
-	fmt.Println(log)
+func (w Wlogs) Info(l string) {
+	now := time.Now().Format("2006/01/02 - 15:04:05")
+	mlog := fmt.Sprintf("[GUIDE] %v INFO %s", now, l)
+	if err := WriteFile(logPath, mlog); err != nil {
+		log.Println(err.Error())
+	}
 }
 
-func (w Wlogs) Error(l string){
-	log := fmt.Sprintf("[GUIDE] "+"ERROR "+"%s "+l, w.Date)
-	fmt.Println(log)
+func (w Wlogs) Error(l string) {
+	now := time.Now().Format("2006/01/02 - 15:04:05")
+	mlog := fmt.Sprintf("[GUIDE] %v ERROR %s", now, l)
+	if err := WriteFile(logPath, mlog); err != nil {
+		log.Println(err.Error())
+	}
 }
 
-func (w Wlogs) Warn(l string){
-	log := fmt.Sprintf("[GUIDE] "+"WARN "+"%s "+l, w.Date)
-	fmt.Println(log)
+func (w Wlogs) Warn(l string) {
+	now := time.Now().Format("2006/01/02 - 15:04:05")
+	mlog := fmt.Sprintf("[GUIDE] %v WARN %s", now, l)
+	if err := WriteFile(logPath, mlog); err != nil {
+		log.Println(err.Error())
+	}
 }

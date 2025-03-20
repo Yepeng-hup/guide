@@ -2,7 +2,7 @@
     <!DOCTYPE HTML>
     <html lang="en">
     <head>
-        <title>用户管理</title>
+        <title>用户列表</title>
     </head>
     {{template "base" .}}
     <style>
@@ -13,12 +13,14 @@
 
     <body>
         <div style="margin-top: 80px; margin-left: 10px">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">新建用户</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" onclick="createUserTc()">新建用户</button>
             {{/*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo">修改密码</button>*/}}
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal4" data-whatever="@mdo" style="margin-left: 100px">重启机器</button>
         </div>
-
         <table class="table table-hover" style="margin-top: 15px">
+            <thead>
+                <th style="color: #0b87e7">用户列表</th>
+            </thead>
             <thead>
             <th>@</th>
             <th>ID</th>
@@ -44,8 +46,37 @@
                 {{end}}
             </tbody>
         </table>
+        <hr>
+        <table class="table table-hover" style="margin-top: 15px">
+            <thead>
+            <th style="color: #0b87e7">角色用户列表</th>
+            </thead>
+            <thead>
+            <th>@</th>
+            <th>用户名</th>
+            <th>角色名</th>
+            <th>动作</th>
+            </thead>
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <tbody>
+            {{range $k ,$v := .userAndRoleList}}
+            {{if ne $v.UserName  "admin"}}
+            <tr>
+                <td><input class="cb" type="checkbox"/></td>
+                <td>{{$v.UserName}}</td>
+                <td>{{$v.RoleName}}</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deleteUser()">删除</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo" onclick="editUser()">编辑</button>
+                </td>
+            </tr>
+            {{end}}
+            {{end}}
+            </tbody>
+        </table>
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -57,15 +88,20 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">用户名</label>
+                                <label class="col-form-label">用户名</label>
                                 <input type="text" class="form-control" name="userName" id="recipient-userName">
                             </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">密码</label>
+                                <label class="col-form-label">赋权角色</label>
+                                <select class="custom-select mr-sm-2" id="recipient-roleName" name="roleName">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">密码</label>
                                 <input type="password" class="form-control" name="userPasswd" id="recipient-userPasswd" autocomplete="off">
                             </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">确认密码</label>
+                                <label class="col-form-label">确认密码</label>
                                 <input type="password" class="form-control" name="userPasswd2" id="recipient-userPasswd2" autocomplete="off">
                             </div>
                         </form>
@@ -78,26 +114,26 @@
             </div>
         </div>
 
-        <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel3" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">更新用户信息</h5>
+                        <h5 class="modal-title" id="exampleModalLabel3">更新用户信息</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">用户ID:</label>
+                            <label class="col-form-label">用户ID:</label>
                             <input type="text" class="form-control" id="recipient-userId3">
                         </div>
                         <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">用户名:</label>
+                            <label class="col-form-label">用户名:</label>
                             <input type="text" class="form-control" id="recipient-userName3">
                         </div>
                         <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">创建时间:</label>
+                            <label class="col-form-label">创建时间:</label>
                             <input type="text" class="form-control" id="recipient-newUserDate3">
                         </div>
                     </div>
@@ -111,11 +147,11 @@
             </div>
         </div>
 
-        {{/*<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">*/}}
+        {{/*<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true" data-backdrop="static" data-keyboard="false"> */}}
             {{/*<div class="modal-dialog">*/}}
                 {{/*<div class="modal-content">*/}}
                     {{/*<div class="modal-header">*/}}
-                        {{/*<h5 class="modal-title" id="exampleModalLabel">修改密码</h5>*/}}
+                        {{/*<h5 class="modal-title" id="exampleModalLabel2">修改密码</h5>*/}}
                         {{/*<button type="button" class="close" data-dismiss="modal" aria-label="Close">*/}}
                             {{/*<span aria-hidden="true">&times;</span>*/}}
                         {{/*</button>*/}}
@@ -123,7 +159,7 @@
                     {{/*<div class="modal-body">*/}}
                         {{/*<form>*/}}
                             {{/*<div class="form-group">*/}}
-                                {{/*<label for="recipient-name" class="col-form-label">用户名</label>*/}}
+                                {{/*<label class="col-form-label">用户名</label>*/}}
                                 {{/*<select class="form-control" name="userName" id="recipient-userName2">*/}}
                                     {{/*{{range $k ,$v := .userList}}*/}}
                                         {{/*{{if ne $v.UserName  "admin"}}*/}}
@@ -133,11 +169,11 @@
                                 {{/*</select>*/}}
                             {{/*</div>*/}}
                             {{/*<div class="form-group">*/}}
-                                {{/*<label for="recipient-name" class="col-form-label">密码</label>*/}}
+                                {{/*<label class="col-form-label">密码</label>*/}}
                                 {{/*<input type="password" class="form-control" name="userPasswd" id="recipient-userPasswds">*/}}
                             {{/*</div>*/}}
                             {{/*<div class="form-group">*/}}
-                                {{/*<label for="recipient-name" class="col-form-label">确认密码</label>*/}}
+                                {{/*<label class="col-form-label">确认密码</label>*/}}
                                 {{/*<input type="password" class="form-control" name="userPasswd2" id="recipient-userPasswds2">*/}}
                             {{/*</div>*/}}
                         {{/*</form>*/}}
@@ -151,11 +187,11 @@
         {{/*</div>*/}}
 
 
-        <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel4" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title" id="exampleModalLabel" style="color: #c60a17">危险操作！确认要重启机器吗？</h6>
+                        <h6 class="modal-title" id="exampleModalLabel4" style="color: #c60a17">危险操作！确认要重启机器吗？</h6>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

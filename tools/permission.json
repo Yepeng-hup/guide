@@ -1,0 +1,77 @@
+{
+  "user": [
+    "/user/index",
+    "/user/role/index",
+    "/user/update/pwd",
+    "/user/update/info",
+    "/user/create",
+    "/user/delete",
+    "/reboot",
+    "/user/test/ui"
+  ],
+
+  "url": [
+    "/url/index",
+    "/url/type/list",
+    "/url/upload",
+    "/url/update",
+    "/url/type/create",
+    "/url/type/del",
+    "/url/show",
+    "/url/del"
+  ],
+
+  "file": [
+    "/file/cat",
+    "/file/hs",
+    "/file/delete",
+    "/file/dir/check",
+    "/file/upload",
+    "/file/create",
+    "/file/file/create",
+    "/file/ys",
+    "/file/jy",
+    "/file/edit",
+    "/file/hs/delete",
+    "/file/ss"
+  ],
+
+  "service": [
+    "/svc/index",
+    "/svc/list",
+    "/svc/cfg",
+    "/svc/delete"
+  ],
+
+  "passwd": [
+    "/pwd/index",
+    "/pwd/list",
+    "/pwd/bak",
+    "/pwd/cfg",
+    "/pwd/cat",
+    "/pwd/delete"
+  ],
+
+  "log": [
+    "/log/r",
+    "/log/d",
+    "/log/bit",
+    "/log/index"
+  ],
+
+  "security": [
+    "/security/index"
+  ],
+
+  "cron": [
+    "/cron/cfg",
+    "/cron/delete",
+    "/cron/index",
+    "/cron/list"
+  ],
+
+  "other": [
+    "/readme",
+    "/sta/*filepath"
+  ]
+}
