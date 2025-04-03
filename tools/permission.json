@@ -10,6 +10,7 @@
     "/user/role/create",
     "/user/role/select",
     "/user/role/per/select",
+    "/user/role/per/delete",
     "/user/role/delete",
     "/user/glserver",
     "/user/glserver/stop"
