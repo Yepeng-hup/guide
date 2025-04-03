@@ -68,6 +68,21 @@ func SelectRolePermission(c *gin.Context) {
 	})
 }
 
+func SelectAdminRolePermission(c *gin.Context) {
+	p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\"", "role_admin"))
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":       http.StatusOK,
+		"permission": p,
+	})
+}
+
 var p *permission = nil
 
 func readJson() {

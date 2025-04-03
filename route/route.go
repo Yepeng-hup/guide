@@ -103,6 +103,7 @@ func InitRoute() *gin.Engine {
 	//user.GET("/glserver/stop", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/glserver/stop"), service.StopGlserver)
 	user.DELETE("/role/delete", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/delete"), service.DelRole)
 	user.DELETE("/role/per/delete", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/per/delete"), service.DelRolePermissionRoute)
+	user.GET("/role/per/admin/select", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/per/admin/select"), service.SelectAdminRolePermission)
 
 	url := r.Group("/url")
 	url.GET("/index", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/url/index"), service.ShowDbUrl)

@@ -169,3 +169,30 @@ function deleteRolePermission(){
 
 }
 
+function showAdminALlRoute(){
+    $.get(
+        {
+            "url": "/user/role/per/admin/select",
+            "success": function (data) {
+                let htmlData = "";
+
+                for( var i=0; i<data.permission.length; i++){
+                    htmlData += `
+                             <tr>
+                                <td>${data.permission[i].RoleName}</td>
+                                <td style="color: #0b87e7">${data.permission[i].Permission}</td>
+                            </tr>
+                    `;
+
+                };
+
+                let list = document.getElementById('adminPer');
+                list.innerHTML = htmlData;
+            },
+            "fail": function (error) {
+                console.log(error);
+            }
+        },
+    )
+}
+
