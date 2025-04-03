@@ -1,7 +1,9 @@
 package core
 
 import (
+	"bufio"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"guide/global"
@@ -154,16 +156,20 @@ func InitUser() {
 
 	sql := "SELECT userName FROM user WHERE userName = \"admin\""
 	rows, err := db.Query(sql)
+
 	if err != nil {
 		mlog.Error("init fail.")
 		mlog.Error(fmt.Sprintf("query user table fail,%s", err.Error()))
 		os.Exit(1)
 	}
 	defer rows.Close()
+
 	var user struct {
 		User string
 	}
+
 	userList := make([]User, 0)
+
 	for rows.Next() {
 		err := rows.Scan(&user.User)
 		if err != nil {
@@ -176,19 +182,95 @@ func InitUser() {
 
 	if len(userList) < 1 {
 		insertSQL := `INSERT INTO user (userName, password) VALUES (?,?);`
+
 		encryptionPwd, err := PasswordEncryption("guide654321", global.NowKey)
 		if err != nil {
 			mlog.Error(fmt.Sprintf("init user encryption passwd fail,%s", err.Error()))
-			return
+			os.Exit(1)
 		}
+
 		_, err = db.Exec(insertSQL, "admin", encryptionPwd)
+
 		if err != nil {
 			mlog.Error(fmt.Sprintf("init db user fail,%s", err.Error()))
-			return
+			os.Exit(1)
 		}
 	} else {
 		return
 	}
+}
+
+var p1 *Permission
+
+func readJson1() {
+	jsonFilePath := "tools/permission.json"
+	file, err := os.Open(jsonFilePath)
+	if err != nil {
+		log.Fatal("open json file: ", err.Error())
+	}
+	defer file.Close()
+	f := bufio.NewReader(file)
+	configObj := json.NewDecoder(f)
+	if err = configObj.Decode(&p1); err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+	return
+}
+
+func InitAdminRoleAndAdminRolePermission() {
+	db, err := ConnDb()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	sql := "SELECT userName FROM user_roles WHERE userName = \"admin\""
+	rows, err := db.Query(sql)
+
+	if err != nil {
+		mlog.Error("adminRole init fail.")
+		mlog.Error(fmt.Sprintf("query user_roles table fail,%s", err.Error()))
+		os.Exit(1)
+	}
+	defer rows.Close()
+
+	var user struct {
+		User string
+	}
+
+	userList := make([]User, 0)
+
+	for rows.Next() {
+		err := rows.Scan(&user.User)
+		if err != nil {
+			mlog.Error("adminRole init fail.")
+			mlog.Error(err.Error())
+			os.Exit(1)
+		}
+		userList = append(userList, user)
+	}
+
+	if len(userList) < 1 {
+		insertSQL := `INSERT INTO user_roles (userName, roleName) VALUES (?,?);`
+
+		_, err = db.Exec(insertSQL, "admin", "role_admin")
+
+		if err != nil {
+			mlog.Error(fmt.Sprintf("init db role [role_admin] fail,%s", err.Error()))
+			os.Exit(1)
+		} else {
+			// 写入role_admin权限
+			//readJson1()
+			//for _, v := range p1.User {
+			//
+			//}
+			return
+
+		}
+	} else {
+		return
+	}
+
 }
 
 func InsertAct(params ...string) {
@@ -654,7 +736,6 @@ func SelectUrl(selectSql string) ([]Url, error) {
 	}
 	defer rows.Close()
 	var url struct {
-		// Id         string
 		UrlName    string
 		UrlAddress string
 		UrlType    string
@@ -694,6 +775,31 @@ func SelectUrlType(selectSql string) ([]UrlType, error) {
 		urlTypeList = append(urlTypeList, urlType)
 	}
 	return urlTypeList, nil
+}
+
+func SelectUserPermission(user ...string) ([]string, error) {
+	labelList := make([]string, 0)
+	userAndRoleList, err := SelectUserAndRole(fmt.Sprintf("SELECT * FROM user_roles WHERE userName = \"%s\"", user[0]))
+	if err != nil {
+		mlog.Error("func [SelectUserAndRole] use error," + err.Error())
+		return nil, err
+	}
+
+	if len(userAndRoleList) <= 0 {
+		return nil, fmt.Errorf("user not binding role -> [%s]", user[0])
+	}
+
+	p, err := SelectRolePermission(fmt.Sprintf("select DISTINCT * from roles_permission WHERE roleName = \"%v\"", userAndRoleList[0].RoleName))
+	if err != nil {
+		mlog.Error("func [SelectRolePermission] use error," + err.Error())
+		return nil, err
+	}
+
+	for _, v := range p {
+		labelList = append(labelList, v.Label)
+	}
+	uniqueLabel := DeduplicateGeneric(labelList)
+	return uniqueLabel, nil
 }
 
 func DeleteAct(p ...string) error {
@@ -772,10 +878,34 @@ func DeleteUserPwd(p ...string) error {
 	return nil
 }
 
+func DeleteUserAndRole(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM user_roles WHERE userName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	mlog.Info(fmt.Sprintf("delete user_roles ok. name -> [%s].", p[0]))
+	return nil
+}
+
 func DeleteUser(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
 		return fmt.Errorf(err.Error())
+	}
+
+	if err := DeleteUserAndRole(p[0]); err != nil {
+		mlog.Error(fmt.Sprintf("delete user_roles table data fail -> [%s]", p[0]))
+		return err
 	}
 	deleteSQL := "DELETE FROM user WHERE userName = ?"
 	stmt, err := db.Prepare(deleteSQL)
@@ -826,6 +956,79 @@ func DeleteUrlType(p ...string) error {
 		return fmt.Errorf(err.Error())
 	}
 	mlog.Info(fmt.Sprintf("delete url_type ok. name -> [%s].", p[0]))
+	return nil
+}
+
+func DeleteRolePermission(roleName string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM roles_permission  WHERE roleName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(roleName)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	mlog.Info(fmt.Sprintf("delete roles permission ok. role -> [%s].", roleName))
+	return nil
+}
+
+func DeleteRolePermissionRoute(roleName, permissionRoute string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM roles_permission  WHERE roleName = ? AND permission = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(roleName, permissionRoute)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	mlog.Info(fmt.Sprintf("delete roles permission ok. role -> [%s], route -> [%s]", roleName, permissionRoute))
+	return nil
+}
+
+func DeleteRole(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	userAndRoleList, err := SelectUserAndRole(fmt.Sprintf("SELECT * FROM user_roles WHERE roleName = \"%s\"", p[0]))
+	if err != nil {
+		mlog.Error(err.Error())
+		return err
+	}
+
+	if len(userAndRoleList) >= 1 {
+		for _, v := range userAndRoleList {
+			mlog.Error(fmt.Sprintf("role binding user, delete fail [%s]->[%s].", v.UserName, v.RoleName))
+		}
+		return fmt.Errorf("role binding user, delete fail.")
+	}
+
+	deleteSQL := "DELETE FROM roles WHERE roleName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	if err := DeleteRolePermission(p[0]); err != nil {
+		return err
+	}
+	mlog.Info(fmt.Sprintf("delete roles ok. name -> [%s].", p[0]))
 	return nil
 }
 

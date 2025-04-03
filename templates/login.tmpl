@@ -1,9 +1,9 @@
 {{define "login.tmpl"}}
-    <!DOCTYPE HTML>
     <html lang="en">
     <head>
         <title>登录</title>
         <link rel="stylesheet" href="/sta/css/all.css">
+        <script src="/sta/js/jstools/jquery-3.7.1.min.js"></script>
     </head>
     <style>
         body {
@@ -14,7 +14,7 @@
     <body>
         <div class="sub-main-w3">
 
-            <form action="/login", method="post">
+            <form>
                 <h2 style="color: #212529">Welcome GUIDE</h2>
 
                 <div class="form-style-agile">
@@ -26,11 +26,46 @@
                     <label>密码</label>
                     <input id="passwd" placeholder="" name="Password" type="password" required="" autocomplete="off">
                 </div>
-                <input type="submit" value="登录">
-                <p class=""><b style="color: red">{{.error}}</b></p>
+                <input type="button" value="登录" onclick="loginck()">
             </form>
         </div>
     </body>
+
+    <script>
+        function loginck(){
+            let userName = $("#name").val();
+            let password = $("#passwd").val();
+
+            $.ajax(
+                {
+                    url: "/loginck",
+                    type: "POST",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "user": userName,
+                        "password": password
+                    }),
+                    success: function (data) {
+                        if (data.code === 200) {
+                            const permissions = data["permission"] || [];
+                            localStorage.setItem("userPermissions", JSON.stringify(permissions));
+                            const loginUser = data["loginUser"];
+                            if (loginUser !== undefined && loginUser !== null) {
+                                const userValue = typeof loginUser === 'string' ? loginUser : JSON.stringify(loginUser);
+                                localStorage.setItem("user", userValue);
+                            } else {
+                                console.error("login user data loss.");
+                            }
+                            window.location.href = "/home";
+                        } else {
+                            alert(data["msg"]);
+                            window.location.href = "/login";
+                        }
+                    }
+                },
+            );
+        }
+    </script>
     </html>
 
 {{end}}

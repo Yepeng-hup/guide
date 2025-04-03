@@ -83,6 +83,7 @@ function selectRolePermission(){
                                 <td><input class="cb" type="checkbox"/></td>
                                 <td>${data.permission[i].RoleName}</td>
                                 <td style="color: #0b87e7">${data.permission[i].Permission}</td>
+                                <td><button class="btn btn-danger" onclick="deleteRolePermission()">删除</button></td>
                             </tr>
                     `;
 
@@ -97,3 +98,74 @@ function selectRolePermission(){
         },
     )
 }
+
+function deleteRole(){
+    let items = document.getElementsByClassName('cb');
+    let len = items.length;
+
+    for (var i = len - 1; i >= 0; i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let trItems = items[i].parentNode.parentNode;
+            let trStr = trItems.innerText;
+            const arr = trStr.split('\t');
+
+            $.ajax(
+                {
+                    url: "/user/role/delete",
+                    type: "DELETE",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "roleName": arr[1]
+                    }),
+                    success: function (data) {
+                        if (data.code !== 200) {
+                            alert(data["msg"]);
+                            return;
+                        } else {
+                            window.location = "/user/role/index";
+                        }
+                    }
+                },
+            );
+        }
+    }
+
+}
+
+function deleteRolePermission(){
+    let items = document.getElementsByClassName('cb');
+    let len = items.length;
+
+    for (var i = len - 1; i >= 0; i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let trItems = items[i].parentNode.parentNode;
+            let trStr = trItems.innerText;
+            const arr = trStr.split('\t');
+
+            $.ajax(
+                {
+                    url: "/user/role/per/delete",
+                    type: "DELETE",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "roleName": arr[1],
+                        "permissionRoute": arr[2]
+                    }),
+                    success: function (data) {
+                        if (data.code !== 200) {
+                            alert(data["msg"]);
+                            return;
+                        } else {
+                            // window.location = "/user/role/index";
+                        }
+                    }
+                },
+            );
+            trItems.parentNode.removeChild(trItems);
+        }
+    }
+
+}
+

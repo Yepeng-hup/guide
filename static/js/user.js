@@ -6,15 +6,11 @@ function logout() {
             success: function (data) {
                 if (data.code === 200) {
                     window.location = "/login"
-                    return
-                } else {
-                    return
                 }
             }
         },
     );
 }
-
 
 function createUser() {
     let userName = $("#recipient-userName").val();

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	core.ReadJson("conf.d/debug.json")
+	core.ReadJson("conf.d/guide.json")
 
 	cmd.CliInit()
 
@@ -19,6 +19,7 @@ func main() {
 	}
 
 	go core.InitUser()
+	go core.InitAdminRoleAndAdminRolePermission()
 
 	routes := r.Routes()
 	core.InitPermissionRoute(routes)

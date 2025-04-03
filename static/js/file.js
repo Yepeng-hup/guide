@@ -466,8 +466,7 @@ function downloadFile(){
             let divItems = items[i].parentNode.parentNode;
             let divlr = divItems.innerText;
             // use Tuple
-            let fileTuple = divlr.split(/\s+/);
-            // window.location.href = `/file/download?fileName=1.py&filePath=${encodeURIComponent(location.pathname)}`;
+            let fileTuple = divlr.split(/\s+/)
             window.location.href = `${location.pathname}/${fileTuple[1]}`
         }
     }

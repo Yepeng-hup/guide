@@ -121,7 +121,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [user] permission.")
+		mlog.Info(fmt.Sprintf("%s add [user] permission.", role))
 	case "url":
 		for _, v := range p.Url {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -136,7 +136,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [url] permission.")
+		mlog.Info(fmt.Sprintf("%s add [url] permission.", role))
 	case "file":
 		for _, v := range p.File {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -151,7 +151,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [file] permission.")
+		mlog.Info(fmt.Sprintf("%s add [file] permission.", role))
 	case "service":
 		for _, v := range p.Service {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -166,7 +166,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [service] permission.")
+		mlog.Info(fmt.Sprintf("%s add [service] permission.", role))
 	case "passwd":
 		for _, v := range p.Passwd {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -181,7 +181,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [passwd] permission.")
+		mlog.Info(fmt.Sprintf("%s add [passwd] permission.", role))
 	case "log":
 		for _, v := range p.Log {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -196,7 +196,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [log] permission.")
+		mlog.Info(fmt.Sprintf("%s add [log] permission.", role))
 	case "security":
 		for _, v := range p.Security {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -211,7 +211,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [security] permission.")
+		mlog.Info(fmt.Sprintf("%s add [security] permission.", role))
 	case "cron":
 		for _, v := range p.Cron {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -227,7 +227,7 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [cron] permission.")
+		mlog.Info(fmt.Sprintf("%s add [cron] permission.", role))
 	case "other":
 		for _, v := range p.Other {
 			p, err := core.SelectRolePermission(fmt.Sprintf("select * from roles_permission WHERE roleName = \"%v\" and permission = \"%v\"", role, v))
@@ -242,9 +242,9 @@ func useCreateRole(role, permissionName string) error {
 				mlog.Error(err.Error())
 			}
 		}
-		mlog.Info("add [other] permission.")
+		mlog.Info(fmt.Sprintf("%s add [other] permission.", role))
 	default:
-		mlog.Error("error not is permission.")
+		mlog.Error(fmt.Sprintf("%s add permission [%s] fail, error not is permission.", role, permissionName))
 		return nil
 	}
 	return nil
@@ -254,8 +254,9 @@ func CreateRole(c *gin.Context) {
 	var req RequestData
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "json analysis parameter error.",
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  "json analysis parameter error.",
 		})
 		return
 	}
@@ -268,6 +269,61 @@ func CreateRole(c *gin.Context) {
 			})
 			return
 		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+	})
+}
+
+type Role struct {
+	RoleName string `json:"roleName"`
+}
+
+type deleteRoute struct {
+	RoleName        string `json:"roleName"`
+	PermissionRoute string `json:"permissionRoute"`
+}
+
+func DelRole(c *gin.Context) {
+	var r Role
+	if err := c.ShouldBindJSON(&r); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  "json analysis role error.",
+		})
+		return
+	}
+
+	if err := core.DeleteRole(r.RoleName); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+	})
+}
+
+func DelRolePermissionRoute(c *gin.Context) {
+	var d deleteRoute
+	if err := c.ShouldBindJSON(&d); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  "json analysis role error.",
+		})
+		return
+	}
+
+	if err := core.DeleteRolePermissionRoute(d.RoleName, d.PermissionRoute); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{

@@ -1,0 +1,123 @@
+{{define "home.tmpl"}}
+<html lang="en">
+<head>
+    <title>HOME</title>
+{{template "base" .}}
+
+<style>
+    .sidebar {
+        background: #f8f9fa;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    .card-hover {
+        transition: transform 0.2s;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+    }
+</style>
+</head>
+<body>
+
+<div class="container-fluid" style="margin-top: 80px">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="sidebar col-md-3 col-lg-2 p-0">
+            <div class="p-4 text-center">
+                <img src="/img/dx.png" alt="头像"
+                     class="rounded-circle shadow-sm mb-3" style="width: 100px; height: 100px;">
+                <h5 class="mb-1" id="login-user"></h5>
+                <p class="text-muted small">一剑霜寒十四州</p>
+            </div>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/home">
+                    <i class="fas fa-home mr-2"></i> 个人主页
+                </a>
+                <a class="nav-link" href="#">
+                    <i class="fas fa-user-cog mr-2"></i> 密码修改
+                </a>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <main class="col-md-9 col-lg-10 p-4">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card card-hover">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-line text-primary mr-2"></i>数据统计
+                            </h5>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="h4 mb-0">888</div>
+                                    <small class="text-muted">文章</small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="h4 mb-0">9999k</div>
+                                    <small class="text-muted">粉丝</small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="h4 mb-0">99999k</div>
+                                    <small class="text-muted">点赞</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 其他 -->
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <div class="card card-hover">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-certificate text-success mr-2"></i>认证信息
+                            </h5>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check-circle text-success mr-2"></i>邮箱已验证</li>
+                                <li><i class="fas fa-check-circle text-success mr-2"></i>手机已验证</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近活动 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock mr-2"></i>最近活动
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <div class="media mb-3">
+                        <i class="fas fa-comment-dots fa-2x text-info mr-3"></i>
+                        <div class="media-body">
+                            <h6 class="mt-0">发表了新文章</h6>
+                            <small class="text-muted">2小时前 · 《鬼吹灯》</small>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function getUser(){
+        const userData = localStorage.getItem("user");
+        let div_h5 = document.getElementById('login-user');
+        div_h5.innerHTML = userData;
+    }
+    getUser()
+</script>
+
+</body>
+</html>
+
+{{end}}

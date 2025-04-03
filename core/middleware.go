@@ -88,3 +88,68 @@ func CookieCheck() gin.HandlerFunc {
 		return
 	}
 }
+
+func discernPermission(roleName string) []string {
+	var urlSlices = make([]string, 0)
+	sql := fmt.Sprintf("SELECT * from roles_permission WHERE roleName = \"%s\"", roleName)
+	routeList, _ := SelectRolePermission(sql)
+	if len(routeList) <= 0 {
+		mlog.Error("show role permission fail. LIST not index, index nil.")
+		return nil
+	}
+
+	for _, v := range routeList {
+		urlSlices = append(urlSlices, v.Permission)
+	}
+	return urlSlices
+}
+
+func IfPermission(permissionSlices []string, url string) bool {
+	for _, v := range permissionSlices {
+		if v == url {
+			return true
+		}
+	}
+	return false
+}
+
+func PermissionCheck(routePath string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		method := c.Request.Method
+		user, err := c.Cookie("user")
+		if err != nil {
+			mlog.Error(fmt.Sprintf("not use cookie and cookie config fail, %s", err.Error()))
+			if method == "GET" {
+				c.Redirect(http.StatusMovedPermanently, "/")
+				return
+			} else {
+				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+					"code": http.StatusForbidden,
+					"msg":  "You do not have permission to access, please contact the administrator.",
+				})
+				return
+			}
+		}
+
+		sql := fmt.Sprintf("select * from user_roles where userName = \"%s\"", user)
+		r, _ := SelectUserAndRole(sql)
+		if len(r) <= 0 {
+			mlog.Error(fmt.Sprintf("not user [%s] is role.", user))
+			return
+		}
+
+		urlSlices := discernPermission(r[0].RoleName)
+		boolRel := IfPermission(urlSlices, routePath)
+		if boolRel {
+			c.Next()
+		} else {
+			//
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  "You do not have permission to access, please contact the administrator.",
+			})
+			return
+		}
+		c.Next()
+	}
+}

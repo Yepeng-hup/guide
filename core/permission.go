@@ -27,8 +27,6 @@ func readJson() {
 	return
 }
 
-// debug code
-
 func InitPermissionRoute(allRoute gin.RoutesInfo) {
 	readJson()
 	go func() {
@@ -150,27 +148,4 @@ func InitPermissionRoute(allRoute gin.RoutesInfo) {
 			}(v)
 		}
 	}()
-	//var lock sync.Mutex
-	//const ginStr = "/sta/*filepath"
-	//routePathList := make([]string, 0)
-	//for _, route := range allRoute {
-	//	//fmt.Println(route.Path)
-	//	if route.Path == ginStr {
-	//		continue
-	//	}
-	//	routePathList = append(routePathList, route.Path)
-	//}
-	//fmt.Println(routePathList)
-	//go func() {
-	//	lock.Lock()
-	//	for _, route := range allRoute {
-	//		fmt.Println(route.Path)
-	//		// 覆盖写入,表的列必须加上唯一索引或key
-	//		//db.Exec("REPLACE INTO permission_all (permission_all_path)VALUES(?)", route.Path)
-	//		// 其他方法
-	//		// sql := INSERT INTO permission_all (permission_all_path) VALUES ('/login') ON DUPLICATE KEY UPDATE permission_all_path = VALUES(permission_all_path);
-	//	}
-	//	lock.Unlock()
-	//	log.Println("init start permission table")
-	//}()
 }

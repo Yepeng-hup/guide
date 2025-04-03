@@ -7,7 +7,12 @@
     "/user/create",
     "/user/delete",
     "/reboot",
-    "/user/test/ui"
+    "/user/role/create",
+    "/user/role/select",
+    "/user/role/per/select",
+    "/user/role/delete",
+    "/user/glserver",
+    "/user/glserver/stop"
   ],
 
   "url": [
@@ -72,6 +77,7 @@
 
   "other": [
     "/readme",
-    "/sta/*filepath"
+    "/sta/*filepath",
+    "/home"
   ]
 }

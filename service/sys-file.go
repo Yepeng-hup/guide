@@ -104,7 +104,7 @@ func DownloadData(c *gin.Context, p *string) {
 
 func CatFile(c *gin.Context) {
 	var fileTailNameList = []string{"go", "sh", "txt", "py", "yaml", "yml", "md", "java", "c", "json", "env", "dockerfile", "conf", "js", "html", "css", "ts",
-		"tmpl", "sql", "bat", "ps1", "php", "tmp", "xml", "ini", "jenkinsfile"}
+		"tmpl", "sql", "bat", "ps1", "php", "tmp", "xml", "ini", "jenkinsfile", "vue"}
 	fileNmae := c.Query("fileName")
 	filePath := c.Query("filePath")
 	fileList := strings.Fields(fileNmae)

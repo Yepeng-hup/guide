@@ -12,8 +12,8 @@ import (
 
 type (
 	LoginFrom struct {
-		User     string
-		Password string
+		User     string `json:"user"`
+		Password string `json:"password"`
 	}
 
 	User struct {
@@ -32,10 +32,19 @@ func Login(c *gin.Context) {
 }
 
 func LoginCk(c *gin.Context) {
-	f := LoginFrom{
-		User:     c.PostForm("Name"),
-		Password: c.PostForm("Password"),
+	//f := LoginFrom{
+	//	User:     c.PostForm("Name"),
+	//	Password: c.PostForm("Password"),
+	//}
+	var f LoginFrom
+
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "json analysis parameter error.",
+		})
+		return
 	}
+
 	user, err := core.SelectUser(fmt.Sprintf("SELECT id,userName,newUserDate,password FROM user WHERE userName = \"%s\"", f.User))
 	if err != nil {
 		mlog.Error(err.Error())
@@ -51,16 +60,36 @@ func LoginCk(c *gin.Context) {
 			return
 		}
 		if f.User == user[0].UserName && f.Password == pwd {
+			permissionList, err := core.SelectUserPermission(f.User)
+			if err != nil {
+				mlog.Error(err.Error())
+				c.JSON(http.StatusOK, gin.H{
+					"code": http.StatusInternalServerError,
+					"msg":  err.Error(),
+				})
+				return
+			}
+
 			cookie := http.Cookie{Name: "user", Value: f.User, MaxAge: 408000}
 			http.SetCookie(c.Writer, &cookie)
 			mlog.Info(fmt.Sprintf("user -> [%s] login success.", f.User))
-			c.Redirect(http.StatusMovedPermanently, "/url/index")
+			//c.Redirect(http.StatusMovedPermanently, "/url/index")
+			c.JSON(http.StatusOK, gin.H{
+				"code":       http.StatusOK,
+				"permission": permissionList,
+				"loginUser":  f.User,
+			})
 			return
 		}
 	}
+
 	mlog.Error(fmt.Sprintf("user -> [%s] login fail.", f.User))
-	c.HTML(http.StatusOK, "login.tmpl", gin.H{
-		"error": "user or password input error",
+	//c.HTML(http.StatusOK, "login.tmpl", gin.H{
+	//	"error": "user or password input error",
+	//})
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusInternalServerError,
+		"msg":  "user or password input error",
 	})
 }
 
