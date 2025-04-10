@@ -3,12 +3,16 @@ package main
 import (
 	"guide/core"
 	"guide/core/cmd"
+	"guide/core/mon"
 	"guide/route"
 	"log"
+	"time"
 )
 
 func main() {
-	core.ReadJson("conf.d/guide.json")
+	go mon.StartPromMetricsUpdate(40 * time.Second)
+
+	core.ReadJson("conf.d/debug.json")
 
 	cmd.CliInit()
 

@@ -3,6 +3,7 @@ package route
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"guide/core"
 	"guide/global"
 	"guide/service"
@@ -71,6 +72,7 @@ func InitRoute() *gin.Engine {
 
 	})
 
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	r.GET("/login", service.Login)
 	r.POST("/loginck", service.LoginCk)
 	r.GET("/logout", func(c *gin.Context) {
