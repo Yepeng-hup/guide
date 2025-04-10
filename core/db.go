@@ -9,6 +9,7 @@ import (
 	"guide/global"
 	"log"
 	"os"
+	"time"
 )
 
 var (
@@ -20,6 +21,9 @@ func ConnDb() (*sql.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("conn db sqlite fail, %v", err.Error())
 	}
+	db.SetMaxOpenConns(20)
+	db.SetMaxIdleConns(20)
+	db.SetConnMaxLifetime(10 * time.Minute)
 	return db, nil
 }
 
