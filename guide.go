@@ -12,7 +12,7 @@ import (
 func main() {
 	go mon.StartPromMetricsUpdate(40 * time.Second)
 
-	core.ReadJson("conf.d/debug.json")
+	core.ReadJson("conf.d/guide.json")
 
 	cmd.CliInit()
 
