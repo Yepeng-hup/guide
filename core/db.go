@@ -991,6 +991,25 @@ func DeleteUserAndRole(p ...string) error {
 	return nil
 }
 
+func DelUserLoginCount(p ...string)error{
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM login_count WHERE userName = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(p[0])
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	mlog.Info(fmt.Sprintf("delete login_count ok. name -> [%s].", p[0]))
+	return nil
+}
+
 func DeleteUser(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
@@ -1001,6 +1020,12 @@ func DeleteUser(p ...string) error {
 		mlog.Error(fmt.Sprintf("delete user_roles table data fail -> [%s]", p[0]))
 		return err
 	}
+
+	if err := DelUserLoginCount(p[0]); err != nil {
+		mlog.Error(fmt.Sprintf("delete login_count table data fail -> [%s]", p[0]))
+		return err
+	}
+
 	deleteSQL := "DELETE FROM user WHERE userName = ?"
 	stmt, err := db.Prepare(deleteSQL)
 	if err != nil {

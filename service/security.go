@@ -273,9 +273,7 @@ func AddBlacklistIp(c *gin.Context) {
 	}
 
 	blacklistIpStr := fmt.Sprintf("all:%s:deny", ip.BlacklistIp)
-	fmt.Println(blacklistIpStr)
 
-	// 先查询db此ip是否已经被拉黑
 	sql := fmt.Sprintf("select * from blacklist where ip=\"%s\"", ip.BlacklistIp)
 	ipList, err := core.SelectBlacklistIp(sql)
 	if err != nil {
@@ -295,7 +293,6 @@ func AddBlacklistIp(c *gin.Context) {
 			return
 		}
 
-		// 写入db
 		if err := core.InsertActBlacklist(ip.BlacklistIp); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": http.StatusBadGateway,
