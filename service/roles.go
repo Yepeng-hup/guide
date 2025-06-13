@@ -98,7 +98,6 @@ func readJson() {
 		log.Fatal(err.Error())
 		return
 	}
-	return
 }
 
 type RequestData struct {

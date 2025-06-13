@@ -55,9 +55,6 @@ func showRoleData() int {
 	return len(v)
 }
 
-func countData() {
-
-}
 
 func LoginDataSource(c *gin.Context){
 	valueList := []string{}

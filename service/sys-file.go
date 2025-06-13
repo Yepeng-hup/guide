@@ -530,5 +530,4 @@ func RootDirCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": http.StatusInternalServerError,
 	})
-	return
 }
