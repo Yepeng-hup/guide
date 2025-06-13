@@ -67,7 +67,10 @@
   ],
 
   "security": [
-    "/security/index"
+    "/security/index",
+    "/security/black/add",
+    "/security/black/mv",
+    "/security/black/show"
   ],
 
   "cron": [
