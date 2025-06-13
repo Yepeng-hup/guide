@@ -27,6 +27,7 @@ func main() {
 
 	routes := r.Routes()
 	core.InitPermissionRoute(routes)
+	log.Println("INFO: Guide all project init success.")
 
 	// if global.Mon == "true" {go service.CpuValueWDB()}
 	log.Println("INFO: Server version -> 4.0, listening and serving HTTP on " + core.Cfg.ListenHost + ":" + core.Cfg.ListenPort)
