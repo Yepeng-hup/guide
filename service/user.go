@@ -32,10 +32,6 @@ func Login(c *gin.Context) {
 }
 
 func LoginCk(c *gin.Context) {
-	//f := LoginFrom{
-	//	User:     c.PostForm("Name"),
-	//	Password: c.PostForm("Password"),
-	//}
 	var f LoginFrom
 
 	if err := c.ShouldBindJSON(&f); err != nil {
@@ -73,7 +69,10 @@ func LoginCk(c *gin.Context) {
 			cookie := http.Cookie{Name: "user", Value: f.User, MaxAge: 408000}
 			http.SetCookie(c.Writer, &cookie)
 			mlog.Info(fmt.Sprintf("user -> [%s] login success.", f.User))
-			//c.Redirect(http.StatusMovedPermanently, "/url/index")
+			if err := core.InsertActLoginUser(f.User); err != nil {
+				mlog.Error(err.Error())
+			}
+
 			c.JSON(http.StatusOK, gin.H{
 				"code":       http.StatusOK,
 				"permission": permissionList,

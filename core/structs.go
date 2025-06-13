@@ -82,6 +82,12 @@ type (
 		NewRoleDate string
 	}
 
+	BIp struct {
+		Id          string
+		NewAddDate string
+		Ip	string
+	}
+
 	RolePermission struct {
 		Id         string
 		RoleName   string
@@ -99,5 +105,11 @@ type (
 		Security []string `json:"security"`
 		Cron     []string `json:"cron"`
 		Other    []string `json:"other"`
+	}
+
+	LoginCount struct {
+		// Id int
+		LoginDate string 
+		UserName string 
 	}
 )

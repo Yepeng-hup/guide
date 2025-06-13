@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem", "url", "url_type", "roles", "user_roles", "roles_permission", "permission"}
+	tableList = []string{"cron", "service_tools", "user_passwd", "user", "error_log", "cpu", "mem", "url", "url_type", "roles", "user_roles", "roles_permission", "permission", "blacklist", "login_count"}
 )
 
 func ConnDb() (*sql.DB, error) {
@@ -65,82 +65,94 @@ func CreateGuideAllTable() error {
 		} else {
 			switch v {
 			case "cron":
-				createTableCron := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
-				_, err = db.Exec(createTableCron)
+				sql := `CREATE TABLE IF NOT EXISTS cron (id INTEGER PRIMARY KEY, cronNewDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), cronName TEXT, cronTime TEXT, cronCode TEXT, cronNotes TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table cron fail,%s", err.Error())
 				}
 			case "service_tools":
-				createTableServiceTools := `CREATE TABLE IF NOT EXISTS service_tools (id INTEGER PRIMARY KEY, serviceName TEXT, serviceDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), startCmd TEXT, serviceNotes TEXT);`
-				_, err = db.Exec(createTableServiceTools)
+				sql := `CREATE TABLE IF NOT EXISTS service_tools (id INTEGER PRIMARY KEY, serviceName TEXT, serviceDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), startCmd TEXT, serviceNotes TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table service_tools fail,%s", err.Error())
 				}
 			case "user_passwd":
-				createTableUserPasswd := `CREATE TABLE IF NOT EXISTS user_passwd (id INTEGER PRIMARY KEY, serviceName TEXT, user TEXT, password TEXT, Notes TEXT);`
-				_, err = db.Exec(createTableUserPasswd)
+				sql := `CREATE TABLE IF NOT EXISTS user_passwd (id INTEGER PRIMARY KEY, serviceName TEXT, user TEXT, password TEXT, Notes TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table user_passwd fail,%s", err.Error())
 				}
 			case "user":
-				createTableUser := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, newUserDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), password TEXT, UNIQUE (userName));`
-				_, err = db.Exec(createTableUser)
+				sql := `CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, userName TEXT, newUserDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), password TEXT, UNIQUE (userName));`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table user fail,%s", err.Error())
 				}
 			case "error_log":
-				createTableErrorLog := `CREATE TABLE IF NOT EXISTS error_log (id INTEGER PRIMARY KEY, newLogDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), types TEXT, logtext TEXT);`
-				_, err = db.Exec(createTableErrorLog)
+				sql := `CREATE TABLE IF NOT EXISTS error_log (id INTEGER PRIMARY KEY, newLogDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), types TEXT, logtext TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table error_log fail,%s", err.Error())
 				}
 			case "cpu":
-				createTableCPU := `CREATE TABLE IF NOT EXISTS cpu (id INTEGER PRIMARY KEY, cpunum INT);`
-				_, err = db.Exec(createTableCPU)
+				sql := `CREATE TABLE IF NOT EXISTS cpu (id INTEGER PRIMARY KEY, cpunum INT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table cpu fail,%s", err.Error())
 				}
 			case "mem":
-				createTableMEM := `CREATE TABLE IF NOT EXISTS mem (id INTEGER PRIMARY KEY, memnum FLOAT);`
-				_, err = db.Exec(createTableMEM)
+				sql := `CREATE TABLE IF NOT EXISTS mem (id INTEGER PRIMARY KEY, memnum FLOAT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table mem fail,%s", err.Error())
 				}
 			case "url":
-				createTableUrl := `CREATE TABLE IF NOT EXISTS url (id INTEGER PRIMARY KEY, urlName TEXT, urlAddress TEXT, urlType TEXT, urlNotes TEXT);`
-				_, err = db.Exec(createTableUrl)
+				sql := `CREATE TABLE IF NOT EXISTS url (id INTEGER PRIMARY KEY, urlName TEXT, urlAddress TEXT, urlType TEXT, urlNotes TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table url fail,%s", err.Error())
 				}
 			case "url_type":
-				createTableUrlType := `CREATE TABLE IF NOT EXISTS url_type (id INTEGER PRIMARY KEY, urlType TEXT);`
-				_, err = db.Exec(createTableUrlType)
+				sql := `CREATE TABLE IF NOT EXISTS url_type (id INTEGER PRIMARY KEY, urlType TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table url_type fail,%s", err.Error())
 				}
 			case "roles":
-				createTableUrlType := `CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY, roleName TEXT, newRoleDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), UNIQUE (roleName));`
-				_, err = db.Exec(createTableUrlType)
+				sql := `CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY, roleName TEXT, newRoleDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), UNIQUE (roleName));`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table roles fail,%s", err.Error())
 				}
 			case "user_roles":
-				createTableUrlType := `CREATE TABLE IF NOT EXISTS user_roles (id INTEGER PRIMARY KEY, userName TEXT, roleName TEXT, UNIQUE (userName));`
-				_, err = db.Exec(createTableUrlType)
+				sql := `CREATE TABLE IF NOT EXISTS user_roles (id INTEGER PRIMARY KEY, userName TEXT, roleName TEXT, UNIQUE (userName));`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table user_roles fail,%s", err.Error())
 				}
 			case "roles_permission":
-				createTableUrlType := `CREATE TABLE IF NOT EXISTS roles_permission (id INTEGER PRIMARY KEY, roleName TEXT, permission TEXT, label TEXT);`
-				_, err = db.Exec(createTableUrlType)
+				sql := `CREATE TABLE IF NOT EXISTS roles_permission (id INTEGER PRIMARY KEY, roleName TEXT, permission TEXT, label TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table roles_permission fail,%s", err.Error())
 				}
 			case "permission":
-				createTableUrlType := `CREATE TABLE IF NOT EXISTS permission (id INTEGER PRIMARY KEY, permission_url TEXT);`
-				_, err = db.Exec(createTableUrlType)
+				sql := `CREATE TABLE IF NOT EXISTS permission (id INTEGER PRIMARY KEY, permission_url TEXT);`
+				_, err = db.Exec(sql)
 				if err != nil {
 					return fmt.Errorf("create table permission fail,%s", err.Error())
+				}
+			case "blacklist":
+				sql := `CREATE TABLE IF NOT EXISTS blacklist (id INTEGER PRIMARY KEY, newAddDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), ip TEXT);`
+				_, err = db.Exec(sql)
+				if err != nil {
+					return fmt.Errorf("create table blacklist fail,%s", err.Error())
+				}
+			case "login_count":
+				sql := `CREATE TABLE IF NOT EXISTS login_count (id INTEGER PRIMARY KEY, loginDate TEXT DEFAULT (strftime('%Y-%m-%d %H:%M', 'now', 'localtime')), userName TEXT);`
+				_, err = db.Exec(sql)
+				if err != nil {
+					return fmt.Errorf("create table login_count fail,%s", err.Error())
 				}
 
 			default:
@@ -430,6 +442,32 @@ func InsertUserAndRole(p ...string) error {
 	_, err = db.Exec(insertSQL, p[0], p[1])
 	if err != nil {
 		return fmt.Errorf("insert data user_roles fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertActBlacklist(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO blacklist (ip) VALUES (?);`
+	_, err = db.Exec(insertSQL, p[0])
+	if err != nil {
+		return fmt.Errorf("insert data to blacklist fail,%s", err.Error())
+	}
+	return nil
+}
+
+func InsertActLoginUser(p ...string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf("%s", err)
+	}
+	insertSQL := `INSERT INTO login_count (userName) VALUES (?);`
+	_, err = db.Exec(insertSQL, p[0])
+	if err != nil {
+		return fmt.Errorf("insert data to login_count fail,%s", err.Error())
 	}
 	return nil
 }
@@ -806,6 +844,58 @@ func SelectUserPermission(user ...string) ([]string, error) {
 	return uniqueLabel, nil
 }
 
+func SelectBlacklistIp(selectSql string) ([]BIp, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("query blacklist table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var blacklists struct {
+		Id          string
+		NewAddDate string
+		Ip string
+	}
+	b := make([]BIp, 0)
+	for rows.Next() {
+		err := rows.Scan(&blacklists.Id,  &blacklists.NewAddDate, &blacklists.Ip)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		b = append(b, blacklists)
+	}
+	return b, nil
+}
+
+func SelectLoginUser(selectSql string) ([]LoginCount, error) {
+	db, err := ConnDb()
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+	rows, err := db.Query(selectSql)
+	if err != nil {
+		return nil, fmt.Errorf("query login_count table fail,%s", err.Error())
+	}
+	defer rows.Close()
+	var loginCount struct {
+		// Id         string
+		LoginDate string
+		UserName string
+	}
+	loginCountList := make([]LoginCount, 0)
+	for rows.Next() {
+		err := rows.Scan(&loginCount.LoginDate,&loginCount.UserName)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		loginCountList = append(loginCountList, loginCount)
+	}
+	return loginCountList, nil
+}
+
 func DeleteAct(p ...string) error {
 	db, err := ConnDb()
 	if err != nil {
@@ -859,7 +949,7 @@ func DeleteErrLog() error {
 	if err != nil {
 		return fmt.Errorf(err.Error())
 	}
-	mlog.Info("delete table error_log data ok.")
+	mlog.Info("delete table eRROR_log data ok.")
 	return nil
 }
 
@@ -1035,6 +1125,27 @@ func DeleteRole(p ...string) error {
 	mlog.Info(fmt.Sprintf("delete roles ok. name -> [%s].", p[0]))
 	return nil
 }
+
+
+func DeleteBlacklistIp(blacklistIp string) error {
+	db, err := ConnDb()
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	deleteSQL := "DELETE FROM blacklist  WHERE ip = ?"
+	stmt, err := db.Prepare(deleteSQL)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(blacklistIp)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	mlog.Info(fmt.Sprintf("delete blacklist ip ok. ip -> [%s]", blacklistIp))
+	return nil
+}
+
 
 func UpdateUser(p ...string) error {
 	db, err := ConnDb()

@@ -32,13 +32,40 @@
             </div>
 
             <nav class="nav flex-column">
-                <a class="nav-link" href="/home">
-                    <i class="fas fa-home mr-2"></i> 个人主页
-                </a>
-                <a class="nav-link" href="#">
-                    <i class="fas fa-user-cog mr-2"></i> 密码修改
-                </a>
+                <li class="nav-link">
+                    <a class="btn btn-light" href="/home" style="color: #0b87e7">个人主页</a>
+                </li>
+                <li class="nav-link">
+                    <button class="btn btn-light" data-toggle="modal" onclick="" data-target="#exampleModal" data-whatever="@mdo" style="color: #0b87e7">密码修改</button>
+                </li>
             </nav>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">密码修改</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label class="col-form-label">密码</label>
+                                <input type="password" class="form-control" name="passwd" id="i-passwd">
+                                <label class="col-form-label">确认密码</label>
+                                <input type="password" class="form-control" name="passwd1" id="i-passwd1">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="updateUserPwd()">确定</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 主内容区 -->
@@ -52,16 +79,12 @@
                             </h5>
                             <div class="row text-center">
                                 <div class="col-4">
-                                    <div class="h4 mb-0">888</div>
-                                    <small class="text-muted">文章</small>
+                                    <div class="h4 mb-0">{{.userNum}}</div>
+                                    <small class="text-muted">用户</small>
                                 </div>
                                 <div class="col-4">
-                                    <div class="h4 mb-0">9999k</div>
-                                    <small class="text-muted">粉丝</small>
-                                </div>
-                                <div class="col-4">
-                                    <div class="h4 mb-0">99999k</div>
-                                    <small class="text-muted">点赞</small>
+                                    <div class="h4 mb-0">{{.roleNum}}</div>
+                                    <small class="text-muted">角色</small>
                                 </div>
                             </div>
                         </div>
@@ -73,40 +96,42 @@
                     <div class="card card-hover">
                         <div class="card-body">
                             <h5 class="card-title">
-                                <i class="fas fa-certificate text-success mr-2"></i>认证信息
+                                <i class="fas fa-certificate text-success mr-2"></i>每天寄语
                             </h5>
                             <ul class="list-unstyled mb-0">
-                                <li><i class="fas fa-check-circle text-success mr-2"></i>邮箱已验证</li>
-                                <li><i class="fas fa-check-circle text-success mr-2"></i>手机已验证</li>
+                                <li><i class="fas fa-check-circle text-success mr-2"></i>{{.messageValue}}</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 最近活动 -->
+
             <div class="card">
+
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-clock mr-2"></i>最近活动
+                        <i class="fas fa-clock mr-2"></i>登录统计(top 10)
                     </h5>
                 </div>
 
-                <div class="card-body">
-                    <div class="media mb-3">
-                        <i class="fas fa-comment-dots fa-2x text-info mr-3"></i>
-                        <div class="media-body">
-                            <h6 class="mt-0">发表了新文章</h6>
-                            <small class="text-muted">2小时前 · 《鬼吹灯》</small>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div id="main-login" style="width: 50%;height: 300px; text-align: center"></div>
+                    <div style="overflow: auto;width: 50%;height: 300px;">
+                        <div style="margin-top: 10px">
+                        <p style="font-weight: bold;">guide 是一个golang语言开发的工具集合，就是把所有小型自己开发的工作工具集中化，不单一使用。</p>
+                        <p style="font-weight: bold;">guide支持二次开发，基于原有框架拓展和添加自己的工具。</p>
+                        <p style="font-weight: bold;">项目源码地址: <a href="https://github.com/Yepeng-hup/guide" target="_blank" style="text-decoration: none;">https://github.com/Yepeng-hup/guide</a></p>
                         </div>
                     </div>
-
-
                 </div>
+
             </div>
         </main>
     </div>
 </div>
+
+<script src="/sta/js/jstools/echarts.js"></script>
 
 <script>
     function getUser(){
@@ -115,6 +140,66 @@
         div_h5.innerHTML = userData;
     }
     getUser()
+</script>
+
+<script>
+    function updateUserPwd(){
+        const userData = localStorage.getItem("user");
+        const passwd = $("#i-passwd").val();
+        const passwd1 = $("#i-passwd1").val();
+
+        if (passwd === '' && passwd1 === '') {
+            alert("不允许为空");
+            return;
+        }
+        if (passwd !== passwd1){
+            alert("密码输入不一致");
+        }else {
+            $.post({
+                "url": "/home/update/pwd",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "userName": userData,
+                    "password": passwd1
+                }),
+                success: function (data) {
+                    if (data["code"] === 200) {
+                        window.location = location.pathname;
+                    } else {
+                        alert(data["msg"]);
+                    }
+                },
+                fail: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main-login'));
+
+    $.get('/home/data').done(function(data) {
+        myChart.setOption({
+            tooltip: {},
+            legend: {
+                data:['登录次数']
+            },
+            xAxis: {
+                name: '用户名',
+                data: data.cate
+            },
+            yAxis: {},
+            series: [{
+                name: '登录次数',
+                type: 'bar',
+                color: '#6d61ea',
+                data: data.values,
+                barWidth: '20%'
+            }]
+        });
+    });
 </script>
 
 </body>

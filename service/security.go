@@ -257,10 +257,171 @@ func showSecureLog() ([]Secures, error) {
 	return ipSlice, nil
 }
 
+type (
+	Ip struct {
+		BlacklistIp string `json:"blacklistIp"`
+	}
+)
+
 func AddBlacklistIp(c *gin.Context) {
+	var ip Ip
+	if err := c.ShouldBindJSON(&ip); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "json analysis parameter error.",
+		})
+		return
+	}
+
+	blacklistIpStr := fmt.Sprintf("all:%s:deny", ip.BlacklistIp)
+	fmt.Println(blacklistIpStr)
+
+	// 先查询db此ip是否已经被拉黑
+	sql := fmt.Sprintf("select * from blacklist where ip=\"%s\"", ip.BlacklistIp)
+	ipList, err := core.SelectBlacklistIp(sql)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadGateway,
+			"msg": err.Error(),
+		})
+		return
+	}
+
+	if len(ipList) <= 0 {
+		if err := core.WriteFile("/etc/hosts.deny", blacklistIpStr); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": http.StatusBadGateway,
+				"msg": err.Error(),
+			})
+			return
+		}
+
+		// 写入db
+		if err := core.InsertActBlacklist(ip.BlacklistIp); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": http.StatusBadGateway,
+				"msg": err.Error(),
+			})
+			return
+		}
+
+		mlog.Info(fmt.Sprintf("add ip [%s] blacklist Ok", ip.BlacklistIp))
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
+			"msg": "add ip blacklist OK.",
+		})
+		return
+	}
+
+	mlog.Warn(fmt.Sprintf("add ip [%s] blacklist already present.", ip.BlacklistIp))
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"msg": "add ip blacklist already present.",
+	})
 
 }
 
 func MoveBlacklistIp(c *gin.Context) {
 
+	const (
+		filePath  = "/etc/hosts.deny"
+		separator = ":"
+	)
+
+	var ip Ip
+	if err := c.ShouldBindJSON(&ip); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "json analysis parameter error.",
+		})
+		return
+	}
+
+	sql := fmt.Sprintf("select * from blacklist where ip=\"%s\"", ip.BlacklistIp)
+	ipList, err := core.SelectBlacklistIp(sql)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadGateway,
+			"msg": err.Error(),
+		})
+		return
+	}
+
+	if len(ipList) <= 0 {
+		mlog.Warn(fmt.Sprintf("add ip fail, find this IP address -> [%s]", ip.BlacklistIp))
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadGateway,
+			"msg": "I couldn't find this IP address.",
+		})
+		return
+	}
+
+	content, _ := os.ReadFile(filePath)
+	lines := strings.Split(string(content), "\n")
+
+	var filteredLines []string
+	for _, line := range lines {
+		// 跳过空行和注释行
+		if strings.HasPrefix(line, "#") || line == "" {
+			filteredLines = append(filteredLines, line)
+			continue
+		}
+
+		parts := strings.Split(line, separator)
+		if len(parts) < 3 || parts[1] != ip.BlacklistIp {
+			filteredLines = append(filteredLines, line)
+		}
+	}
+	
+
+	newContent := strings.Join(filteredLines, "\n")
+	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+		mlog.Error(err.Error()+" delete file is ip fail.")
+		c.JSON(http.StatusOK, gin.H{
+			"code": http.StatusBadGateway,
+			"msg": err.Error(),
+		})
+		return
+	}else {
+		if err := core.DeleteBlacklistIp(ip.BlacklistIp); err != nil {
+			mlog.Error(fmt.Sprintf("delete blacklist ip fail. ip -> [%s]", ip.BlacklistIp))
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadGateway,
+				"msg": fmt.Sprintf("delete blacklist ip fail. ip -> [%s]", ip.BlacklistIp),
+			})
+			return
+		}
+
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"msg": "delete blacklist ip OK.",
+	})
+	
+}
+
+
+func AddNetworkBlacklistIp(c *gin.Context){
+
+}
+
+
+func MoveNetworkBlacklistIp(c *gin.Context){
+	
+}
+
+
+func ShowDbBlacklistIp(c *gin.Context){
+	sql := "select * from blacklist"
+	ipList, err := core.SelectBlacklistIp(sql)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadGateway,
+			"msg": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"blackList": ipList,
+	})
 }

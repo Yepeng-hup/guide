@@ -1,10 +1,12 @@
 package mon
 
 import (
+	"runtime"
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
-	"runtime"
-	"time"
 )
 
 var (
@@ -63,10 +65,10 @@ func PromMonMiddleware() gin.HandlerFunc {
 		c.Next()
 
 		duration := time.Since(start).Seconds()
-		status := c.Writer.Status()
+		statusStr := strconv.Itoa(c.Writer.Status())
 
 		httpRequestsTotal.WithLabelValues(
-			string(rune(status)),
+			statusStr,
 			c.Request.Method,
 			path,
 		).Inc()
@@ -88,7 +90,7 @@ func processMon() {
 
 	processResourceAlloc.Set(float64(alloc))
 	processResourceTotalAlloc.Set(float64(totalAlloc))
-	processResourceGoroutines.Set(float64(goroutines))
+	processResourceGoroutines.Set(float64(goroutines)) 
 }
 
 func StartPromMetricsUpdate(interval time.Duration) {

@@ -14,11 +14,11 @@
     <body>
         <form class="form-inline" action="/url/upload", method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 80px">
             <div class="form-group">
-                <label for="inputPassword6">名称</label>
+                <label>名称</label>
                 <input type="text" style="width: 200px" class="form-control mx-sm-3" name="url-name">
-                <label for="inputPassword6">网址</label>
+                <label>网址</label>
                 <input type="text" style="width: 300px" class="form-control mx-sm-3" name="url-addr">
-                <label for="inputPassword6">类型</label>
+                <label>类型</label>
                 <select name="url-type" id="url-type" class="custom-select mx-sm-3">
                     {{range $_, $v := .urlTypeList}}
                         {{if eq $v.TypeName "other"}}
@@ -28,7 +28,7 @@
                         {{end}}
                     {{end}}
                 </select>
-                <label for="inputPassword6">备注</label>
+                <label>备注</label>
                 <input type="text" style="width: 400px" class="form-control mx-sm-3" name="url-txt" placeholder="默认'无备注'">
                 <input  class="btn btn-primary" type="submit" value="添加">
             </div>
@@ -37,7 +37,7 @@
         </form>
 
         <form action="/url/del" method="post" enctype="multipart/form-data" style="margin-left: 10px; margin-top: 20px" class="form-inline" >
-            <label for="inputPassword6">名称</label>
+            <label>名称</label>
             <input class="form-control mx-sm-3" style="width: 200px" type="text" name="u-name" placeholder="模糊匹配，输入全名称">
             <input  class="btn btn-danger" type="submit" value="删除">
         </form>
@@ -89,19 +89,19 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">名称</label>
+                                <label class="col-form-label">名称</label>
                                 <input type="text" class="form-control" name="urlName" id="recipient-urlName">
                             </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">网址</label>
+                                <label class="col-form-label">网址</label>
                                 <input type="text" class="form-control" name="urlAddr" id="recipient-url" autocomplete="off">
                             </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">类名</label>
+                                <label class="col-form-label">类名</label>
                                 <input type="text" class="form-control" name="urlType" id="recipient-type" autocomplete="off">
                             </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">备注</label>
+                                <label class="col-form-label">备注</label>
                                 <input type="text" class="form-control" name="urlNotes" id="recipient-notes" autocomplete="off">
                             </div>
                         </form>
@@ -126,7 +126,7 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">类型名</label>
+                                <label class="col-form-label">类型名</label>
                                 <input type="text" class="form-control" name="file" id="recipient-file">
                             </div>
                         </form>
