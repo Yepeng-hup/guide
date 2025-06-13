@@ -2,15 +2,17 @@ package route
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"guide/core"
+	"guide/core/mon"
 	"guide/global"
 	"guide/service"
 	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -25,6 +27,7 @@ func InitRoute() *gin.Engine {
 	})
 	r.Static("/sta", "static")
 	r.LoadHTMLGlob("templates/*.tmpl")
+	r.Use(mon.PromMonMiddleware())
 
 	r.NoRoute(core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), func(c *gin.Context) {
 		fullPath := filepath.Join(core.Cfg.FileDataDir, c.Request.URL.Path)
@@ -86,10 +89,10 @@ func InitRoute() *gin.Engine {
 	r.GET("/readme", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/readme"), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "readme.tmpl", gin.H{})
 	})
-	r.GET("/home", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/home"), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "home.tmpl", gin.H{})
-	})
+	r.GET("/home", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/home"), service.HomeIndex)
+	r.POST("/home/update/pwd", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.UpdateHomePwd)
 	r.GET("/reboot", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/reboot"), service.RebootHost)
+	r.GET("/home/data",core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/reboot"), service.LoginDataSource)
 
 	user := r.Group("/user")
 	user.GET("/index", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/index"), service.UserAdmin)
@@ -167,6 +170,8 @@ func InitRoute() *gin.Engine {
 
 	security := r.Group("/security")
 	security.GET("/index", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/security/index"), service.SecurityIndex)
-
+	security.POST("/black/add", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/security/black/add"), service.AddBlacklistIp)
+	security.DELETE("/black/mv", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/security/black/mv"), service.MoveBlacklistIp)
+	security.GET("/black/show", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/security/black/show"), service.ShowDbBlacklistIp)
 	return r
 }
