@@ -104,8 +104,6 @@ func InitRoute() *gin.Engine {
 	user.POST("/role/create", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/create"), service.CreateRole)
 	user.GET("/role/select", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/select"), service.SelectRole)
 	user.POST("/role/per/select", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/per/select"), service.SelectRolePermission)
-	//user.GET("/glserver", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/glserver"), service.StartGlserver)
-	//user.GET("/glserver/stop", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/glserver/stop"), service.StopGlserver)
 	user.DELETE("/role/delete", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/delete"), service.DelRole)
 	user.DELETE("/role/per/delete", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/per/delete"), service.DelRolePermissionRoute)
 	user.GET("/role/per/admin/select", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/per/admin/select"), service.SelectAdminRolePermission)
