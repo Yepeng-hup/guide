@@ -12,9 +12,7 @@
     "/user/role/per/select",
     "/user/role/per/delete",
     "/user/role/per/admin/select",
-    "/user/role/delete",
-    "/user/glserver",
-    "/user/glserver/stop"
+    "/user/role/delete"
   ],
 
   "url": [
@@ -83,6 +81,7 @@
   "other": [
     "/readme",
     "/sta/*filepath",
-    "/home"
+    "/home",
+    "/home/data"
   ]
 }
