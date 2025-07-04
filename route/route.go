@@ -92,7 +92,7 @@ func InitRoute() *gin.Engine {
 	r.GET("/home", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/home"), service.HomeIndex)
 	r.POST("/home/update/pwd", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.UpdateHomePwd)
 	r.GET("/reboot", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/reboot"), service.RebootHost)
-	r.GET("/home/data",core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/reboot"), service.LoginDataSource)
+	r.GET("/home/data",core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/home/data"), service.LoginDataSource)
 
 	user := r.Group("/user")
 	user.GET("/index", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/index"), service.UserAdmin)
