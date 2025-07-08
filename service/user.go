@@ -218,38 +218,38 @@ func DeleteUser(c *gin.Context) {
 	})
 }
 
-func UpdateUserInfo(c *gin.Context) {
-	data, _ := c.GetRawData()
-	var body map[string]string
-	_ = json.Unmarshal(data, &body)
-	userId := body["userId"]
-	userName := body["userName"]
-	newUserDate := body["newUserDate"]
-	user, err := c.Cookie("user")
-	if err != nil {
-		mlog.Error(err.Error())
-		return
-	}
+// func UpdateUserInfo(c *gin.Context) {
+// 	data, _ := c.GetRawData()
+// 	var body map[string]string
+// 	_ = json.Unmarshal(data, &body)
+// 	userId := body["userId"]
+// 	userName := body["userName"]
+// 	newUserDate := body["newUserDate"]
+// 	user, err := c.Cookie("user")
+// 	if err != nil {
+// 		mlog.Error(err.Error())
+// 		return
+// 	}
 
-	if user != "admin" {
-		c.JSON(http.StatusOK, gin.H{
-			"code": http.StatusBadGateway,
-		})
-		mlog.Error(fmt.Sprintf("This login user does not have permission --> %s", user))
-		return
-	}
-	if err := core.UpdateUser(userName, newUserDate, userId); err != nil {
-		mlog.Error(err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"code": http.StatusBadGateway,
-		})
-		return
-	}
-	mlog.Info(fmt.Sprintf("update user [%s] info ok.", userName))
-	c.JSON(http.StatusOK, gin.H{
-		"code": http.StatusOK,
-	})
-}
+// 	if user != "admin" {
+// 		c.JSON(http.StatusOK, gin.H{
+// 			"code": http.StatusBadGateway,
+// 		})
+// 		mlog.Error(fmt.Sprintf("This login user does not have permission --> %s", user))
+// 		return
+// 	}
+// 	if err := core.UpdateUser(userName, newUserDate, userId); err != nil {
+// 		mlog.Error(err.Error())
+// 		c.JSON(http.StatusOK, gin.H{
+// 			"code": http.StatusBadGateway,
+// 		})
+// 		return
+// 	}
+// 	mlog.Info(fmt.Sprintf("update user [%s] info ok.", userName))
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"code": http.StatusOK,
+// 	})
+// }
 
 func RebootHost(c *gin.Context) {
 	osType := core.ShowSys()

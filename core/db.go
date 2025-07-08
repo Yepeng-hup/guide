@@ -1172,17 +1172,17 @@ func DeleteBlacklistIp(blacklistIp string) error {
 }
 
 
-func UpdateUser(p ...string) error {
-	db, err := ConnDb()
-	if err != nil {
-		return fmt.Errorf(err.Error())
-	}
-	_, err = db.Exec("UPDATE user SET userName = ? WHERE newUserDate = ? AND id = ?", p[0], p[1], p[2])
-	if err != nil {
-		return fmt.Errorf(err.Error())
-	}
-	return nil
-}
+// func UpdateUser(p ...string) error {
+// 	db, err := ConnDb()
+// 	if err != nil {
+// 		return fmt.Errorf(err.Error())
+// 	}
+// 	_, err = db.Exec("UPDATE user SET userName = ? WHERE newUserDate = ? AND id = ?", p[0], p[1], p[2])
+// 	if err != nil {
+// 		return fmt.Errorf(err.Error())
+// 	}
+// 	return nil
+// }
 
 func UpdateUserPwd(p ...string) error {
 	db, err := ConnDb()

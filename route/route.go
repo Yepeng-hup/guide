@@ -99,7 +99,7 @@ func InitRoute() *gin.Engine {
 	user.POST("/create", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/create"), service.CreateUser)
 	user.POST("/update/pwd", service.UpdatePwd)
 	user.DELETE("/delete", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/delete"), service.DeleteUser)
-	user.POST("/update/info", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/update/info"), service.UpdateUserInfo)
+	// user.POST("/update/info", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/update/info"), service.UpdateUserInfo)
 	user.GET("/role/index", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/index"), service.RoleAdmin)
 	user.POST("/role/create", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/create"), service.CreateRole)
 	user.GET("/role/select", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/user/role/select"), service.SelectRole)
