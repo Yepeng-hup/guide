@@ -85,10 +85,7 @@ func InitRoute() *gin.Engine {
 			"code": http.StatusOK,
 		})
 	})
-
-	r.GET("/readme", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/readme"), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "readme.tmpl", gin.H{})
-	})
+	
 	r.GET("/home", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/home"), service.HomeIndex)
 	r.POST("/home/update/pwd", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), service.UpdateHomePwd)
 	r.GET("/reboot", core.SysIpWhitelist(core.Cfg.StartWhiteList), core.CookieCheck(), core.PermissionCheck("/reboot"), service.RebootHost)
