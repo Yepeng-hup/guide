@@ -79,7 +79,6 @@
   ],
 
   "other": [
-    "/readme",
     "/sta/*filepath",
     "/home",
     "/home/data"
