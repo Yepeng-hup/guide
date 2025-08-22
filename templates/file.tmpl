@@ -152,7 +152,7 @@
             <p id="error-message">password error!</p>
         </div>
 
-        <div class="modal" id="mtk" data-backdrop="static" data-keyboard="false">
+        <div class="modal" id="mtk" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -165,6 +165,24 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="updateContent()">确认更新</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal" id="down" onclick="down()">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="mtk1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="fileName1"></div>
+                        <button type="button" class="close" data-dismiss="modal" onclick="SSdown()">&times;</button>
+                    </div>
+                        <div class="container mt-4">
+                            <div id="sstexts"></div>
+                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="SSupdateContent()">更新</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" id="down1" onclick="SSdown()">关闭</button>
                     </div>
                 </div>
             </div>

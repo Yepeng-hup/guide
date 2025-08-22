@@ -3,6 +3,7 @@
     <head>
         <title>登录</title>
         <link rel="stylesheet" href="/sta/css/all.css">
+        <link rel="stylesheet" href="/sta/css/jj.css">
         <script src="/sta/js/jstools/jquery-3.7.1.min.js"></script>
     </head>
     <style>
@@ -29,7 +30,26 @@
                 <input type="button" value="登录" onclick="loginck()">
             </form>
         </div>
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p id="popup-message">input error</p>
+                <button onclick="hidePopup()" class="popup-btn">X</button>
+            </div>
+        </div>
     </body>
+
+    <script>
+        function showPopup(message) {
+            document.getElementById("popup-message").innerText = message;
+            document.getElementById("popup").classList.remove("hidden");
+            setTimeout(hidePopup, 5000);
+        }
+
+        function hidePopup() {
+            document.getElementById("popup").classList.add("hidden");
+        }
+    </script>
+
 
     <script>
         function loginck(){
@@ -58,13 +78,14 @@
                             }
                             window.location.href = "/home";
                         } else {
-                            alert(data["msg"]);
+                            showPopup(data["msg"]);
                         }
                     }
                 },
             );
         }
     </script>
+
     </html>
 
 {{end}}

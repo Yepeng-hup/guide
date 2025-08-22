@@ -120,8 +120,7 @@ function updateContent() {
     let items=document.getElementsByClassName('cb');
     var checkboxes = document.getElementsByClassName('cb');
     let len=items.length;
-    // console.log(content)
-    // return;
+    
     for (var i=len-1; i>=0;i--) {
         let is_checkd = items[i].checked;
         if (is_checkd) {
@@ -155,6 +154,52 @@ function updateContent() {
             });
         }
     }
+}
+
+function SSupdateContent(){
+    let content = document.getElementById('sstexts').innerText;
+    let items=document.getElementsByClassName('cb');
+    var checkboxes = document.getElementsByClassName('cb');
+    let len=items.length;
+
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+            let aTag = divItems.querySelector('a');
+            let fileLink = aTag ? aTag.href : '';
+            let path = new URL(fileLink).pathname;
+            let dirPath = path.split('/').slice(0, -1).join('/');
+
+            $.post({
+                "url": "/file/edit",
+                "data": {
+                    "content": content,
+                    "file": divlr,
+                    "path": dirPath
+                },
+                "success": function (data) {
+                    if (data["code"] === 200) {
+                        alert("update success")
+                        for (let i = 0; i < checkboxes.length; i++) {
+                            checkboxes[i].checked = false;
+                        }
+                        document.getElementById("down1").click();
+                    } else {
+                        alert("err: update fail")
+                        for (let i = 0; i < checkboxes.length; i++) {
+                            checkboxes[i].checked = false;
+                        }
+                    }
+                },
+                "fail": function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+
 }
 
 
@@ -239,12 +284,79 @@ function catFileCheckbox() {
 }
 
 
+function SScatFileCheckbox() {
+    let items=document.getElementsByClassName('cb');
+    let len=items.length;
+    var checkboxes = document.getElementsByClassName('cb');
+    for (var i=len-1; i>=0;i--) {
+        let is_checkd = items[i].checked;
+        if (is_checkd) {
+            let divItems = items[i].parentNode.parentNode;
+            let divlr = divItems.innerText;
+            let aTag = divItems.querySelector('a');
+            let hrefValue = aTag.getAttribute('href');
+            // let fileName = hrefValue.split('/').pop();
+            $.get(
+                {
+                    "url": "/file/sscat",
+                    "data": {
+                        "fileName": divlr,
+                        "filePath": hrefValue
+                    },
+                    "success": function (data) {
+                        if (data["code"] === 200) {
+                            SStextpj(data["fileName"]);
+                            const modalEl = document.getElementById('mtk1');
+                            const modal = new bootstrap.Modal(modalEl);
+                            modal.show();
+                            const target = document.querySelector('#mtk1 #sstexts');
+                            target.innerHTML = '';
+                            const editor = CodeMirror(target, {
+                                 value: data["fileText"],
+                                 lineNumbers: false,
+                                 theme: "default",
+                                 indentUnit: 4,
+                                 smartIndent: true,
+                                 autoCloseBrackets: true,
+                                 viewportMargin: Infinity,
+                                 spellcheck: true,
+                                 specialChars: /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u2028\u2029\ufeff\ufff9-\ufffc]/g,
+                             });
+                            return
+                        } else {
+                            alertMontage("不支持的文件格式.","alert-danger");
+                            for (let i = 0; i < checkboxes.length; i++) {
+                                checkboxes[i].checked = false;
+                            }
+                        }
+                    },
+                    "fail": function (error) {
+                        console.log(error);
+                    }
+                },
+            )
+        }
+    }
+}
+
+
 function down() {
     var checkboxes = document.getElementsByClassName('cb');
     for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = false;
     }
     var element = document.getElementById('texts');
+    if (element) {
+        element.innerHTML = '';
+    }
+}
+
+function SSdown() {
+    var checkboxes = document.getElementsByClassName('cb');
+    for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+    }
+    var element = document.getElementById('sstexts');
     if (element) {
         element.innerHTML = '';
     }
@@ -430,12 +542,12 @@ function fileSearch(){
                     htmlData += `
                         <tr>
                             <td><input class="cb" type="checkbox"/></td>
-                            <td><a href="${data.fileList[i].Href}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/file.png" style="width: 20px; height: 20px"> ${data.fileList[i].FileName}</a></td>
+                            <td><a id="update" href="${data.fileList[i].Href}" style="text-decoration: none;font-size: 18px;"><img src="/sta/img/file.png" style="width: 20px; height: 20px"> ${data.fileList[i].FileName}</a></td>
                             <td>${data.fileList[i].Size}MB</td>
                             <td>${data.fileList[i].Time}</td>
                             <td>${permissionString}</td>
                             <td>
-                                <button data-toggle="modal" data-target="#mtk" style="margin-left: 15px" class="btn btn-success" onclick="catFileCheckbox()">查看</button>
+                                <button style="margin-left: 15px" class="btn btn-success" onclick="SScatFileCheckbox()">查看</button>
                             </td>
                         </tr>
                     `;

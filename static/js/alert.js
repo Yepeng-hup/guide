@@ -22,6 +22,15 @@ function textpj(fileName) {
     title.innerHTML = htmlTitle;
 }
 
+function SStextpj(fileName) {
+    let htmlTitle = `
+        <h5 class="modal-title">${fileName}</h5>
+    `;
+
+    let title = document.getElementById('fileName1');
+    title.innerHTML = htmlTitle;
+}
+
 function passwdpj(pwd){
     let htmlData = `
         <pre style="color: white; padding: 10px">${pwd}</pre>

@@ -16,15 +16,16 @@
     <div style="margin-left: 10px; margin-top: 80px">
         <input class="btn btn-primary" type="button"  name="showsys" id="showsys" value="系统安全状态" onclick="">
         <input class="btn btn-primary" type="button"  data-toggle="modal" data-target="#exampleModal3" data-whatever="@mdo" name="audit" id="iplist" value="黑名单IP列表" onclick="showBlacklist()">
+        <input class="btn btn-primary" type="button"  name="showsys" id="showsys" value="防火墙规则配置" onclick="">
+        <input class="btn btn-primary" type="button"  name="showsys" id="showsys" value="白名单配置" onclick="">
     </div>
     <hr>
 
     <div style="margin-left: 10px;">
-        <h4 style="text-align: center">系统日志ip统计</h4>
         <div><span style="color: red">{{.messageError}}</span></div>
         
         <div>
-            <h5 style="color: #007bff">Messages log</h5>
+            <h5 style="color: #007bff">Messages log [system]</h5>
             <table class="table table-hover">
                 <thead>
                     <th>@</th>
@@ -62,7 +63,7 @@
         </div>
 
         <div>
-            <h5 style="color: #007bff">Secure log</h5>
+            <h5 style="color: #007bff">Secure log [system]</h5>
             <div><span style="color: red">{{.securesError}}</span></div>
             <table class="table table-hover">
                 <thead>

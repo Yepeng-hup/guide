@@ -28,6 +28,7 @@
 
   "file": [
     "/file/cat",
+    "/file/sscat",
     "/file/hs",
     "/file/delete",
     "/file/dir/check",

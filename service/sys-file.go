@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/mholt/archiver"
 )
@@ -144,6 +143,51 @@ func CatFile(c *gin.Context) {
 		return
 	}
 }
+
+
+func SSCatFile(c *gin.Context) {
+	var fileTailNameList = []string{"go", "sh", "txt", "py", "yaml", "yml", "md", "java", "c", "json", "env", "dockerfile", "conf", "js", "html", "css", "ts",
+		"tmpl", "sql", "bat", "ps1", "php", "tmp", "xml", "ini", "jenkinsfile", "vue"}
+	fileNmae := c.Query("fileName")
+	filePath := c.Query("filePath")
+	fileList := strings.Fields(fileNmae)
+	lastIndex := strings.LastIndex(fileList[0], ".")
+	if lastIndex != -1 && lastIndex+1 < len(fileList[0]) {
+		// starting from the last position of the last point, truncate the string
+		fName := fileList[0][lastIndex+1:]
+		if !core.SliceCheck(fileTailNameList, fName) {
+			mlog.Error("This is not a file.")
+			return
+		} else {
+			//add if file size
+			fileInfo, err := os.Stat(core.Cfg.FileDataDir + filePath)
+			if err != nil {
+				mlog.Error(fmt.Sprintf("show file info fail,%s", err.Error()))
+				return
+			}
+			if fileInfo.Size()/1024/1024 > 1 {
+				mlog.Error(fmt.Sprintf("only allow viewing files below 1M, the is file size -> [%v]M", fileInfo.Size()/1024/1024))
+				return
+			}
+			//cat file
+			fileContents, err := ioutil.ReadFile(core.Cfg.FileDataDir + filePath)
+			if err != nil {
+				mlog.Error(fmt.Sprintf("not is read file, %v", err.Error()))
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"code":     http.StatusOK,
+				"fileText": string(fileContents),
+				"fileName": fileList[0],
+			})
+		}
+
+	} else {
+		mlog.Error("Not in character [.] .")
+		return
+	}
+}
+
 
 func UpdateFile(c *gin.Context) {
 	u := Update{
@@ -472,14 +516,20 @@ func listFilesAndDirs(root *string, searchStr string, ssPath string) ([]FileAnch
 
 		// 检查是否是文件及是否包含搜索关键字的文件
 		if !info.IsDir() && strings.Contains(info.Name(), searchStr) {
-			href := ssPath + "/" + info.Name()
+
+			relPath, err := filepath.Rel(core.Cfg.FileDataDir+ssPath, path)
+			if err != nil {
+				return fmt.Errorf("function filepath.Rel error: %v", err)
+			}
+
 			fileList = append(fileList, FileAnchor{
-				FileName: info.Name(),
-				Href:     href,
-				Size:     info.Size() / 1024 / 1024,
-				Time:     info.ModTime().Format("2006-01-02 15:04:05"),
-				Power:    info.Mode(),
+			FileName: info.Name(),
+			Href:     ssPath+"/"+relPath,
+			Size:     info.Size() / 1024 / 1024,
+			Time:     info.ModTime().Format("2006-01-02 15:04:05"),
+			Power:    info.Mode(),
 			})
+
 		}
 
 		return nil
