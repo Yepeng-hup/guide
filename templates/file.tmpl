@@ -337,7 +337,7 @@
                 const breadcrumbs = pathParts.map((part, index) => {
                     const href = '/' + pathParts.slice(0, index + 1).join('/'); // 拼接每一层的链接
                     return {
-                        text: part,
+                        text: decodeURIComponent(part),
                         href: href
                     };
                 });

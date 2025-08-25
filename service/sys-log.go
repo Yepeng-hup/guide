@@ -42,6 +42,7 @@ func screenErrorAndWarn(logContent string) (bool, string) {
 	patternErr := "(?i)error"
 	patternWarn := "(?i)warn"
 	patternFail := "(?i)fail"
+	patternStr := "(?i)Invalid"
 
 	// Compile regular expressions.
 	regexErr := regexp.MustCompile(patternErr)
@@ -55,6 +56,11 @@ func screenErrorAndWarn(logContent string) (bool, string) {
 			regexFail := regexp.MustCompile(patternFail)
 			if regexFail.MatchString(logContent) {
 				return true, "other"
+			}else {
+				regexStr := regexp.MustCompile(patternStr)
+				if regexStr.MatchString(logContent) {
+					return true, "other"
+				}
 			}
 		}
 	}
